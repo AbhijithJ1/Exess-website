@@ -9,9 +9,6 @@ const navLinks = [
   { name: 'Team', href: '#team' },
   { name: 'Events', href: '#events' },
   { name: 'Projects', href: '#projects' },
-  { name: 'Resources', href: '#resources' },
-  { name: 'Gallery', href: '#gallery' },
-  { name: 'Testimonials', href: '#testimonials' },
   { name: 'Contact', href: '#contact' },
 ]
 
@@ -83,14 +80,14 @@ const Navbar = () => {
               </span>
             </a>
 
-            {/* Desktop Nav in Michroma typography */}
-            <div className="hidden xl:flex items-center gap-1">
+            {/* Desktop Nav: Clean 6-item navigation in Michroma typography */}
+            <div className="hidden lg:flex items-center gap-1.5 sm:gap-2">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className={`relative px-3.5 py-2 text-[10px] uppercase tracking-[0.16em] font-brand font-semibold transition-colors duration-300 rounded-full ${
+                  className={`relative px-4 py-2 text-[10.5px] uppercase tracking-[0.16em] font-brand font-semibold transition-colors duration-300 rounded-full ${
                     activeSection === link.href.slice(1)
                       ? 'text-primary'
                       : 'text-slate-600 hover:text-slate-900'
@@ -109,10 +106,10 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Toggle */}
-            <div className="flex items-center">
+            <div className="flex items-center lg:hidden">
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="xl:hidden w-10 h-10 rounded-xl flex items-center justify-center text-slate-800 hover:bg-slate-100 transition-colors"
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-800 hover:bg-slate-100 transition-colors"
                 aria-label="Toggle menu"
               >
                 <AnimatePresence mode="wait">
@@ -152,7 +149,7 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-x-0 top-[70px] z-40 p-4 xl:hidden"
+            className="fixed inset-x-0 top-[70px] z-40 p-4 lg:hidden"
           >
             <div className="bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-3xl p-6 shadow-xl space-y-2">
               {navLinks.map((link) => (
