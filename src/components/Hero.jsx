@@ -25,15 +25,6 @@ const HeroBackground = () => (
       </radialGradient>
     </defs>
 
-    {/* ── 1. Continuous Central Main Power Bus Line ──────────────────────── */}
-    <path
-      d="M720 100 V240"
-      stroke="rgba(30,107,147,0.15)"
-      strokeWidth="1.8"
-      strokeDasharray="4 4"
-    />
-    <circle cx="720" cy="240" r="3.5" fill="#32C5E8" opacity="0.6" />
-
     {/* ── 2. Subtle PCB Copper Routing — Open Whitespace Lines ───────────── */}
     <g stroke="rgba(30,107,147,0.10)" strokeWidth="1.2" fill="none" strokeLinecap="square">
       <path d="M0 140 H160 V90 H320" />

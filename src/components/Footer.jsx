@@ -152,7 +152,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Proddec CEC Footer Credit */}
+        {/* PRODDEC CEC Footer Credit */}
         <div className="mt-4 pt-3 border-t border-border/40 text-center">
           <p className="font-inter text-xs text-body/70 group inline-flex items-center justify-center cursor-default">
             Crafted with{' '}
@@ -160,9 +160,14 @@ const Footer = () => {
               ❤️
             </span>{' '}
             by{' '}
-            <span className="font-medium text-heading ml-1 hover:text-primary transition-colors duration-300">
-              Proddec CEC
-            </span>
+            <a
+              href="https://www.proddec.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-brand font-semibold text-primary ml-1 hover:text-secondary hover:underline transition-all duration-300 tracking-wider cursor-pointer"
+            >
+              PRODDEC CEC
+            </a>
           </p>
         </div>
       </div>
