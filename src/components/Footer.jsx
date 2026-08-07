@@ -151,6 +151,20 @@ const Footer = () => {
             <a href="#" className="hover:text-primary transition-colors duration-300">Terms of Service</a>
           </div>
         </div>
+
+        {/* Proddec CEC Footer Credit */}
+        <div className="mt-4 pt-3 border-t border-border/40 text-center">
+          <p className="font-inter text-xs text-body/70 group inline-flex items-center justify-center cursor-default">
+            Crafted with{' '}
+            <span className="inline-block text-primary mx-1 transition-transform duration-300 group-hover:scale-125 group-hover:text-accent">
+              ❤️
+            </span>{' '}
+            by{' '}
+            <span className="font-medium text-heading ml-1 hover:text-primary transition-colors duration-300">
+              Proddec CEC
+            </span>
+          </p>
+        </div>
       </div>
     </footer>
   )

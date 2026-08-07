@@ -27,7 +27,7 @@ const HeroBackground = () => (
 
     {/* ── 1. Continuous Central Main Power Bus Line ──────────────────────── */}
     <path
-      d="M720 0 V240"
+      d="M720 100 V240"
       stroke="rgba(30,107,147,0.15)"
       strokeWidth="1.8"
       strokeDasharray="4 4"
