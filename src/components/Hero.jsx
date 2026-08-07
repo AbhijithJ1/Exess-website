@@ -60,21 +60,23 @@ const HeroBackground = () => (
 )
 
 /**
- * Premium CTA Button — Minimal, modern engineering micro-interaction
+ * Premium Light-Theme CTA Button — Glass/Neumorphic UI inspired by Apple & Vercel
  */
 const ElectricalSignalButton = ({ onClick }) => (
   <button
     id="hero-explore-btn"
     onClick={onClick}
-    className="group relative inline-flex items-center gap-3.5 px-8 py-3.5 sm:px-9 sm:py-4 rounded-full font-brand text-xs sm:text-sm text-white tracking-wider overflow-hidden cursor-pointer bg-slate-900 border border-primary/30 hover:border-primary/70 transition-all duration-300 shadow-soft hover:shadow-soft-lg active:scale-95"
+    className="group relative inline-flex items-center gap-3.5 px-8 py-3.5 sm:px-10 sm:py-4 rounded-2xl font-brand text-xs sm:text-sm font-semibold tracking-wider text-slate-800 bg-white/95 backdrop-blur-md border border-primary/30 hover:border-primary/70 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_4px_20px_rgba(30,107,147,0.10)] hover:shadow-[0_8px_30px_rgba(30,107,147,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer overflow-hidden"
   >
-    {/* Subtle signal pulse gradient highlight on hover */}
-    <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+    {/* Smooth blue gradient overlay transition on hover */}
+    <div className="absolute inset-0 bg-gradient-to-r from-[#1E6B93] to-[#187AA3] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none" />
 
-    <span className="relative z-10 font-semibold">Explore ExESS</span>
+    <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
+      Explore ExESS
+    </span>
 
-    <div className="relative z-10 flex items-center justify-center w-7 h-7 rounded-full bg-primary/20 text-accent group-hover:bg-primary group-hover:text-white transition-all duration-300">
-      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
+    <div className="relative z-10 flex items-center justify-center">
+      <ArrowRight className="w-4 h-4 text-primary group-hover:text-white group-hover:translate-x-1.5 transition-all duration-300 ease-out" />
     </div>
   </button>
 )
