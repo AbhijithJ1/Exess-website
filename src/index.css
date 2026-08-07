@@ -1,0 +1,280 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #F8FAFC;
+    color: #6B7280;
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  ::selection {
+    background-color: rgba(30, 107, 147, 0.15);
+    color: #1F2937;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    color: #1F2937;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .glass-dark {
+    background: rgba(30, 107, 147, 0.04);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    border: 1px solid rgba(30, 107, 147, 0.1);
+  }
+
+  .section-padding {
+    @apply px-4 sm:px-8 lg:px-16 xl:px-24 2xl:px-32;
+  }
+
+  .section-gap {
+    @apply py-20 sm:py-28 lg:py-36;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #1E6B93 0%, #32C5E8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── EXESS hero metal sweep: narrow bright peak travels L→R across polished steel ── */
+  .text-light-sweep {
+    background: linear-gradient(
+      90deg,
+      rgba(175, 204, 225, 0.86) 0%,
+      rgba(205, 225, 242, 0.90) 18%,
+      rgba(235, 248, 255, 0.97) 30%,
+      rgba(255, 255, 255, 1.00) 36%,
+      rgba(198, 243, 255, 1.00) 40%,
+      rgba(255, 255, 255, 1.00) 44%,
+      rgba(235, 248, 255, 0.97) 52%,
+      rgba(205, 225, 242, 0.90) 67%,
+      rgba(175, 204, 225, 0.86) 88%,
+      rgba(158, 192, 215, 0.84) 100%
+    );
+    background-size: 400% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: metalSweep 5.5s ease-in-out infinite;
+  }
+
+  /* ── Section heading sweep: blue-tinted highlight travelling across dark text ── */
+  .text-light-sweep-dark {
+    background: linear-gradient(
+      90deg,
+      #1A5F86 0%,
+      #1E6B93 18%,
+      #1A7BAE 30%,
+      #5ED8F2 38%,
+      #96EBF8 42%,
+      #5ED8F2 46%,
+      #1A7BAE 54%,
+      #1E6B93 70%,
+      #1A5F86 88%,
+      #175278 100%
+    );
+    background-size: 400% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: metalSweep 5.5s ease-in-out infinite;
+    animation-delay: -2.2s;
+  }
+
+  .btn-primary {
+    @apply px-8 py-4 bg-primary text-white font-semibold text-sm sm:text-base rounded-full 
+           transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
+           hover:bg-secondary hover:shadow-soft-xl hover:shadow-primary/20 
+           hover:-translate-y-1 active:translate-y-0 active:scale-[0.98];
+  }
+
+  .btn-outline {
+    @apply px-8 py-4 border-2 border-primary/25 text-primary font-semibold text-sm sm:text-base rounded-full 
+           transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
+           hover:bg-primary hover:text-white hover:border-primary hover:shadow-soft-xl 
+           hover:-translate-y-1 active:translate-y-0 active:scale-[0.98];
+  }
+
+  .card-premium {
+    @apply bg-card rounded-3xl border border-border/70 
+           transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+           hover:shadow-soft-xl hover:border-primary/20 hover:-translate-y-1.5;
+  }
+
+  .card-inner {
+    @apply p-6 sm:p-8;
+  }
+
+  .section-label {
+    @apply inline-flex items-center gap-2.5 px-4 py-2 rounded-full 
+           bg-primary/[0.06] border border-primary/15 mb-6 shadow-sm;
+  }
+
+  .section-label-text {
+    @apply text-caption text-primary uppercase tracking-[0.18em] font-semibold;
+  }
+
+  .heading-display {
+    @apply font-grotesk text-display text-heading font-bold tracking-tight leading-[1.08];
+  }
+
+  .heading-section {
+    @apply font-grotesk text-h2 text-heading font-bold tracking-tight leading-[1.15];
+  }
+
+  .body-text {
+    @apply font-inter text-body text-body leading-relaxed;
+  }
+
+  .body-text-lg {
+    @apply font-inter text-body-lg text-body leading-relaxed;
+  }
+}
+
+@layer utilities {
+  .pcb-grid {
+    background-image: 
+      linear-gradient(rgba(30, 107, 147, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30, 107, 147, 0.025) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  .pcb-grid-dense {
+    background-image: 
+      linear-gradient(rgba(30, 107, 147, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30, 107, 147, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .circuit-dots {
+    background-image: radial-gradient(circle, rgba(30, 107, 147, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Lenis smooth scroll */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 107, 147, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(30, 107, 147, 0.35);
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid #1E6B93;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Mobile touch improvements */
+@media (hover: none) {
+  .card-premium:hover {
+    transform: none;
+  }
+}
+
+/* ── Metal light sweep: peak travels left→right ─────────────────────────── */
+@keyframes metalSweep {
+  /* Animating from 100% → 0% makes the bright peak move L→R across the text   */
+  /* (at 100% we see the right 25% of the 400%-wide gradient = after the peak;  */
+  /*  at 0%  we see the left  25% of the gradient = before the peak)             */
+  0%   { background-position: 100% center; }
+  18%  { background-position: 100% center; }  /* pause before sweep starts */
+  82%  { background-position:   0% center; }  /* sweep: L→R */
+  100% { background-position:   0% center; }  /* pause after sweep */
+}
+
+/* ── Section headline glow-reveal ──────────────────────────────────────── */
+@keyframes headlinePowerOn {
+  0%   { opacity: 0; filter: blur(16px) drop-shadow(0 0 0px transparent); transform: translateY(22px); }
+  45%  { opacity: 0.85; filter: blur(3px) drop-shadow(0 0 24px rgba(30,107,147,0.50)); transform: translateY(5px); }
+  100% { opacity: 1; filter: blur(0px) drop-shadow(0 0 6px rgba(30,107,147,0.10)); transform: translateY(0); }
+}
+
+/* ── Content fade-in (after headline) ──────────────────────────────────── */
+@keyframes contentFadeIn {
+  0%   { opacity: 0; filter: blur(8px); transform: translateY(14px); }
+  100% { opacity: 1; filter: blur(0px); transform: translateY(0); }
+}
+
+/* ── SVG trace stroke grow ──────────────────────────────────────────────── */
+@keyframes traceGrow {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
