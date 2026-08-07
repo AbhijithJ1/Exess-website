@@ -12,10 +12,10 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 32, filter: 'blur(8px)' },
+  hidden: { opacity: 0, y: 20 },
   visible: {
-    opacity: 1, y: 0, filter: 'blur(0px)',
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+    opacity: 1, y: 0,
+    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
   },
 }
 
@@ -25,8 +25,6 @@ const Projects = () => {
 
   return (
     <section id="projects" className="relative section-gap overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.015] to-transparent pointer-events-none" />
-
       <div className="section-padding relative z-10 max-w-7xl mx-auto">
         <PowerOnHeader
           badge="Innovation & Projects"
@@ -46,10 +44,9 @@ const Projects = () => {
               key={project.id}
               variants={itemVariants}
               onClick={() => setSelectedProject(project)}
-              className="group card-premium overflow-hidden cursor-pointer flex flex-col justify-between"
+              className="group bg-white rounded-3xl border border-border/70 overflow-hidden cursor-pointer flex flex-col justify-between hover:shadow-soft-lg hover:border-primary/30 transition-all duration-300"
             >
               <div>
-                {/* Large Responsive Cover-Image Placeholder Frame */}
                 <ImagePlaceholder
                   src={project.image}
                   alt={project.title}
@@ -57,15 +54,15 @@ const Projects = () => {
                   aspectRatio="aspect-[16/9]"
                   badge={project.status}
                   overlayContent={
-                    <div className="absolute bottom-3 right-3 w-10 h-10 rounded-xl bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
-                      <project.icon className="w-5 h-5 text-accent" />
+                    <div className="absolute bottom-3 right-3 w-9 h-9 rounded-xl bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
+                      <project.icon className="w-4 h-4 text-accent" />
                     </div>
                   }
                 />
 
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
-                    <span className={`px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide ${
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide ${
                       project.status === 'Completed'
                         ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/50'
                         : 'bg-amber-50 text-amber-600 border border-amber-200/50'
@@ -77,19 +74,19 @@ const Projects = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold font-grotesk text-heading mb-2 group-hover:text-primary transition-colors duration-300">
+                  <h3 className="text-lg font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors duration-300">
                     {project.title}
                   </h3>
 
-                  <p className="text-body-sm text-body leading-relaxed mb-5 line-clamp-2">
+                  <p className="font-inter text-xs text-body leading-relaxed mb-5 line-clamp-2">
                     {project.description}
                   </p>
 
-                  <div className="flex flex-wrap gap-1.5 mb-2">
+                  <div className="flex flex-wrap gap-1.5 mb-2 font-mono">
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-gray-100 text-gray-600 font-mono"
+                        className="px-2 py-0.5 rounded-lg text-[9px] font-semibold bg-gray-100 text-gray-600"
                       >
                         {tag}
                       </span>
@@ -99,8 +96,8 @@ const Projects = () => {
               </div>
 
               <div className="px-6 pb-6 pt-0">
-                <span className="inline-flex items-center gap-2 text-xs font-semibold text-primary group-hover:text-secondary transition-colors">
-                  Project Documentation <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <span className="inline-flex items-center gap-2 text-[10px] font-brand uppercase tracking-wider text-primary group-hover:text-secondary transition-colors">
+                  Documentation <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
             </motion.div>
@@ -115,7 +112,7 @@ const Projects = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md"
             onClick={() => setSelectedProject(null)}
           >
             <motion.div
@@ -142,26 +139,26 @@ const Projects = () => {
                 badge={selectedProject.status}
               />
 
-              <h3 className="text-2xl sm:text-3xl font-grotesk font-bold text-heading mb-3">
+              <h3 className="text-xl sm:text-2xl font-brand text-heading mb-3">
                 {selectedProject.title}
               </h3>
 
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex flex-wrap gap-2 mb-4 font-mono">
                 {selectedProject.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 rounded-lg text-xs font-semibold bg-primary/[0.08] text-primary font-mono"
+                    className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-primary/[0.08] text-primary"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
 
-              <p className="text-body text-sm leading-relaxed mb-6">
+              <p className="font-inter text-body text-sm leading-relaxed mb-6">
                 {selectedProject.details || selectedProject.description}
               </p>
 
-              <div className="grid grid-cols-2 gap-3 mb-6 p-4 rounded-2xl bg-gray-50 border border-border/60 text-xs">
+              <div className="grid grid-cols-2 gap-3 mb-6 p-4 rounded-2xl bg-gray-50 border border-border/60 text-xs font-inter">
                 <div>
                   <span className="text-gray-400 block mb-0.5">Team Size</span>
                   <span className="font-semibold text-heading">{selectedProject.team}</span>
@@ -177,7 +174,7 @@ const Projects = () => {
                   href={selectedProject.githubUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="btn-primary w-full inline-flex items-center justify-center gap-2 text-center"
+                  className="btn-primary w-full inline-flex items-center justify-center gap-2 font-brand text-xs uppercase tracking-wider py-3.5"
                 >
                   <Github className="w-4 h-4" /> View Hardware Repository
                 </a>

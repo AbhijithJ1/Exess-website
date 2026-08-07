@@ -11,7 +11,7 @@ const navLinks = [
   { name: 'Projects', href: '#projects' },
   { name: 'Resources', href: '#resources' },
   { name: 'Gallery', href: '#gallery' },
-  { name: 'Alumni', href: '#alumni' },
+  { name: 'Testimonials', href: '#testimonials' },
   { name: 'Contact', href: '#contact' },
 ]
 
@@ -71,26 +71,26 @@ const Navbar = () => {
       >
         <div className="section-padding max-w-7xl mx-auto">
           <div className="flex items-center justify-between h-16 sm:h-18">
-            {/* Small ExESS Logo in Navbar */}
+            {/* ExESS Logo & Michroma Branding in Navbar */}
             <a
               href="#home"
               onClick={(e) => handleNavClick(e, '#home')}
               className="flex items-center gap-2.5 py-1.5 group"
             >
               <Logo size={scrolled ? 32 : 36} color="#1E6B93" />
-              <span className="font-grotesk font-bold text-lg tracking-tight text-slate-900 group-hover:text-primary transition-colors">
+              <span className="font-brand text-base sm:text-lg tracking-tight text-slate-900 group-hover:text-primary transition-colors">
                 Ex<span className="text-primary">ESS</span>
               </span>
             </a>
 
-            {/* Desktop Nav */}
+            {/* Desktop Nav in Michroma typography */}
             <div className="hidden xl:flex items-center gap-1">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className={`relative px-4 py-2 text-xs uppercase tracking-[0.14em] font-semibold transition-colors duration-300 rounded-full ${
+                  className={`relative px-3.5 py-2 text-[10px] uppercase tracking-[0.16em] font-brand font-semibold transition-colors duration-300 rounded-full ${
                     activeSection === link.href.slice(1)
                       ? 'text-primary'
                       : 'text-slate-600 hover:text-slate-900'
@@ -160,7 +160,7 @@ const Navbar = () => {
                   key={link.name}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                  className={`block px-4 py-3 rounded-2xl text-xs font-brand uppercase tracking-wider font-semibold transition-colors ${
                     activeSection === link.href.slice(1)
                       ? 'bg-primary/10 text-primary border border-primary/20'
                       : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'

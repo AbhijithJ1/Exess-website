@@ -13,7 +13,7 @@ import Events from './components/Events'
 import Projects from './components/Projects'
 import Resources from './components/Resources'
 import Gallery from './components/Gallery'
-import Alumni from './components/Alumni'
+import Testimonials from './components/Testimonials'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CircuitDivider from './components/CircuitDivider'
@@ -99,12 +99,12 @@ function App() {
 
           <Gallery />
 
-          {/* Trace between Gallery → Alumni */}
+          {/* Trace between Gallery → Testimonials */}
           <CircuitDivider variant="right" className="section-padding" />
 
-          <Alumni />
+          <Testimonials />
 
-          {/* Trace between Alumni → Contact */}
+          {/* Trace between Testimonials → Contact */}
           <CircuitDivider variant="center" className="section-padding" />
 
           <Contact />

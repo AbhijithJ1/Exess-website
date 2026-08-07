@@ -1,15 +1,32 @@
 /**
  * ExESS Executive Committee & Team Data
- * Reusable data structure for ExESS website
+ * Categorized data for Faculty Coordinator, Executive Committee, Office Bearers, and Committee Members
  */
-export const teamMembers = [
+
+export const facultyCoordinator = {
+  id: 'fac-coord',
+  name: 'Dr. Elizabeth George',
+  role: 'Faculty Coordinator',
+  category: 'Faculty Coordinator',
+  department: 'Associate Professor, ECE Dept.',
+  initials: 'EG',
+  image: null,
+  bio: 'Guides ExESS technical workshops, hardware research projects, and departmental academic initiatives.',
+  socials: {
+    linkedin: 'https://linkedin.com',
+    email: 'elizabeth@cec.ac.in',
+  },
+}
+
+export const executiveCommittee = [
   {
     id: 'ak-chair',
     name: 'Aditya Krishnan',
     role: 'Chairperson',
+    category: 'Executive Committee',
     year: 'Final Year, ECE',
     initials: 'AK',
-    image: null, // Add photo URL e.g. '/images/team/aditya.jpg'
+    image: null,
     bio: 'Specializes in Embedded Real-Time Operating Systems (RTOS) and FPGA prototyping.',
     socials: {
       linkedin: 'https://linkedin.com',
@@ -21,6 +38,7 @@ export const teamMembers = [
     id: 'mn-vice',
     name: 'Meera Nair',
     role: 'Vice Chairperson',
+    category: 'Executive Committee',
     year: 'Final Year, ECE',
     initials: 'MN',
     image: null,
@@ -35,6 +53,7 @@ export const teamMembers = [
     id: 'rm-sec',
     name: 'Rahul Menon',
     role: 'Secretary',
+    category: 'Executive Committee',
     year: 'Third Year, ECE',
     initials: 'RM',
     image: null,
@@ -49,6 +68,7 @@ export const teamMembers = [
     id: 'ar-tech',
     name: 'Anjali Rajesh',
     role: 'Technical Head',
+    category: 'Executive Committee',
     year: 'Third Year, ECE',
     initials: 'AR',
     image: null,
@@ -59,10 +79,14 @@ export const teamMembers = [
       email: 'anjali@exess-cec.org',
     },
   },
+]
+
+export const officeBearers = [
   {
     id: 'vs-event',
     name: 'Vivek Soman',
     role: 'Event Coordinator',
+    category: 'Office Bearers',
     year: 'Third Year, ECE',
     initials: 'VS',
     image: null,
@@ -77,6 +101,7 @@ export const teamMembers = [
     id: 'pt-design',
     name: 'Priya Thomas',
     role: 'Design Lead',
+    category: 'Office Bearers',
     year: 'Third Year, ECE',
     initials: 'PT',
     image: null,
@@ -91,6 +116,7 @@ export const teamMembers = [
     id: 'kd-proj',
     name: 'Kiran Das',
     role: 'Project Lead',
+    category: 'Office Bearers',
     year: 'Third Year, ECE',
     initials: 'KD',
     image: null,
@@ -105,6 +131,7 @@ export const teamMembers = [
     id: 'sm-pr',
     name: 'Sneha Mohan',
     role: 'Public Relations',
+    category: 'Office Bearers',
     year: 'Second Year, ECE',
     initials: 'SM',
     image: null,
@@ -115,4 +142,54 @@ export const teamMembers = [
       email: 'sneha@exess-cec.org',
     },
   },
+]
+
+export const committeeMembers = [
+  {
+    id: 'ab-comm',
+    name: 'Arjun B',
+    role: 'Web & Media Lead',
+    category: 'Committee Members',
+    year: 'Second Year, ECE',
+    initials: 'AB',
+    image: null,
+    bio: 'Maintains the official ExESS website and digital event branding.',
+  },
+  {
+    id: 'sk-comm',
+    name: 'Siddharth K',
+    role: 'Workshop Volunteer',
+    category: 'Committee Members',
+    year: 'Second Year, ECE',
+    initials: 'SK',
+    image: null,
+    bio: 'Assists in soldering tool setups and hardware component logistics.',
+  },
+  {
+    id: 'dv-comm',
+    name: 'Devika V',
+    role: 'Content & Editorial',
+    category: 'Committee Members',
+    year: 'Second Year, ECE',
+    initials: 'DV',
+    image: null,
+    bio: 'Writes technical articles and documents ExESS project showcases.',
+  },
+  {
+    id: 'rn-comm',
+    name: 'Rohan N',
+    role: 'Hardware Lab Asst.',
+    category: 'Committee Members',
+    year: 'Second Year, ECE',
+    initials: 'RN',
+    image: null,
+    bio: 'Manages oscilloscope equipment and microcontroller kit inventory.',
+  },
+]
+
+export const allTeamCategories = [
+  { title: 'Faculty Coordinator', members: [facultyCoordinator] },
+  { title: 'Executive Committee', members: executiveCommittee },
+  { title: 'Office Bearers', members: officeBearers },
+  { title: 'Committee Members', members: committeeMembers },
 ]

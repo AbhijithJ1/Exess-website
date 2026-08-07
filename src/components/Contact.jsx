@@ -11,10 +11,10 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
+  hidden: { opacity: 0, y: 20 },
   visible: {
-    opacity: 1, y: 0, filter: 'blur(0px)',
-    transition: { duration: 0.6, ease: [0.23, 1, 0.32, 1] },
+    opacity: 1, y: 0,
+    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
   },
 }
 
@@ -31,9 +31,7 @@ const Contact = () => {
 
   return (
     <section id="contact" className="relative section-gap overflow-hidden">
-      <div className="absolute inset-0 pcb-grid opacity-30 pointer-events-none" />
-
-      <div className="section-padding relative z-10">
+      <div className="section-padding relative z-10 max-w-6xl mx-auto">
         <PowerOnHeader
           badge="Get In Touch"
           headline={<>Let&apos;s <span className="text-light-sweep-dark">Connect</span></>}
@@ -45,15 +43,15 @@ const Contact = () => {
           initial="hidden"
           animate={contentVisible ? 'visible' : 'hidden'}
           variants={containerVariants}
-          className="grid lg:grid-cols-5 gap-10 sm:gap-12 max-w-6xl mx-auto"
+          className="grid lg:grid-cols-5 gap-10 sm:gap-12"
         >
           {/* Left Column: Contact Info & Reserved Campus Photo Container */}
           <div className="lg:col-span-2 space-y-7 sm:space-y-8">
             <motion.div variants={itemVariants}>
-              <h3 className="text-h3 font-grotesk text-heading mb-3 sm:mb-4">
+              <h3 className="text-xl sm:text-2xl font-brand text-heading mb-3">
                 Get in Touch
               </h3>
-              <p className="body-text mb-6">
+              <p className="font-inter text-sm text-body leading-relaxed mb-6">
                 Whether you&apos;re a student looking to join, a company interested in collaboration,
                 or an alumnus wanting to give back &mdash; reach out to us.
               </p>
@@ -66,9 +64,9 @@ const Contact = () => {
                   type="cover"
                   aspectRatio="aspect-video"
                   badge="CEC_CAMPUS"
-                  className="shadow-soft border border-border/80"
+                  className="shadow-soft"
                 />
-                <span className="block text-[11px] font-mono text-gray-400 text-center mt-2">
+                <span className="block text-[10px] font-mono text-gray-400 text-center mt-2">
                   ECE Department &bull; College of Engineering Chengannur
                 </span>
               </div>
@@ -82,13 +80,13 @@ const Contact = () => {
                 { icon: Clock, title: 'Office Hours', lines: ['Mon - Fri: 9:00 AM - 5:00 PM'] },
               ].map((item) => (
                 <motion.div key={item.title} variants={itemVariants} className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-primary/[0.06] flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-primary/[0.06] flex items-center justify-center flex-shrink-0">
                     <item.icon className="w-4.5 h-4.5 text-primary" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-heading mb-1">{item.title}</h4>
+                    <h4 className="text-xs font-brand text-heading uppercase tracking-wider mb-1">{item.title}</h4>
                     {item.lines.map((line, i) => (
-                      <p key={i} className="text-sm text-body">{line}</p>
+                      <p key={i} className="text-xs font-inter text-body">{line}</p>
                     ))}
                   </div>
                 </motion.div>
@@ -98,65 +96,65 @@ const Contact = () => {
 
           {/* Right Column: Contact Form */}
           <motion.div variants={itemVariants} className="lg:col-span-3">
-            <form onSubmit={handleSubmit} className="card-premium p-6 sm:p-8">
+            <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-8 border border-border/80 shadow-soft">
               {submitted ? (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="text-center py-12 sm:py-16"
                 >
                   <CheckCircle className="w-14 h-14 text-emerald-500 mx-auto mb-4" />
-                  <h3 className="text-h3 font-grotesk text-heading mb-2">Message Sent!</h3>
-                  <p className="body-text">We&apos;ll get back to you soon.</p>
+                  <h3 className="text-xl font-brand text-heading mb-2">Message Sent!</h3>
+                  <p className="font-inter text-sm text-body">We&apos;ll get back to you soon.</p>
                 </motion.div>
               ) : (
                 <>
                   <div className="grid sm:grid-cols-2 gap-5 mb-5">
                     <div>
-                      <label className="block text-sm font-semibold text-heading mb-2">Name</label>
+                      <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2">Name</label>
                       <input
                         type="text" required
                         value={formState.name}
                         onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm"
+                        className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter"
                         placeholder="Your name"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-heading mb-2">Email</label>
+                      <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2">Email</label>
                       <input
                         type="email" required
                         value={formState.email}
                         onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm"
+                        className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter"
                         placeholder="your@email.com"
                       />
                     </div>
                   </div>
 
                   <div className="mb-5">
-                    <label className="block text-sm font-semibold text-heading mb-2">Subject</label>
-                    <select className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm text-body">
+                    <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2">Subject</label>
+                    <select className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter text-body">
                       <option>General Inquiry</option>
                       <option>Join ExESS</option>
                       <option>Sponsorship</option>
                       <option>Collaboration</option>
-                      <option>Alumni Connect</option>
+                      <option>Testimonial Submission</option>
                     </select>
                   </div>
 
                   <div className="mb-7 sm:mb-8">
-                    <label className="block text-sm font-semibold text-heading mb-2">Message</label>
+                    <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2">Message</label>
                     <textarea
                       required rows={5}
                       value={formState.message}
                       onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm resize-none"
+                      className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter resize-none"
                       placeholder="Tell us what's on your mind..."
                     />
                   </div>
 
-                  <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2.5">
+                  <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2.5 font-brand text-xs uppercase tracking-wider py-3.5">
                     <Send className="w-4 h-4" />
                     Send Message
                   </button>

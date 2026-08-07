@@ -18,7 +18,8 @@ export default {
         muted: '#9CA3AF',
       },
       fontFamily: {
-        grotesk: ['"Space Grotesk"', 'sans-serif'],
+        brand: ['"Michroma"', 'sans-serif'],
+        grotesk: ['"Michroma"', '"Space Grotesk"', 'sans-serif'],
         inter: ['"Inter"', 'sans-serif'],
       },
       fontSize: {

@@ -13,12 +13,11 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 24, filter: 'blur(8px)' },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
   },
 }
 
@@ -36,26 +35,15 @@ const PCBLineArt = ({ className = '' }) => (
       stroke="rgba(30, 107, 147, 0.12)"
       strokeWidth="1.5"
       strokeLinecap="round"
-      strokeLinejoin="round"
     />
     <path
       d="M10 60 H50 L80 90 H150 L170 110 H230"
       stroke="rgba(50, 197, 232, 0.18)"
       strokeWidth="1.5"
       strokeLinecap="round"
-      strokeLinejoin="round"
     />
-    <path
-      d="M10 100 H100 L130 130 H230"
-      stroke="rgba(30, 107, 147, 0.12)"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <circle cx="80" cy="20" r="3.5" fill="rgba(30, 107, 147, 0.25)" />
-    <circle cx="110" cy="50" r="3.5" fill="#32C5E8" />
-    <circle cx="80" cy="90" r="3.5" fill="rgba(30, 107, 147, 0.25)" />
-    <circle cx="170" cy="110" r="3.5" fill="#32C5E8" />
+    <circle cx="80" cy="20" r="3" fill="rgba(30, 107, 147, 0.25)" />
+    <circle cx="110" cy="50" r="3" fill="#32C5E8" />
   </svg>
 )
 
@@ -82,7 +70,7 @@ const About = () => {
           maxW="max-w-3xl"
         />
 
-        {/* ── 2. About ExESS Overview Card + Reserved Media Area ──── */}
+        {/* ── 2. Editorial Open Layout (Reduced Bordered Card Appearance) ── */}
         <motion.div
           ref={overviewRef}
           initial="hidden"
@@ -92,19 +80,19 @@ const About = () => {
         >
           <motion.div
             variants={itemVariants}
-            className="relative p-8 sm:p-12 lg:p-14 rounded-3xl bg-white border border-border/70 shadow-soft overflow-hidden grid lg:grid-cols-12 gap-8 items-center"
+            className="relative py-6 lg:py-10 grid lg:grid-cols-12 gap-10 items-center border-y border-border/60"
           >
             {/* Corner PCB illustration */}
-            <PCBLineArt className="absolute top-0 right-0 w-64 h-44 opacity-80" />
+            <PCBLineArt className="absolute top-0 right-0 w-64 h-44 opacity-50 pointer-events-none" />
 
             <div className="relative z-10 lg:col-span-7">
-              <span className="text-xs font-grotesk font-bold uppercase tracking-[0.22em] text-primary mb-3 block">
+              <span className="text-xs font-brand uppercase tracking-[0.20em] text-primary mb-3 block">
                 About ExESS
               </span>
-              <h3 className="font-grotesk font-bold text-heading text-2xl sm:text-3xl lg:text-4xl mb-6 tracking-tight leading-tight">
+              <h3 className="font-brand text-heading text-xl sm:text-2xl lg:text-3xl mb-6 tracking-tight leading-snug">
                 Pioneering Hardware &amp; Embedded Systems Excellence at CEC
               </h3>
-              <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-600 mb-6">
+              <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-600 mb-5">
                 Electronics Students Society (ExESS) is the technical forum of the Department of Electronics and Communication Engineering, College of Engineering Chengannur.
               </p>
               <p className="font-inter text-body text-sm sm:text-base leading-relaxed text-gray-500">
@@ -112,7 +100,7 @@ const About = () => {
               </p>
             </div>
 
-            {/* Reserved Media Container for Future Lab / Workshop Photographs */}
+            {/* Reserved Media Container */}
             <div className="relative z-10 lg:col-span-5 w-full">
               <ImagePlaceholder
                 src={null}
@@ -120,41 +108,39 @@ const About = () => {
                 type="cover"
                 aspectRatio="aspect-[16/9]"
                 badge="LAB_FACILITIES"
-                className="shadow-soft border border-border/80"
+                className="shadow-soft"
               />
-              <span className="block text-[11px] font-mono text-gray-400 text-center mt-2.5">
+              <span className="block text-[10px] font-mono text-gray-400 text-center mt-2">
                 Electronics Lab &amp; Workshop Space &bull; College of Engineering Chengannur
               </span>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* ── 3. Dual Mission & Vision Cards ────────────────────────────── */}
+        {/* ── 3. Mission & Vision — Clean Editorial Alternating Layout ───── */}
         <motion.div
           ref={mvRef}
           initial="hidden"
           animate={mvVisible ? 'visible' : 'hidden'}
           variants={containerVariants}
-          className="grid md:grid-cols-2 gap-8"
+          className="grid md:grid-cols-2 gap-12 pt-4"
         >
           {/* OUR MISSION */}
           <motion.div
             variants={itemVariants}
-            className="relative group p-8 sm:p-10 rounded-3xl bg-white border border-border/70 shadow-soft transition-all duration-400 hover:shadow-soft-lg hover:border-primary/30 overflow-hidden flex flex-col justify-between"
+            className="relative group pr-4 border-l-2 border-primary/30 pl-6 flex flex-col justify-between"
           >
-            <PCBLineArt className="absolute bottom-0 right-0 w-52 h-36 opacity-40 group-hover:opacity-75 transition-opacity duration-400" />
-
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-primary/[0.08] flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
-                <Target className="w-6 h-6 text-primary group-hover:text-white transition-colors duration-300" />
+              <div className="w-10 h-10 rounded-xl bg-primary/[0.08] flex items-center justify-center mb-5 group-hover:bg-primary transition-colors duration-300">
+                <Target className="w-5 h-5 text-primary group-hover:text-white transition-colors duration-300" />
               </div>
-              <span className="text-xs font-grotesk font-bold uppercase tracking-[0.22em] text-primary mb-2 block">
+              <span className="text-[10px] font-brand uppercase tracking-[0.20em] text-primary mb-2 block">
                 Purpose &amp; Focus
               </span>
-              <h3 className="font-grotesk font-bold text-heading text-2xl sm:text-3xl mb-4 tracking-tight">
+              <h3 className="font-brand text-heading text-xl sm:text-2xl mb-4 tracking-tight">
                 Our Mission
               </h3>
-              <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-600">
+              <p className="font-inter text-body text-base leading-relaxed text-gray-600">
                 Our mission is to strengthen students&apos; technical knowledge through workshops, technical talks, hands-on sessions, hackathons, competitions, PCB design activities, embedded systems learning, and industry-oriented skill development.
               </p>
             </div>
@@ -163,21 +149,19 @@ const About = () => {
           {/* OUR VISION */}
           <motion.div
             variants={itemVariants}
-            className="relative group p-8 sm:p-10 rounded-3xl bg-white border border-border/70 shadow-soft transition-all duration-400 hover:shadow-soft-lg hover:border-accent/40 overflow-hidden flex flex-col justify-between"
+            className="relative group pr-4 border-l-2 border-accent/40 pl-6 flex flex-col justify-between"
           >
-            <PCBLineArt className="absolute bottom-0 right-0 w-52 h-36 opacity-40 group-hover:opacity-75 transition-opacity duration-400" />
-
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-accent/[0.12] flex items-center justify-center mb-6 group-hover:bg-accent transition-colors duration-300">
-                <Compass className="w-6 h-6 text-secondary group-hover:text-white transition-colors duration-300" />
+              <div className="w-10 h-10 rounded-xl bg-accent/[0.12] flex items-center justify-center mb-5 group-hover:bg-accent transition-colors duration-300">
+                <Compass className="w-5 h-5 text-secondary group-hover:text-white transition-colors duration-300" />
               </div>
-              <span className="text-xs font-grotesk font-bold uppercase tracking-[0.22em] text-secondary mb-2 block">
+              <span className="text-[10px] font-brand uppercase tracking-[0.20em] text-secondary mb-2 block">
                 Aspiration &amp; Legacy
               </span>
-              <h3 className="font-grotesk font-bold text-heading text-2xl sm:text-3xl mb-4 tracking-tight">
+              <h3 className="font-brand text-heading text-xl sm:text-2xl mb-4 tracking-tight">
                 Our Vision
               </h3>
-              <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-600">
+              <p className="font-inter text-body text-base leading-relaxed text-gray-600">
                 To serve as a benchmark student engineering body that nurtures inquisitive minds, inspires hardware innovation, and empowers electronics undergraduates to become competent, industry-ready technology leaders.
               </p>
             </div>
