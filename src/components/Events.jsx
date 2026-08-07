@@ -12,7 +12,7 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1, y: 0,
     transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
@@ -42,14 +42,14 @@ const Events = () => {
             className="mb-0 max-w-2xl"
           />
 
-          <motion.div variants={itemVariants} className="flex gap-1.5 sm:gap-2 p-1 bg-background rounded-2xl border border-border/60 w-fit max-w-full overflow-x-auto no-scrollbar">
+          <motion.div variants={itemVariants} className="flex gap-1.5 sm:gap-2 border-b border-border/60 pb-2 w-fit max-w-full overflow-x-auto no-scrollbar">
             {['all', 'upcoming', 'past'].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-4 py-2 rounded-xl text-[10px] uppercase font-brand tracking-wider font-semibold transition-all duration-300 whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-lg text-[10px] uppercase font-brand tracking-wider font-semibold transition-all duration-300 whitespace-nowrap ${
                   filter === f
-                    ? 'bg-primary text-white shadow-soft'
+                    ? 'bg-primary text-white shadow-sm'
                     : 'text-body hover:text-heading'
                 }`}
               >
@@ -64,18 +64,19 @@ const Events = () => {
           </motion.div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Open Editorial Layout — Reduced Card Borders */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
           <AnimatePresence mode="popLayout">
             {filteredEvents.map((event) => (
               <motion.div
                 key={event.id}
                 layout
-                initial={{ opacity: 0, scale: 0.96 }}
+                initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
+                exit={{ opacity: 0, scale: 0.97 }}
                 transition={{ duration: 0.35 }}
                 onClick={() => setSelectedEvent(event)}
-                className="group bg-white rounded-3xl border border-border/70 overflow-hidden cursor-pointer flex flex-col justify-between hover:shadow-soft-lg hover:border-primary/30 transition-all duration-300"
+                className="group cursor-pointer flex flex-col justify-between border-b border-border/50 pb-6 transition-all duration-300"
               >
                 <div>
                   <ImagePlaceholder
@@ -86,15 +87,15 @@ const Events = () => {
                     badge={event.category}
                   />
 
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3.5">
-                      <span className="px-3 py-1 rounded-full text-[9px] font-brand bg-primary/[0.08] text-primary tracking-wider uppercase">
+                  <div className="pt-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[9px] font-brand text-primary tracking-wider uppercase">
                         {event.category}
                       </span>
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-brand tracking-wide ${
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-brand tracking-wide ${
                         event.status === 'upcoming'
-                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/50'
-                          : 'bg-gray-100 text-gray-500'
+                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
+                          : 'text-gray-400'
                       }`}>
                         {event.status === 'upcoming' ? 'Upcoming' : 'Completed'}
                       </span>
@@ -104,20 +105,16 @@ const Events = () => {
                       {event.title}
                     </h3>
 
-                    <p className="font-inter text-xs text-body leading-relaxed mb-5 line-clamp-2">
+                    <p className="font-inter text-xs text-body leading-relaxed mb-4 line-clamp-2">
                       {event.description}
                     </p>
 
-                    <div className="space-y-2 mb-4 pt-3 border-t border-border/40 font-inter">
-                      <div className="flex items-center gap-2.5 text-xs text-body">
+                    <div className="space-y-1.5 mb-4 pt-2 border-t border-border/30 font-inter">
+                      <div className="flex items-center gap-2 text-xs text-body/80">
                         <Calendar className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                         <span className="truncate">{event.date}</span>
                       </div>
-                      <div className="flex items-center gap-2.5 text-xs text-body">
-                        <Clock className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                        <span>{event.time}</span>
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs text-body">
+                      <div className="flex items-center gap-2 text-xs text-body/80">
                         <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                         <span className="truncate">{event.location}</span>
                       </div>
@@ -125,7 +122,7 @@ const Events = () => {
                   </div>
                 </div>
 
-                <div className="px-6 pb-6 pt-0">
+                <div>
                   <span className="inline-flex items-center gap-2 text-[10px] font-brand uppercase tracking-wider text-primary group-hover:text-secondary transition-colors">
                     View Details <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -147,9 +144,9 @@ const Events = () => {
             onClick={() => setSelectedEvent(null)}
           >
             <motion.div
-              initial={{ scale: 0.94, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 16 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.94, opacity: 0, y: 20 }}
+              exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
               className="relative w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-border/80 max-h-[90vh] overflow-y-auto"

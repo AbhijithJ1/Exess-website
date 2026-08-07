@@ -12,10 +12,10 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1, y: 0,
-    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
   },
 }
 
@@ -32,19 +32,20 @@ const Projects = () => {
           description="Real-world hardware & embedded projects engineered by ExESS members. From circuit prototypes to working systems."
         />
 
+        {/* Open Editorial Layout — Reduced Heavy Card Borders */}
         <motion.div
           ref={gridRef}
           initial="hidden"
           animate={gridVisible ? 'visible' : 'hidden'}
           variants={containerVariants}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10"
         >
           {projectsData.map((project) => (
             <motion.div
               key={project.id}
               variants={itemVariants}
               onClick={() => setSelectedProject(project)}
-              className="group bg-white rounded-3xl border border-border/70 overflow-hidden cursor-pointer flex flex-col justify-between hover:shadow-soft-lg hover:border-primary/30 transition-all duration-300"
+              className="group cursor-pointer flex flex-col justify-between border-b border-border/50 pb-6 transition-all duration-300"
             >
               <div>
                 <ImagePlaceholder
@@ -54,18 +55,18 @@ const Projects = () => {
                   aspectRatio="aspect-[16/9]"
                   badge={project.status}
                   overlayContent={
-                    <div className="absolute bottom-3 right-3 w-9 h-9 rounded-xl bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
-                      <project.icon className="w-4 h-4 text-accent" />
+                    <div className="absolute bottom-3 right-3 w-8 h-8 rounded-lg bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
+                      <project.icon className="w-3.5 h-3.5 text-accent" />
                     </div>
                   }
                 />
 
-                <div className="p-6">
+                <div className="pt-5">
                   <div className="flex items-center justify-between mb-3">
-                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide ${
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-brand tracking-wide ${
                       project.status === 'Completed'
-                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/50'
-                        : 'bg-amber-50 text-amber-600 border border-amber-200/50'
+                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
+                        : 'text-amber-600'
                     }`}>
                       {project.status}
                     </span>
@@ -78,7 +79,7 @@ const Projects = () => {
                     {project.title}
                   </h3>
 
-                  <p className="font-inter text-xs text-body leading-relaxed mb-5 line-clamp-2">
+                  <p className="font-inter text-xs text-body leading-relaxed mb-4 line-clamp-2">
                     {project.description}
                   </p>
 
@@ -86,7 +87,7 @@ const Projects = () => {
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 rounded-lg text-[9px] font-semibold bg-gray-100 text-gray-600"
+                        className="px-2 py-0.5 rounded-lg text-[9px] font-semibold bg-gray-100/80 text-gray-600"
                       >
                         {tag}
                       </span>
@@ -95,7 +96,7 @@ const Projects = () => {
                 </div>
               </div>
 
-              <div className="px-6 pb-6 pt-0">
+              <div>
                 <span className="inline-flex items-center gap-2 text-[10px] font-brand uppercase tracking-wider text-primary group-hover:text-secondary transition-colors">
                   Documentation <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </span>
@@ -116,9 +117,9 @@ const Projects = () => {
             onClick={() => setSelectedProject(null)}
           >
             <motion.div
-              initial={{ scale: 0.94, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 16 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.94, opacity: 0, y: 20 }}
+              exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
               className="relative w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-border/80 max-h-[90vh] overflow-y-auto"
