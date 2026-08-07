@@ -102,15 +102,20 @@ const Team = () => {
   const [fullTeamOpen, setFullTeamOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('All')
 
-  // Lock background scroll when full team modal is open
+  // Lock background scroll and add ESC key listener when full team modal is open
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setFullTeamOpen(false)
+    }
     if (fullTeamOpen) {
       document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', handleKeyDown)
     } else {
       document.body.style.overflow = ''
     }
     return () => {
       document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKeyDown)
     }
   }, [fullTeamOpen])
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, MapPin, Clock, ArrowRight, X, Sparkles, CheckCircle2 } from 'lucide-react'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
@@ -29,6 +29,23 @@ const Events = () => {
     : eventsData.filter((e) => e.status === filter)
 
   const upcomingCount = eventsData.filter((e) => e.status === 'upcoming').length
+
+  // Lock body scroll and add ESC key listener when event detail modal is open
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setSelectedEvent(null)
+    }
+    if (selectedEvent) {
+      document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', handleKeyDown)
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [selectedEvent])
 
   return (
     <section id="events" className="relative section-gap overflow-hidden">
@@ -133,14 +150,14 @@ const Events = () => {
         </div>
       </div>
 
-      {/* Modal View */}
+      {/* Modal View — Fully Responsive with Navbar Clearance & ESC Listener */}
       <AnimatePresence>
         {selectedEvent && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md"
+            className="fixed inset-0 z-[60] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
             onClick={() => setSelectedEvent(null)}
           >
             <motion.div
@@ -149,82 +166,88 @@ const Events = () => {
               exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-border/80 max-h-[90vh] overflow-y-auto"
+              className="relative w-full max-w-2xl bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] sm:max-h-[calc(100vh-120px)] overflow-y-auto overscroll-contain"
             >
-              <button
-                onClick={() => setSelectedEvent(null)}
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <ImagePlaceholder
-                src={selectedEvent.image}
-                alt={selectedEvent.title}
-                type="cover"
-                aspectRatio="aspect-[21/9]"
-                className="mb-6"
-                badge={selectedEvent.category}
-              />
-
-              <div className="flex items-center gap-2 mb-3">
-                <span className="px-3 py-1 rounded-full text-[9px] font-brand bg-primary/10 text-primary uppercase tracking-wider">
-                  {selectedEvent.category}
-                </span>
-                <span className="text-xs font-inter text-gray-400">
-                  {selectedEvent.status === 'upcoming' ? '• Upcoming' : '• Past Event'}
-                </span>
-              </div>
-
-              <h3 className="text-xl sm:text-2xl font-brand text-heading mb-2">
-                {selectedEvent.title}
-              </h3>
-              <p className="text-xs font-brand text-primary uppercase tracking-wider mb-4">{selectedEvent.subtitle}</p>
-              <p className="font-inter text-body text-sm leading-relaxed mb-6">
-                {selectedEvent.description}
-              </p>
-
-              {selectedEvent.highlights && (
-                <div className="mb-6 p-4 rounded-2xl bg-gray-50 border border-border/60">
-                  <h4 className="text-[10px] font-brand uppercase tracking-wider text-heading mb-3 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-accent" /> Key Highlights
-                  </h4>
-                  <ul className="space-y-2 font-inter">
-                    {selectedEvent.highlights.map((h, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-xs text-body">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div className="grid sm:grid-cols-3 gap-3 mb-6 p-4 rounded-2xl bg-primary/[0.03] border border-primary/10 text-xs font-inter">
-                <div>
-                  <span className="text-gray-400 block mb-0.5">Date</span>
-                  <span className="font-semibold text-heading">{selectedEvent.date}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400 block mb-0.5">Time</span>
-                  <span className="font-semibold text-heading">{selectedEvent.time}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400 block mb-0.5">Location</span>
-                  <span className="font-semibold text-heading truncate block">{selectedEvent.location}</span>
-                </div>
-              </div>
-
-              {selectedEvent.registrationUrl && (
-                <a
-                  href={selectedEvent.registrationUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-primary w-full inline-flex items-center justify-center gap-2 font-brand text-xs uppercase tracking-wider py-3.5"
+              {/* Sticky Close Button */}
+              <div className="sticky top-0 right-0 z-30 flex justify-end pb-2 pointer-events-none -mr-2 sm:-mr-4 -mt-2 sm:-mt-4">
+                <button
+                  onClick={() => setSelectedEvent(null)}
+                  className="w-10 h-10 rounded-full bg-white/90 shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors pointer-events-auto cursor-pointer"
+                  aria-label="Close modal"
                 >
-                  Register for Event <ArrowRight className="w-4 h-4" />
-                </a>
-              )}
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="-mt-6">
+                <ImagePlaceholder
+                  src={selectedEvent.image}
+                  alt={selectedEvent.title}
+                  type="cover"
+                  aspectRatio="aspect-[21/9]"
+                  className="mb-6"
+                  badge={selectedEvent.category}
+                />
+
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-3 py-1 rounded-full text-[9px] font-brand bg-primary/10 text-primary uppercase tracking-wider">
+                    {selectedEvent.category}
+                  </span>
+                  <span className="text-xs font-inter text-gray-400">
+                    {selectedEvent.status === 'upcoming' ? '• Upcoming' : '• Past Event'}
+                  </span>
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-brand text-heading mb-2">
+                  {selectedEvent.title}
+                </h3>
+                <p className="text-xs font-brand text-primary uppercase tracking-wider mb-4">{selectedEvent.subtitle}</p>
+                <p className="font-inter text-body text-sm leading-relaxed mb-6">
+                  {selectedEvent.description}
+                </p>
+
+                {selectedEvent.highlights && (
+                  <div className="mb-6 p-4 rounded-2xl bg-gray-50 border border-border/60">
+                    <h4 className="text-[10px] font-brand uppercase tracking-wider text-heading mb-3 flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-accent" /> Key Highlights
+                    </h4>
+                    <ul className="space-y-2 font-inter">
+                      {selectedEvent.highlights.map((h, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-xs text-body">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="grid sm:grid-cols-3 gap-3 mb-6 p-4 rounded-2xl bg-primary/[0.03] border border-primary/10 text-xs font-inter">
+                  <div>
+                    <span className="text-gray-400 block mb-0.5">Date</span>
+                    <span className="font-semibold text-heading">{selectedEvent.date}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 block mb-0.5">Time</span>
+                    <span className="font-semibold text-heading">{selectedEvent.time}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 block mb-0.5">Location</span>
+                    <span className="font-semibold text-heading truncate block">{selectedEvent.location}</span>
+                  </div>
+                </div>
+
+                {selectedEvent.registrationUrl && (
+                  <a
+                    href={selectedEvent.registrationUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-primary w-full inline-flex items-center justify-center gap-2 font-brand text-xs uppercase tracking-wider py-3.5"
+                  >
+                    Register for Event <ArrowRight className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
             </motion.div>
           </motion.div>
         )}

@@ -1,12 +1,13 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
 
 /**
  * HeroBackground — Cleaner Engineering Atmosphere
  *
  * Clean, open engineering background with plenty of whitespace:
- * Removed grid layout lines. Features subtle PCB traces, blueprint lines,
- * and soft radial background gradients for a high-end engineering feel.
+ * Features subtle PCB traces, blueprint lines, and soft radial background
+ * gradients for a high-end engineering feel. No vertical lines crossing navbar.
  */
 const HeroBackground = () => (
   <svg
@@ -17,7 +18,6 @@ const HeroBackground = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <defs>
-      {/* Soft radial center gradient for depth */}
       <radialGradient id="hlg" cx="50%" cy="45%" r="55%">
         <stop offset="0%" stopColor="#32C5E8" stopOpacity="0.05" />
         <stop offset="60%" stopColor="#1E6B93" stopOpacity="0.02" />
@@ -25,7 +25,7 @@ const HeroBackground = () => (
       </radialGradient>
     </defs>
 
-    {/* ── 2. Subtle PCB Copper Routing — Open Whitespace Lines ───────────── */}
+    {/* Subtle PCB Copper Routing — Open Whitespace Lines */}
     <g stroke="rgba(30,107,147,0.10)" strokeWidth="1.2" fill="none" strokeLinecap="square">
       <path d="M0 140 H160 V90 H320" />
       <path d="M0 240 H100 V180 H280" stroke="rgba(50,197,232,0.15)" />
@@ -60,76 +60,21 @@ const HeroBackground = () => (
 )
 
 /**
- * ElectricalSignalButton — Micro-interaction with Michroma typography and exact ExESS case
+ * Premium CTA Button — Minimal, modern engineering micro-interaction
  */
 const ElectricalSignalButton = ({ onClick }) => (
   <button
     id="hero-explore-btn"
     onClick={onClick}
-    className="group relative inline-flex items-center gap-4 px-9 py-4 rounded-full font-brand text-xs sm:text-sm text-white tracking-wider overflow-hidden cursor-pointer"
-    style={{
-      background: 'linear-gradient(135deg, #1E6B93 0%, #187AA3 100%)',
-      boxShadow: '0 4px 20px rgba(30, 107, 147, 0.22)',
-      transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-    }}
-    onMouseEnter={e => {
-      e.currentTarget.style.background = 'linear-gradient(135deg, #187AA3 0%, #156689 100%)'
-      e.currentTarget.style.boxShadow = '0 8px 30px rgba(30, 107, 147, 0.35)'
-      e.currentTarget.style.transform = 'translateY(-2px)'
-    }}
-    onMouseLeave={e => {
-      e.currentTarget.style.background = 'linear-gradient(135deg, #1E6B93 0%, #187AA3 100%)'
-      e.currentTarget.style.boxShadow = '0 4px 20px rgba(30, 107, 147, 0.22)'
-      e.currentTarget.style.transform = 'translateY(0)'
-    }}
+    className="group relative inline-flex items-center gap-3.5 px-8 py-3.5 sm:px-9 sm:py-4 rounded-full font-brand text-xs sm:text-sm text-white tracking-wider overflow-hidden cursor-pointer bg-slate-900 border border-primary/30 hover:border-primary/70 transition-all duration-300 shadow-soft hover:shadow-soft-lg active:scale-95"
   >
-    <span>Explore ExESS</span>
+    {/* Subtle signal pulse gradient highlight on hover */}
+    <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-    <div className="relative flex items-center justify-center ml-1" aria-hidden="true">
-      <svg className="w-10 h-4 overflow-visible pointer-events-none" viewBox="0 0 44 16" fill="none">
-        <path d="M 2 8 H 28" stroke="rgba(255, 255, 255, 0.35)" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="2 2.5" />
-        <path
-          d="M 28 4 L 35 8 L 28 12"
-          stroke="#32C5E8"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-          className="group-hover:translate-x-1 transition-transform duration-300"
-        />
-        <circle r="2.5" fill="#32C5E8">
-          <animateMotion dur="1.1s" repeatCount="indefinite" path="M 2 8 L 32 8" />
-        </circle>
-      </svg>
-    </div>
-  </button>
-)
+    <span className="relative z-10 font-semibold">Explore ExESS</span>
 
-/**
- * PCBScrollIndicator
- */
-const PCBScrollIndicator = ({ onClick }) => (
-  <button
-    onClick={onClick}
-    aria-label="Scroll down to explore"
-    className="flex flex-col items-center gap-2.5 transition-colors duration-300 cursor-pointer group"
-  >
-    <span
-      className="font-brand uppercase text-slate-400 group-hover:text-primary transition-colors text-[9px] tracking-[0.25em]"
-    >
-      Scroll to explore
-    </span>
-
-    <div className="relative w-4 h-12 flex items-center justify-center">
-      <svg className="w-4 h-12 overflow-visible pointer-events-none" viewBox="0 0 16 48" fill="none">
-        <line x1="8" y1="2" x2="8" y2="40" stroke="rgba(30, 107, 147, 0.25)" strokeWidth="1.6" strokeDasharray="3 3" />
-        <circle cx="8" cy="42" r="3" fill="#1E6B93" opacity="0.6" />
-        <circle cx="8" cy="42" r="1.2" fill="#FFFFFF" />
-
-        <circle r="2.5" fill="#32C5E8">
-          <animateMotion dur="1.4s" repeatCount="indefinite" path="M 8 2 L 8 40" />
-        </circle>
-      </svg>
+    <div className="relative z-10 flex items-center justify-center w-7 h-7 rounded-full bg-primary/20 text-accent group-hover:bg-primary group-hover:text-white transition-all duration-300">
+      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
     </div>
   </button>
 )
@@ -199,7 +144,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: D + 0.25, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center gap-2 mb-14"
+          className="flex flex-col items-center gap-2 mb-12"
         >
           <p
             className="font-brand text-xs sm:text-sm uppercase tracking-[0.22em]"
@@ -215,7 +160,7 @@ const Hero = () => {
           </p>
         </motion.div>
 
-        {/* Explore ExESS Button */}
+        {/* Premium Redesigned CTA Button */}
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
@@ -223,16 +168,6 @@ const Hero = () => {
         >
           <ElectricalSignalButton onClick={scrollToAbout} />
         </motion.div>
-      </motion.div>
-
-      {/* PCB Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: D + 0.5, duration: 0.5 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
-      >
-        <PCBScrollIndicator onClick={scrollToAbout} />
       </motion.div>
     </section>
   )
