@@ -14,7 +14,7 @@ import { Camera, Cpu, Layers, Sparkles } from 'lucide-react'
 const ImagePlaceholder = ({
   src = null,
   alt = 'ExESS Media',
-  aspectRatio = 'aspect-video', // e.g. 'aspect-video', 'aspect-square', 'aspect-[4/3]', 'aspect-[16/9]'
+  aspectRatio = 'aspect-video',
   type = 'cover',
   badge = null,
   initials = '',
@@ -35,7 +35,6 @@ const ImagePlaceholder = ({
       {/* ── REAL IMAGE RENDERING (when src provided) ───────────────────────── */}
       {showRealImage && (
         <>
-          {/* Skeleton blur shimmer while image loads */}
           {!loaded && (
             <div className="absolute inset-0 bg-[#0B2135] animate-pulse flex items-center justify-center">
               <div className="w-8 h-8 rounded-full border-2 border-primary/30 border-t-accent animate-spin" />
@@ -57,7 +56,6 @@ const ImagePlaceholder = ({
       {/* ── NEUTRAL ENGINEERING SKELETON PLACEHOLDER (when src is null) ────── */}
       {!showRealImage && (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-gradient-to-br from-[#071826] via-[#0B2135] to-[#05121D] transition-colors duration-500 group-hover:from-[#091F32] group-hover:to-[#081B2B]">
-          {/* PCB Grid & Circuit Lines Background */}
           <svg
             aria-hidden="true"
             className="absolute inset-0 w-full h-full opacity-15 pointer-events-none group-hover:opacity-25 transition-opacity duration-500"
@@ -71,7 +69,6 @@ const ImagePlaceholder = ({
             </defs>
             <rect width="100%" height="100%" fill="url(#pcbMiniGrid)" />
             
-            {/* Hard 90° PCB Copper Trace */}
             <path
               d="M0 40 H 40 V 80 H 120 M 100% 120 H calc(100% - 60) V 160"
               stroke="#32C5E8"
@@ -79,12 +76,10 @@ const ImagePlaceholder = ({
               fill="none"
               strokeDasharray="4 4"
             />
-            {/* Via node circles */}
             <circle cx="40" cy="40" r="3" fill="#32C5E8" />
             <circle cx="40" cy="80" r="3" fill="#1E6B93" />
           </svg>
 
-          {/* Type-Specific Center Visual */}
           {type === 'avatar' || type === 'circle' ? (
             <div className="relative z-10 flex flex-col items-center">
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/20 border border-primary/40 flex items-center justify-center text-white font-grotesk font-bold text-lg sm:text-xl shadow-soft group-hover:scale-110 group-hover:border-accent transition-all duration-300">
@@ -106,20 +101,17 @@ const ImagePlaceholder = ({
             </div>
           )}
 
-          {/* Technical Corner Alignment Ticks */}
           <div className="absolute top-2.5 left-3 font-mono text-[9px] text-white/30 tracking-widest uppercase">
-            {badge || 'EXESS_CAD'}
+            {badge || 'ExESS_CAD'}
           </div>
           <div className="absolute bottom-2.5 right-3 font-mono text-[9px] text-white/30 tracking-widest uppercase">
             READY_FOR_ASSET
           </div>
 
-          {/* Subtle Hover Ambient Glow */}
           <div className="absolute inset-0 bg-accent/0 group-hover:bg-accent/[0.04] transition-colors duration-500 pointer-events-none" />
         </div>
       )}
 
-      {/* Overlay content passed by parent if any */}
       {overlayContent && <div className="absolute inset-0 z-20 pointer-events-none">{overlayContent}</div>}
     </div>
   )

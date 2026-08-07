@@ -138,14 +138,14 @@ const Team = () => {
           ))}
         </motion.div>
 
-        {/* ── 2. "Meet Full Team" Dedicated Trigger ─────────────────────── */}
+        {/* ── 2. "Meet the ExESS Team" Dedicated Trigger (Exact Case ExESS) ── */}
         <div className="flex justify-center pt-2">
           <button
             onClick={() => setFullTeamOpen(true)}
-            className="btn-primary inline-flex items-center gap-3 font-brand text-xs uppercase tracking-wider px-7 sm:px-8 py-3.5 shadow-soft"
+            className="btn-primary inline-flex items-center gap-3 font-brand text-xs tracking-wider px-7 sm:px-8 py-3.5 shadow-soft"
           >
             <Users className="w-4 h-4 text-accent" />
-            Meet Full ExESS Team
+            Meet the ExESS Team
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -198,7 +198,7 @@ const Team = () => {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-3.5 py-2 rounded-xl font-brand text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 ${
+                    className={`px-3.5 py-2 rounded-xl font-brand text-[10px] sm:text-xs tracking-wider transition-all duration-300 ${
                       activeTab === tab
                         ? 'bg-primary text-white shadow-soft'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'

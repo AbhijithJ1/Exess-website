@@ -69,13 +69,13 @@ const HeroBackground = () => (
 )
 
 /**
- * ElectricalSignalButton — Micro-interaction with Michroma typography
+ * ElectricalSignalButton — Micro-interaction with Michroma typography and exact ExESS case
  */
 const ElectricalSignalButton = ({ onClick }) => (
   <button
     id="hero-explore-btn"
     onClick={onClick}
-    className="group relative inline-flex items-center gap-4 px-9 py-4 rounded-full font-brand text-xs sm:text-sm text-white uppercase tracking-wider overflow-hidden cursor-pointer"
+    className="group relative inline-flex items-center gap-4 px-9 py-4 rounded-full font-brand text-xs sm:text-sm text-white tracking-wider overflow-hidden cursor-pointer"
     style={{
       background: 'linear-gradient(135deg, #1E6B93 0%, #187AA3 100%)',
       boxShadow: '0 4px 20px rgba(30, 107, 147, 0.22)',
