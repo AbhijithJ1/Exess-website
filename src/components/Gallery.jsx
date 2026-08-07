@@ -1,26 +1,14 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ZoomIn } from 'lucide-react'
-import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
 import { galleryItems } from '../data/galleryData'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, scale: 0.96 },
-  visible: {
-    opacity: 1, scale: 1,
-    transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
-  },
-}
+// Duplicate gallery list for continuous seamless infinite looping
+const galleryMarqueeList = [...galleryItems, ...galleryItems]
 
 const Gallery = () => {
-  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation()
   const [selectedImage, setSelectedImage] = useState(null)
 
   // Lock body scroll and add ESC key listener when image detail modal is open
@@ -49,50 +37,48 @@ const Gallery = () => {
           description="A glimpse into our fests, workshops, lab sessions, and community events."
         />
 
-        {/* Asymmetric Gallery Layout */}
-        <motion.div
-          ref={gridRef}
-          initial="hidden"
-          animate={gridVisible ? 'visible' : 'hidden'}
-          variants={containerVariants}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 auto-rows-[180px] sm:auto-rows-[220px]"
-        >
-          {galleryItems.map((item, i) => (
-            <motion.div
-              key={item.id}
-              variants={itemVariants}
-              onClick={() => setSelectedImage(item)}
-              className={`group relative rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer ${
-                i === 0 || i === 5 ? 'md:col-span-2 md:row-span-2' : ''
-              }`}
-            >
-              <ImagePlaceholder
-                src={item.image}
-                alt={item.title}
-                type="gallery"
-                aspectRatio="w-full h-full"
-                badge={item.category}
-                overlayContent={
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 p-4 sm:p-5 flex flex-col justify-end">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-[9px] font-brand uppercase tracking-wider text-accent block">
-                          {item.category}
-                        </span>
-                        <h4 className="text-xs sm:text-sm font-bold font-brand text-white mt-0.5">
-                          {item.title}
-                        </h4>
-                      </div>
-                      <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <ZoomIn className="w-4 h-4 text-white" />
+        {/* ── PREMIER INFINITE HORIZONTAL IMAGE CAROUSEL ─────────────────── */}
+        <div className="relative w-full overflow-hidden my-6 py-4 group">
+          {/* Subtle gradient side masks */}
+          <div className="absolute top-0 bottom-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none" />
+
+          {/* Continuous Infinite Marquee Track */}
+          <div className="flex gap-5 w-max animate-marquee group-hover:[animation-play-state:paused] will-change-transform">
+            {galleryMarqueeList.map((item, idx) => (
+              <div
+                key={`${item.id}-${idx}`}
+                onClick={() => setSelectedImage(item)}
+                className="w-72 sm:w-96 h-48 sm:h-60 flex-shrink-0 relative rounded-3xl overflow-hidden cursor-pointer border border-border/60 shadow-soft hover:shadow-soft-lg transition-all duration-300 group/card"
+              >
+                <ImagePlaceholder
+                  src={item.image}
+                  alt={item.title}
+                  type="gallery"
+                  aspectRatio="w-full h-full"
+                  badge={item.category}
+                  overlayContent={
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover/card:opacity-100 transition-opacity duration-300 p-4 sm:p-5 flex flex-col justify-end">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[9px] font-brand uppercase tracking-wider text-accent block">
+                            {item.category}
+                          </span>
+                          <h4 className="text-xs sm:text-sm font-bold font-brand text-white mt-0.5">
+                            {item.title}
+                          </h4>
+                        </div>
+                        <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center group-hover/card:scale-110 transition-transform duration-300">
+                          <ZoomIn className="w-4 h-4 text-white" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                }
-              />
-            </motion.div>
-          ))}
-        </motion.div>
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Lightbox Detail Modal — Fully Responsive with Navbar Clearance */}
