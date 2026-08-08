@@ -233,20 +233,21 @@ const IntroAnimation = ({ onComplete }) => {
       ease: 'power2.out',
     }, 1.95)
 
-    // STEP 7: SYNCHRONIZED LOCK-IN PULSE & TERMINAL PADS ILLUMINATION AT (2.05s)
+    // STEP 7: SYNCHRONIZED LOCK-IN PULSE & TERMINAL PADS ILLUMINATION AT (2.02s)
     tl.to(lockRingRef.current, {
       opacity: 0.85,
-      scale: 1,
-      duration: 0.2,
+      scale: 1.0,
+      duration: 0.3,
       ease: 'power1.out',
     }, 2.02)
 
+    // Smooth stationary opacity fade-out (NO outward scaling / NO backward movement)
     tl.to(lockRingRef.current, {
       opacity: 0,
-      scale: 1.4,
-      duration: 0.35,
+      scale: 1.0,
+      duration: 0.8,
       ease: 'power2.out',
-    }, 2.22)
+    }, 2.32)
 
     if (socketPadsRef.current) {
       const pads = socketPadsRef.current.querySelectorAll('.socket-pad')
