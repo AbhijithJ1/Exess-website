@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, ZoomIn } from 'lucide-react'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
+import PcbLightButton from './PcbLightButton'
 import { galleryItems } from '../data/galleryData'
 
 // Duplicate gallery list for continuous seamless infinite looping
@@ -10,13 +11,17 @@ const galleryMarqueeList = [...galleryItems, ...galleryItems]
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null)
+  const [showAllModal, setShowAllModal] = useState(false)
 
   // Lock body scroll and add ESC key listener when image detail modal is open
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setSelectedImage(null)
+      if (e.key === 'Escape') {
+        setSelectedImage(null)
+        setShowAllModal(false)
+      }
     }
-    if (selectedImage) {
+    if (selectedImage || showAllModal) {
       document.body.style.overflow = 'hidden'
       window.addEventListener('keydown', handleKeyDown)
     } else {
@@ -26,15 +31,16 @@ const Gallery = () => {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [selectedImage])
+  }, [selectedImage, showAllModal])
 
   return (
     <section id="gallery" className="relative section-gap overflow-hidden">
-      <div className="section-padding relative z-10 max-w-7xl mx-auto">
+      <div className="section-padding relative z-10">
         <PowerOnHeader
           badge="Visual Showcase"
           headline={<>Life at <span className="text-light-sweep-dark">ExESS</span></>}
           description="A glimpse into our fests, workshops, lab sessions, and community events."
+          align="left"
         />
 
         {/* ── PREMIER INFINITE HORIZONTAL IMAGE CAROUSEL (NO WHITE SIDE MASKS) ── */}
@@ -75,16 +81,82 @@ const Gallery = () => {
             ))}
           </div>
         </div>
+
+        {/* View All Moments Button */}
+        <div className="flex justify-center mt-6">
+          <PcbLightButton onClick={() => setShowAllModal(true)}>
+            VIEW ALL MOMENTS
+          </PcbLightButton>
+        </div>
       </div>
 
-      {/* Lightbox Detail Modal — Fully Responsive with Navbar Clearance */}
+      {/* Full Moments Gallery Showcase Directory Modal */}
+      <AnimatePresence>
+        {showAllModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-start justify-center p-4 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
+            onClick={() => setShowAllModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-5xl bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] overflow-y-auto"
+            >
+              <div className="sticky top-0 right-0 z-30 flex justify-between items-center bg-white/95 backdrop-blur-md pb-4 border-b border-border/60 -mt-2 mb-6">
+                <div>
+                  <h3 className="font-brand text-xl text-heading font-bold">ExESS MOMENTS &amp; GALLERY</h3>
+                  <p className="text-xs font-inter text-gray-500">Complete visual archive of student activities and fests</p>
+                </div>
+                <button
+                  onClick={() => setShowAllModal(false)}
+                  className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors pointer-events-auto cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {galleryItems.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => {
+                      setShowAllModal(false)
+                      setSelectedImage(item)
+                    }}
+                    className="group cursor-pointer rounded-2xl overflow-hidden border border-border/60 shadow-sm hover:shadow-md transition-all"
+                  >
+                    <ImagePlaceholder
+                      src={item.image}
+                      alt={item.title}
+                      type="gallery"
+                      aspectRatio="aspect-[16/10]"
+                      badge={item.category}
+                    />
+                    <div className="p-3 bg-white">
+                      <span className="text-[9px] font-brand uppercase text-primary block">{item.category}</span>
+                      <h4 className="font-brand text-xs text-heading font-bold">{item.title}</h4>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Lightbox Detail Modal */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/70 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-[65] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/70 backdrop-blur-md overflow-y-auto"
             onClick={() => setSelectedImage(null)}
           >
             <motion.div
@@ -93,14 +165,12 @@ const Gallery = () => {
               exit={{ scale: 0.94, opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-3xl bg-[#071826] rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/20 text-white my-auto max-h-[calc(100vh-100px)] sm:max-h-[calc(100vh-120px)] overflow-y-auto overscroll-contain"
+              className="relative w-full max-w-3xl bg-[#071826] rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/20 text-white my-auto max-h-[calc(100vh-100px)] overflow-y-auto"
             >
-              {/* Sticky close button */}
               <div className="sticky top-0 right-0 z-30 flex justify-end pb-2 pointer-events-none -mr-2 sm:-mr-4 -mt-2 sm:-mt-4">
                 <button
                   onClick={() => setSelectedImage(null)}
                   className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors pointer-events-auto cursor-pointer"
-                  aria-label="Close lightbox"
                 >
                   <X className="w-5 h-5" />
                 </button>

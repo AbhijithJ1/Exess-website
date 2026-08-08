@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Target, Compass } from 'lucide-react'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
 
 // Handcrafted PCB Vector Lines Connecting Vision & Mission Across Wide Viewport
@@ -32,37 +33,52 @@ const About = () => {
 
       <div className="section-padding relative z-10">
 
-        {/* ── 1. Asymmetric Storytelling Layout (Left 60% / Right 40%) ─────── */}
+        {/* ── 1. Storytelling Header ───────────────────────────────────── */}
+        <PowerOnHeader
+          headline={
+            <>
+              Electronics Students Society{' '}
+              <span className="text-light-sweep-dark">(ExESS)</span>
+            </>
+          }
+          description="The official technical forum of the Department of Electronics and Communication Engineering at College of Engineering Chengannur."
+          maxW="max-w-3xl"
+        />
+
+        {/* ── 2. Editorial Layout with Scroll Scale & Reveal Animation ── */}
         <motion.div
           ref={overviewRef}
-          initial={{ opacity: 0, y: 30 }}
-          animate={overviewVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, scale: 1.05, filter: 'blur(8px)' }}
+          animate={overviewVisible ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : { opacity: 0, scale: 1.05, filter: 'blur(8px)' }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
           className="mb-20 sm:mb-28"
         >
           <div className="relative py-8 lg:py-12 grid lg:grid-cols-12 gap-10 lg:gap-16 items-center border-y border-border/60">
-            {/* Left Column (60%): Editorial Story & Large Typography */}
+            {/* Left Column (60%): Exact Official ExESS Narrative Content */}
             <div className="relative z-10 lg:col-span-7 text-left">
               <span className="text-xs font-brand uppercase tracking-[0.22em] text-primary mb-3 block font-bold">
                 ABOUT ExESS
               </span>
 
-              {/* Large Oversized Storytelling Headline */}
-              <h2 className="font-brand text-heading text-3xl sm:text-5xl lg:text-6xl font-bold mb-6 tracking-tight leading-[1.1]">
+              <h2 className="font-brand text-heading text-2xl sm:text-4xl lg:text-5xl font-bold mb-6 tracking-tight leading-[1.15]">
                 Pioneering <span className="text-primary font-bold">Hardware</span> &amp;{' '}
                 <span className="text-primary font-bold">Embedded Systems</span> Excellence at CEC
               </h2>
 
-              <p className="font-inter text-body text-base sm:text-xl leading-relaxed text-gray-700 mb-6 max-w-2xl font-normal">
-                Electronics Students Society (ExESS) is the premier technical body of the Department of Electronics and Communication Engineering at College of Engineering Chengannur.
+              <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-700 mb-5 font-normal">
+                Electronics Students Society (ExESS) is a technical forum for students in the electronics department of College of Engineering Chengannur. The primary goal of ExESS is to explore and strengthen the technical knowledge and practical skills of our students and make them industry-ready. We also intend to highlight what’s new and coming in the realm of electronics to help students comprehend technology and push it beyond what the world has seen.
               </p>
 
-              <p className="font-inter text-body text-sm sm:text-base leading-relaxed text-gray-500 max-w-2xl">
-                Driven by student <span className="text-primary font-semibold">Leadership</span> and faculty mentorship, ExESS unites electronics enthusiasts to foster <span className="text-primary font-semibold">Innovation</span> through hands-on <span className="text-primary font-semibold">Workshops</span>, multi-layer PCB design, microcontroller debugging, and collaborative <span className="text-primary font-semibold">Community</span> research projects.
+              <p className="font-inter text-body text-sm sm:text-base leading-relaxed text-gray-600 mb-5">
+                ExESS arranges a variety of activities for students throughout the year. Its workshops to gain hands-on experience, hackathons for practical problem solving, and quiz programmes were marked by active participation of our students. Webinar series on some of the most relevant topics by eminent personnel were also conducted.
+              </p>
+
+              <p className="font-inter text-body text-sm sm:text-base leading-relaxed text-gray-600">
+                ExESS constantly encourages and motivates students to take on challenging tasks and engage in practical problem solving.
               </p>
             </div>
 
-            {/* Right Column (40%): Clean Engineering Visual Module (NO location card under image) */}
+            {/* Right Column (40%): Hardware Visual Frame */}
             <div className="relative z-10 lg:col-span-5 w-full">
               <div className="rounded-3xl overflow-hidden border border-border/70 shadow-soft bg-white p-2.5">
                 <ImagePlaceholder
@@ -77,15 +93,15 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* ── 2. Mission & Vision — Opposing Directional Convergence (Full Screen Width) ── */}
+        {/* ── 3. Mission & Vision — Opposing Directional Convergence ────────── */}
         <div ref={mvRef} className="relative pt-6">
           <PCBConvergenceLines />
 
           <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
-            {/* VISION — Enters / Translates from LEFT */}
+            {/* VISION — Enters from LEFT */}
             <motion.div
-              initial={{ opacity: 0, x: -80 }}
-              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -80 }}
+              initial={{ opacity: 0, x: -60 }}
+              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -60 }}
               transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               className="group relative bg-white rounded-3xl p-8 sm:p-10 border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
             >
@@ -97,18 +113,18 @@ const About = () => {
                   Aspiration &amp; Legacy
                 </span>
                 <h3 className="font-brand text-heading text-2xl sm:text-3xl mb-4 tracking-tight">
-                  Our Vision
+                  OUR VISION
                 </h3>
                 <p className="font-inter text-body text-sm sm:text-base leading-relaxed text-gray-600">
-                  To establish ExESS as a benchmark departmental society that nurtures inquisitive minds, inspires continuous <span className="text-primary font-semibold">Hardware</span> <span className="text-primary font-semibold">Innovation</span>, and equips undergraduates to become technical leaders in electronics.
+                  To serve as a benchmark student engineering body that nurtures inquisitive minds, inspires hardware innovation, and empowers electronics undergraduates to become competent, industry-ready technology leaders.
                 </p>
               </div>
             </motion.div>
 
-            {/* MISSION — Enters / Translates from RIGHT */}
+            {/* MISSION — Enters from RIGHT */}
             <motion.div
-              initial={{ opacity: 0, x: 80 }}
-              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 80 }}
+              initial={{ opacity: 0, x: 60 }}
+              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 60 }}
               transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               className="group relative bg-white rounded-3xl p-8 sm:p-10 border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
             >
@@ -120,10 +136,10 @@ const About = () => {
                   Purpose &amp; Focus
                 </span>
                 <h3 className="font-brand text-heading text-2xl sm:text-3xl mb-4 tracking-tight">
-                  Our Mission
+                  OUR MISSION
                 </h3>
                 <p className="font-inter text-body text-sm sm:text-base leading-relaxed text-gray-600">
-                  To empower students through hands-on <span className="text-primary font-semibold">Workshops</span>, technical bootcamps, competitions, and <span className="text-primary font-semibold">Embedded Systems</span> learning that bridge textbook circuit theory with industry-grade hardware engineering.
+                  Our mission is to strengthen students&apos; technical knowledge through workshops, technical talks, hands-on sessions, hackathons, competitions, PCB design activities, embedded systems learning, and industry-oriented skill development.
                 </p>
               </div>
             </motion.div>

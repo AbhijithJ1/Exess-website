@@ -1,34 +1,27 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ExternalLink, Github, Cpu, ArrowRight, X, Users, Calendar } from 'lucide-react'
-import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { Github, ArrowRight, X, Users } from 'lucide-react'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
+import PcbLightButton from './PcbLightButton'
 import { projectsData } from '../data/projectsData'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1, y: 0,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-  },
-}
-
 const Projects = () => {
-  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation()
   const [selectedProject, setSelectedProject] = useState(null)
+  const [showAllModal, setShowAllModal] = useState(false)
+
+  // Curated 3 projects on homepage
+  const curatedProjects = projectsData.slice(0, 3)
 
   // Lock body scroll and handle ESC key listener when modal is active
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setSelectedProject(null)
+      if (e.key === 'Escape') {
+        setSelectedProject(null)
+        setShowAllModal(false)
+      }
     }
-    if (selectedProject) {
+    if (selectedProject || showAllModal) {
       document.body.style.overflow = 'hidden'
       window.addEventListener('keydown', handleKeyDown)
     } else {
@@ -38,29 +31,23 @@ const Projects = () => {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [selectedProject])
+  }, [selectedProject, showAllModal])
 
   return (
     <section id="projects" className="relative section-gap overflow-hidden">
-      <div className="section-padding relative z-10 max-w-7xl mx-auto">
+      <div className="section-padding relative z-10">
         <PowerOnHeader
           badge="Innovation & Projects"
           headline={<>Engineering in <span className="text-light-sweep-dark">Action</span></>}
           description="Real-world hardware & embedded projects engineered by ExESS members. From circuit prototypes to working systems."
+          align="left"
         />
 
-        {/* Open Editorial Layout — Reduced Heavy Card Borders */}
-        <motion.div
-          ref={gridRef}
-          initial="hidden"
-          animate={gridVisible ? 'visible' : 'hidden'}
-          variants={containerVariants}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10"
-        >
-          {projectsData.map((project) => (
-            <motion.div
+        {/* Curated Projects Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 mb-12">
+          {curatedProjects.map((project) => (
+            <div
               key={project.id}
-              variants={itemVariants}
               onClick={() => setSelectedProject(project)}
               className="group cursor-pointer flex flex-col justify-between border-b border-border/50 pb-6 transition-all duration-300"
             >
@@ -71,11 +58,6 @@ const Projects = () => {
                   type="cover"
                   aspectRatio="aspect-[16/9]"
                   badge={project.status}
-                  overlayContent={
-                    <div className="absolute bottom-3 right-3 w-8 h-8 rounded-lg bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20">
-                      <project.icon className="w-3.5 h-3.5 text-accent" />
-                    </div>
-                  }
                 />
 
                 <div className="pt-5">
@@ -118,19 +100,80 @@ const Projects = () => {
                   Documentation <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
+
+        {/* View All Projects Button */}
+        <div className="flex justify-center">
+          <PcbLightButton onClick={() => setShowAllModal(true)}>
+            VIEW ALL PROJECTS
+          </PcbLightButton>
+        </div>
       </div>
 
-      {/* Modal View — Fully Responsive with Navbar Clearance & ESC Key Handler */}
+      {/* Full Projects Showcase Directory Modal */}
+      <AnimatePresence>
+        {showAllModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-start justify-center p-4 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
+            onClick={() => setShowAllModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-5xl bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] overflow-y-auto"
+            >
+              <div className="sticky top-0 right-0 z-30 flex justify-between items-center bg-white/95 backdrop-blur-md pb-4 border-b border-border/60 -mt-2 mb-6">
+                <div>
+                  <h3 className="font-brand text-xl text-heading font-bold">ALL ExESS HARDWARE PROJECTS</h3>
+                  <p className="text-xs font-inter text-gray-500 font-medium">Complete repository of student engineering innovations</p>
+                </div>
+                <button
+                  onClick={() => setShowAllModal(false)}
+                  className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors pointer-events-auto cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {projectsData.map((proj) => (
+                  <div
+                    key={proj.id}
+                    onClick={() => {
+                      setShowAllModal(false)
+                      setSelectedProject(proj)
+                    }}
+                    className="p-4 rounded-2xl border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50"
+                  >
+                    <span className="text-[9px] font-brand uppercase tracking-wider text-primary block mb-1">{proj.status}</span>
+                    <h4 className="font-brand text-sm text-heading font-bold mb-1">{proj.title}</h4>
+                    <p className="text-xs text-gray-500 line-clamp-2 mb-3 font-inter">{proj.description}</p>
+                    <span className="text-[10px] font-brand text-primary font-semibold flex items-center gap-1">
+                      Documentation <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Single Project Detail Modal */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-[65] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
             onClick={() => setSelectedProject(null)}
           >
             <motion.div
@@ -139,14 +182,12 @@ const Projects = () => {
               exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-2xl bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] sm:max-h-[calc(100vh-120px)] overflow-y-auto overscroll-contain"
+              className="relative w-full max-w-2xl bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] overflow-y-auto"
             >
-              {/* Sticky close button */}
               <div className="sticky top-0 right-0 z-30 flex justify-end pb-2 pointer-events-none -mr-2 sm:-mr-4 -mt-2 sm:-mt-4">
                 <button
                   onClick={() => setSelectedProject(null)}
                   className="w-10 h-10 rounded-full bg-white/90 shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors pointer-events-auto cursor-pointer"
-                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>

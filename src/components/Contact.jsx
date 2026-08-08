@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Mail, Phone, Send, CheckCircle, Clock, Navigation } from 'lucide-react'
+import { MapPin, Mail, Phone, Send, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
@@ -46,7 +46,7 @@ const Contact = () => {
           variants={containerVariants}
           className="grid lg:grid-cols-12 gap-10 lg:gap-14"
         >
-          {/* Left Column (5 Columns): Essential Info & Campus Location Map Module */}
+          {/* Left Column (5 Columns): Connection Text, Contact Info & Integrated Google Maps Link Frame */}
           <div className="lg:col-span-5 space-y-6">
             <motion.div variants={itemVariants}>
               <p className="font-inter text-sm sm:text-base text-gray-600 leading-relaxed mb-6">
@@ -54,7 +54,7 @@ const Contact = () => {
                 or an alumnus offering technical mentorship &mdash; submit your query below.
               </p>
 
-              {/* Integrated Campus Location Map & Coordinates Module */}
+              {/* Integrated Campus Location Map & Direct Google Maps Embed Module */}
               <div className="rounded-3xl border border-primary/20 bg-white p-4 shadow-soft space-y-3 mb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -67,29 +67,37 @@ const Contact = () => {
                     </div>
                   </div>
                   <a
-                    href="https://maps.google.com/?q=College+of+Engineering+Chengannur"
+                    href="https://www.google.com/maps/place/College+of+Engineering+Chengannur/@9.317325,76.617486,15z/"
                     target="_blank"
                     rel="noreferrer"
                     className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors"
-                    title="Open in Google Maps"
+                    title="Open College Location on Google Maps"
                   >
-                    <Navigation className="w-3.5 h-3.5" />
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
 
-                {/* Styled Map Image Container */}
+                {/* Styled Map Preview Frame */}
                 <div className="rounded-2xl overflow-hidden border border-border/60">
                   <ImagePlaceholder
                     src={null}
                     alt="College of Engineering Chengannur Location Map"
                     type="cover"
                     aspectRatio="aspect-[16/9]"
-                    badge="CEC_MAP_LOCATION"
+                    badge="GOOGLE_MAPS_CEC"
                   />
                 </div>
-                <span className="block text-[10px] font-mono text-gray-400 text-center">
-                  Coordinates: 9.3174° N, 76.6175° E &bull; ECE Dept.
-                </span>
+                <div className="flex items-center justify-between text-[10px] font-mono text-gray-400">
+                  <span>Lat 9.3173° N &bull; Long 76.6174° E</span>
+                  <a
+                    href="https://www.google.com/maps/place/College+of+Engineering+Chengannur/@9.317325,76.617486,15z/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary hover:underline font-brand font-semibold"
+                  >
+                    Google Maps →
+                  </a>
+                </div>
               </div>
             </motion.div>
 
@@ -114,7 +122,7 @@ const Contact = () => {
             </div>
           </div>
 
-          {/* Right Column (7 Columns): Contact Form */}
+          {/* Right Column (7 Columns): Contact Form with SEND MESSAGE PcbLightButton */}
           <motion.div variants={itemVariants} className="lg:col-span-7">
             <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-10 border border-border/80 shadow-soft">
               {submitted ? (
@@ -174,8 +182,8 @@ const Contact = () => {
                   </div>
 
                   {/* Signature PcbLightButton Submit Button */}
-                  <PcbLightButton type="submit" showArrow={false} icon={Send} className="w-full py-4">
-                    Send Message
+                  <PcbLightButton type="submit" icon={Send} className="w-full py-4">
+                    SEND MESSAGE
                   </PcbLightButton>
                 </>
               )}

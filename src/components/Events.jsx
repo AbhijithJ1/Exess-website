@@ -1,41 +1,33 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, MapPin, Clock, ArrowRight, X, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Calendar, MapPin, X, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
+import PcbLightButton from './PcbLightButton'
 import { eventsData } from '../data/eventsData'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1, y: 0,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-  },
-}
-
 const Events = () => {
-  const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation()
   const [filter, setFilter] = useState('all')
   const [selectedEvent, setSelectedEvent] = useState(null)
+  const [showAllModal, setShowAllModal] = useState(false)
 
   const filteredEvents = filter === 'all'
     ? eventsData
     : eventsData.filter((e) => e.status === filter)
 
-  const upcomingCount = eventsData.filter((e) => e.status === 'upcoming').length
+  // Show curated selection on homepage (first 3 events)
+  const curatedEvents = filteredEvents.slice(0, 3)
 
   // Lock body scroll and add ESC key listener when event detail modal is open
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setSelectedEvent(null)
+      if (e.key === 'Escape') {
+        setSelectedEvent(null)
+        setShowAllModal(false)
+      }
     }
-    if (selectedEvent) {
+    if (selectedEvent || showAllModal) {
       document.body.style.overflow = 'hidden'
       window.addEventListener('keydown', handleKeyDown)
     } else {
@@ -45,12 +37,12 @@ const Events = () => {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [selectedEvent])
+  }, [selectedEvent, showAllModal])
 
   return (
     <section id="events" className="relative section-gap overflow-hidden">
-      <div className="section-padding relative z-10 max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 sm:gap-8 mb-14 sm:mb-18">
+      <div className="section-padding relative z-10">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 sm:gap-8 mb-12 sm:mb-16">
           <PowerOnHeader
             badge="Events & Hackathons"
             headline={<>What&apos;s <span className="text-light-sweep-dark">Happening</span></>}
@@ -59,32 +51,27 @@ const Events = () => {
             className="mb-0 max-w-2xl"
           />
 
-          <motion.div variants={itemVariants} className="flex gap-1.5 sm:gap-2 border-b border-border/60 pb-2 w-fit max-w-full overflow-x-auto no-scrollbar">
+          <div className="flex gap-2 border-b border-border/60 pb-2 w-fit max-w-full overflow-x-auto no-scrollbar">
             {['all', 'upcoming', 'past'].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3.5 py-1.5 rounded-lg text-[10px] uppercase font-brand tracking-wider font-semibold transition-all duration-300 whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-lg text-[10px] uppercase font-brand tracking-wider font-semibold transition-all duration-300 whitespace-nowrap cursor-pointer ${
                   filter === f
                     ? 'bg-primary text-white shadow-sm'
                     : 'text-body hover:text-heading'
                 }`}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
-                {f === 'upcoming' && (
-                  <span className="ml-1.5 px-1.5 py-0.5 bg-accent/20 text-accent text-[9px] rounded-full font-bold">
-                    {upcomingCount}
-                  </span>
-                )}
               </button>
             ))}
-          </motion.div>
+          </div>
         </div>
 
-        {/* Open Editorial Layout — Reduced Card Borders */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+        {/* Curated Selection Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 mb-12">
           <AnimatePresence mode="popLayout">
-            {filteredEvents.map((event) => (
+            {curatedEvents.map((event) => (
               <motion.div
                 key={event.id}
                 layout
@@ -148,16 +135,77 @@ const Events = () => {
             ))}
           </AnimatePresence>
         </div>
+
+        {/* View All Events Button */}
+        <div className="flex justify-center">
+          <PcbLightButton onClick={() => setShowAllModal(true)}>
+            VIEW ALL EVENTS
+          </PcbLightButton>
+        </div>
       </div>
 
-      {/* Modal View — Fully Responsive with Navbar Clearance & ESC Listener */}
+      {/* Full Events Directory Modal */}
+      <AnimatePresence>
+        {showAllModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-start justify-center p-4 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
+            onClick={() => setShowAllModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-5xl bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] overflow-y-auto"
+            >
+              <div className="sticky top-0 right-0 z-30 flex justify-between items-center bg-white/95 backdrop-blur-md pb-4 border-b border-border/60 -mt-2 mb-6">
+                <div>
+                  <h3 className="font-brand text-xl text-heading font-bold">ALL ExESS EVENTS</h3>
+                  <p className="text-xs font-inter text-gray-500">Explore complete archives of workshops, competitions and webinars</p>
+                </div>
+                <button
+                  onClick={() => setShowAllModal(false)}
+                  className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors pointer-events-auto cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {eventsData.map((ev) => (
+                  <div
+                    key={ev.id}
+                    onClick={() => {
+                      setShowAllModal(false)
+                      setSelectedEvent(ev)
+                    }}
+                    className="p-4 rounded-2xl border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50"
+                  >
+                    <span className="text-[9px] font-brand uppercase tracking-wider text-primary block mb-1">{ev.category}</span>
+                    <h4 className="font-brand text-sm text-heading font-bold mb-1">{ev.title}</h4>
+                    <p className="text-xs text-gray-500 line-clamp-2 mb-3 font-inter">{ev.description}</p>
+                    <span className="text-[10px] font-brand text-primary font-semibold flex items-center gap-1">
+                      Details <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Single Event Detail Modal */}
       <AnimatePresence>
         {selectedEvent && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-[65] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
             onClick={() => setSelectedEvent(null)}
           >
             <motion.div
@@ -166,14 +214,12 @@ const Events = () => {
               exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-2xl bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] sm:max-h-[calc(100vh-120px)] overflow-y-auto overscroll-contain"
+              className="relative w-full max-w-2xl bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] overflow-y-auto"
             >
-              {/* Sticky Close Button */}
               <div className="sticky top-0 right-0 z-30 flex justify-end pb-2 pointer-events-none -mr-2 sm:-mr-4 -mt-2 sm:-mt-4">
                 <button
                   onClick={() => setSelectedEvent(null)}
                   className="w-10 h-10 rounded-full bg-white/90 shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors pointer-events-auto cursor-pointer"
-                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>

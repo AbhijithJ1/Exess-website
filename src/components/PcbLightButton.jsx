@@ -4,9 +4,10 @@ import { ArrowRight } from 'lucide-react'
 /**
  * PcbLightButton — Signature ExESS Light-Theme Engineered Button
  *
- * Default: White/pale blue surface, thin blue border, dark text, clean arrow.
- * Hover: Surface stays light (bg-slate-50), border light beam accelerates,
- * text stays bold dark, arrow slides 4px forward, 2px lift. NO solid blue fill.
+ * Default: White/pale blue surface, 1px thin blue border, dark text, clean arrow.
+ * Reveal: Traveling blue/cyan electrical signal beam along border perimeter.
+ * Hover: Light surface preserved (bg-slate-50), luminous border, arrow slides 4px forward,
+ * slight 2px lift. NO solid bright blue rectangle fill.
  */
 const PcbLightButton = ({
   children,
@@ -22,7 +23,7 @@ const PcbLightButton = ({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`group relative inline-flex items-center justify-center gap-3.5 px-8 py-3.5 sm:px-9 sm:py-4 rounded-2xl font-brand text-xs sm:text-sm font-bold tracking-wider text-slate-900 bg-white/95 backdrop-blur-md border border-primary/30 hover:border-primary/70 hover:bg-slate-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_4px_20px_rgba(30,107,147,0.08)] hover:shadow-[0_8px_30px_rgba(30,107,147,0.20)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer overflow-hidden ${
+      className={`group relative inline-flex items-center justify-center gap-3 px-7 py-3.5 sm:px-8 sm:py-4 rounded-2xl font-brand text-xs sm:text-sm font-bold tracking-wider text-slate-900 bg-white/95 backdrop-blur-md border border-primary/30 hover:border-primary/70 hover:bg-slate-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_4px_20px_rgba(30,107,147,0.08)] hover:shadow-[0_8px_30px_rgba(30,107,147,0.20)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer overflow-hidden ${
         disabled ? 'opacity-60 pointer-events-none' : ''
       } ${className}`}
     >
@@ -51,20 +52,20 @@ const PcbLightButton = ({
         </defs>
       </svg>
 
-      {/* Subtle Luminous Halo on Hover (Light Surface Preserved) */}
+      {/* Luminous Halo on Hover (Light Surface Preserved) */}
       <div className="absolute inset-0 bg-primary/[0.04] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none" />
 
-      {/* Optional Left Icon */}
+      {/* Optional Custom Icon */}
       {Icon && (
         <Icon className="relative z-10 w-4 h-4 text-primary group-hover:text-primary transition-colors duration-300" />
       )}
 
-      {/* Button Text — Remains Dark & Crisp */}
+      {/* Button Text */}
       <span className="relative z-10 text-slate-900 group-hover:text-slate-950 transition-colors duration-300">
         {children}
       </span>
 
-      {/* Clean Arrow Icon — Slides 4px Forward */}
+      {/* Clean Arrow Icon */}
       {showArrow && (
         <ArrowRight className="relative z-10 w-4 h-4 text-primary group-hover:translate-x-1.5 transition-all duration-300 ease-out" />
       )}
