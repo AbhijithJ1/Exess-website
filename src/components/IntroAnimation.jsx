@@ -2,17 +2,18 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Top-Center Vertical Energy Particle Downward Impact Logo Activation
+ * IntroAnimation — Premium 2.2s Lag-Free PCB Circuit Energy Particle Logo Reveal
  *
- * RESTRAINED CINEMATIC PACING:
- * 1. PCB System Initializes (0.0s - 3.2s): PCB traces & socket frame draw & settle first.
- * 2. Short Pause (3.2s - 3.7s): Completed PCB circuit architecture holds still.
- * 3. Particle Spawns Far Above (3.7s - 4.2s): Cyan/white particle appears far above at TOP-CENTER (300, 30).
- * 4. Vertical Downward Flight (4.2s - 5.2s): Particle travels vertically downward toward logo center (300, 220).
- * 5. Direct Impact & Particle Vanishes (5.2s): Hits (300, 220) & vanishes; brief energy flash powers emblem.
- * 6. Connected Nodes Power On (5.7s - 6.2s): Energy flows into terminal nodes & pads below emblem.
- * 7. Wordmark Energization (6.2s - 7.4s): ExESS letters energize progressively LEFT → RIGHT.
- * 8. Clean Settle & Transition (7.4s - 8.2s): Crisp ExESS identity remains stable for preloader exit.
+ * OPTIMIZED 2.2s CHOREOGRAPHY:
+ * • 0.0s – 0.75s: PCB trace formation (lightweight stroke animation)
+ * • 0.75s – 0.83s: Brief 80ms pause
+ * • 0.83s – 0.88s: Energy particle appears in top gap between upper PCB traces (300, 40)
+ * • 0.88s – 1.08s: Particle travels in straight vertical downward path to emblem center (300, 220)
+ * • 1.08s – 1.28s: Impact & emblem globe activation; particle vanishes
+ * • 1.25s – 1.45s: Energy transfers into connected electronic nodes
+ * • 1.35s – 1.70s: ExESS wordmark letters energize progressively L → R (E → x → E → S → S)
+ * • 1.70s – 1.90s: Final settle into crisp ExESS dark-blue identity
+ * • 1.90s – 2.25s: Smooth preloader exit into website
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -84,17 +85,24 @@ const IntroAnimation = ({ onComplete }) => {
     if (hasFinishedRef.current) return
     hasFinishedRef.current = true
     if (containerRef.current) {
-      containerRef.current.style.transition = 'opacity 0.5s ease-in-out'
+      containerRef.current.style.transition = 'opacity 0.35s ease-out'
       containerRef.current.style.opacity = '0'
       setTimeout(() => {
         if (onComplete) onComplete()
-      }, 480)
+      }, 340)
     } else if (onComplete) {
       onComplete()
     }
   }
 
   useEffect(() => {
+    // Respect Reduced Motion Accessibility Preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      finishAnimation()
+      return
+    }
+
     const letters = lettersRef.current
     gsap.set(containerRef.current, { opacity: 1 })
 
@@ -123,7 +131,7 @@ const IntroAnimation = ({ onComplete }) => {
       nodeFills.forEach(el => gsap.set(el, { opacity: 0 }))
     }
 
-    // Setup Outer PCB Motherboard Traces (Initially hidden)
+    // Setup Outer PCB Motherboard Traces
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
       traces.forEach(el => {
@@ -135,7 +143,7 @@ const IntroAnimation = ({ onComplete }) => {
     // Setup Wordmark Letters
     letters.forEach(letterEl => {
       if (letterEl) {
-        gsap.set(letterEl, { opacity: 0, y: 16, filter: 'blur(8px)' })
+        gsap.set(letterEl, { opacity: 0, y: 0, filter: 'blur(0px)' })
       }
     })
 
@@ -145,59 +153,59 @@ const IntroAnimation = ({ onComplete }) => {
       pads.forEach(p => gsap.set(p, { scale: 1, fill: '#1E6B93', opacity: 0.4 }))
     }
 
-    // ── MASTER CINEMATIC TIMELINE (8.2s TOTAL DURATION) ─────────
+    // ── MASTER 2.2s HIGH-PERFORMANCE TIMELINE ─────────
     const tl = gsap.timeline({
       onComplete: finishAnimation,
     })
 
-    // STEP 1: PCB SYSTEM INITIALIZES & SETTLES (0.0s - 3.2s)
+    // STEP 1: PCB TRACE FORMATION (0.0s - 0.75s)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 2.8, stagger: 0.1, ease: 'power2.inOut' }, 0.1)
+      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 0.65, stagger: 0.03, ease: 'power2.inOut' }, 0.05)
     }
 
-    // STEP 2: SHORT PAUSE (3.2s - 3.7s)
-    tl.to({}, { duration: 0.5 }, 3.2)
+    // STEP 2: BRIEF PAUSE (0.75s - 0.83s)
+    tl.to({}, { duration: 0.08 }, 0.75)
 
-    // STEP 3: SMALL CYAN/WHITE PARTICLE SPAWNS FAR ABOVE AT TOP-CENTER (300, 30) (3.7s - 4.2s)
+    // STEP 3: SINGLE PARTICLE SPAWNS IN OPEN GAP BETWEEN UPPER PCB TRACES (300, 40) (0.83s - 0.88s)
     tl.to(pulseSparkRef.current, {
       opacity: 1,
-      scale: 1.25,
-      duration: 0.5,
+      scale: 1,
+      duration: 0.05,
       ease: 'power1.out',
-    }, 3.7)
+    }, 0.83)
 
-    // STEP 4: PERFECT STRAIGHT VERTICAL TRAJECTORY DOWNWARD TO LOGO CENTER (300, 220) (4.2s - 5.2s)
+    // STEP 4: PERFECT STRAIGHT VERTICAL DOWNWARD PATH TO EMBLEM CENTER (300, 220) (0.88s - 1.08s)
     tl.to(pulseSparkRef.current, {
-      y: 190,
-      duration: 1.0,
+      y: 180,
+      duration: 0.20,
       ease: 'power2.in',
-    }, 4.2)
+    }, 0.88)
 
-    // STEP 5: DIRECT IMPACT AT LOGO CENTER (300, 220) & PARTICLE VANISHES (5.2s)
-    tl.to(pulseSparkRef.current, { opacity: 0, scale: 0.1, duration: 0.1 }, 5.2)
-    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.15 }, 5.2)
+    // STEP 5: DIRECT IMPACT AT (300, 220) & PARTICLE VANISHES (1.08s)
+    tl.to(pulseSparkRef.current, { opacity: 0, scale: 0.1, duration: 0.04 }, 1.08)
+    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.08 }, 1.08)
 
-    // Concentrated impact bloom
+    // Controlled light impact highlight (No giant glow / No explosion)
     tl.to(emblemWrapperRef.current, {
-      filter: 'drop-shadow(0 0 24px rgba(50,197,232,0.80))',
-      duration: 0.25,
+      filter: 'drop-shadow(0 0 12px rgba(50,197,232,0.60))',
+      duration: 0.15,
       ease: 'power1.out',
-    }, 5.2)
+    }, 1.08)
 
-    // STEP 6: EMBLEM GLOBE LINES & ORBIT ACTIVATION (5.2s - 6.0s)
+    // STEP 6: EMBLEM GLOBE LINES & ORBIT ACTIVATION (1.10s - 1.30s)
     if (emblemEl) {
       const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
       tl.to(emblemPaths, {
         strokeDashoffset: 0,
         opacity: 1,
-        duration: 0.75,
-        stagger: 0.04,
+        duration: 0.22,
+        stagger: 0.02,
         ease: 'power2.out',
-      }, 5.25)
+      }, 1.10)
     }
 
-    // STEP 7: CONNECTED ELECTRONIC NODES POWER ON (5.7s - 6.2s)
+    // STEP 7: CONNECTED ELECTRONIC NODES POWER ON (1.25s - 1.45s)
     if (emblemEl) {
       const nodePaths = emblemEl.querySelectorAll('.node-path')
       const nodeFills = emblemEl.querySelectorAll('.node-fill')
@@ -205,45 +213,43 @@ const IntroAnimation = ({ onComplete }) => {
       tl.to(nodePaths, {
         strokeDashoffset: 0,
         opacity: 1,
-        duration: 0.5,
-        stagger: 0.03,
+        duration: 0.18,
+        stagger: 0.02,
         ease: 'power2.out',
-      }, 5.7)
+      }, 1.25)
 
       tl.to(nodeFills, {
         opacity: 1,
-        duration: 0.3,
-        stagger: 0.02,
+        duration: 0.12,
+        stagger: 0.01,
         ease: 'power1.out',
-      }, 5.9)
+      }, 1.32)
     }
 
-    // STEP 8: WORDMARK ENERGIZATION PROGRESSIVELY LEFT → RIGHT (6.2s - 7.4s)
+    // STEP 8: EXESS WORDMARK FORMS PROGRESSIVELY L → R (E → x → E → S → S) (1.35s - 1.70s)
     letters.forEach((letterEl, index) => {
       if (letterEl) {
         tl.to(letterEl, {
           opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          duration: 0.45,
-          ease: 'back.out(1.4)',
-        }, 6.2 + index * 0.18)
+          duration: 0.10,
+          ease: 'power1.out',
+        }, 1.35 + index * 0.06)
       }
     })
 
-    // STEP 9: IMPACT GLOW SETTLES & CLEAN FINAL LOGO REMAINS (7.2s - 8.0s)
+    // STEP 9: FINAL SETTLE INTO CRISP EXESS DARK BLUE IDENTITY (1.70s - 1.90s)
     tl.to(emblemWrapperRef.current, {
-      filter: 'drop-shadow(0 0 8px rgba(50,197,232,0.15))',
-      duration: 0.8,
+      filter: 'drop-shadow(0 0 6px rgba(50,197,232,0.12))',
+      duration: 0.20,
       ease: 'power2.out',
-    }, 7.2)
+    }, 1.70)
 
-    // Pause to admire complete stable ExESS identity
-    tl.to({}, { duration: 0.4 }, 7.8)
+    // Brief hold before seamless preloader exit (1.90s - 2.25s)
+    tl.to({}, { duration: 0.35 }, 1.90)
 
     const safetyTimer = setTimeout(() => {
       finishAnimation()
-    }, 8600)
+    }, 2600)
 
     return () => {
       clearTimeout(safetyTimer)
@@ -260,7 +266,7 @@ const IntroAnimation = ({ onComplete }) => {
       onClick={finishAnimation}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden select-none cursor-pointer bg-white"
     >
-      {/* ── PCB MOTHERBOARD TRACES SVG (DRAWS & SETTLES FIRST) ── */}
+      {/* ── PCB MOTHERBOARD TRACES SVG (LIGHTWEIGHT STROKE ANIMATION) ── */}
       <svg
         ref={pcbSvgRef}
         aria-hidden="true"
@@ -309,7 +315,7 @@ const IntroAnimation = ({ onComplete }) => {
         <circle className="socket-pad" cx="360" cy="460" r="3.5" />
       </svg>
 
-      {/* ── FLYING ENERGY PARTICLE — FAR ABOVE TOP-CENTER (300, 30) (ZERO PERSISTENT SVG LINE) ── */}
+      {/* ── ENERGY PARTICLE — ORIGINATES FROM OPEN GAP BETWEEN UPPER PCB TRACES (300, 40) ── */}
       <svg
         aria-hidden="true"
         className="absolute pointer-events-none"
@@ -318,10 +324,10 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* High-Speed Vertical Downward Flying Energy Particle Spark Node */}
-        <g ref={pulseSparkRef} style={{ transformOrigin: '300px 30px' }}>
-          <circle cx="300" cy="30" r="9" fill="url(#sparkGlow)" />
-          <circle cx="300" cy="30" r="3" fill="#FFFFFF" />
+        {/* Lightweight Single Energy Particle Spark Node */}
+        <g ref={pulseSparkRef} style={{ transformOrigin: '300px 40px' }}>
+          <circle cx="300" cy="40" r="7" fill="url(#sparkGlow)" />
+          <circle cx="300" cy="40" r="2.5" fill="#FFFFFF" />
         </g>
 
         <defs>
@@ -332,7 +338,7 @@ const IntroAnimation = ({ onComplete }) => {
         </defs>
       </svg>
 
-      {/* ── CENTRAL ExESS IDENTITY CORE (NO LARGE CIRCLE AT ALL) ── */}
+      {/* ── CENTRAL ExESS IDENTITY CORE ── */}
       <div
         ref={logoGroupRef}
         className="relative z-10 flex flex-col items-center justify-center text-center p-4"
@@ -346,7 +352,7 @@ const IntroAnimation = ({ onComplete }) => {
           <EmblemSVG svgRef={emblemSvgRef} />
         </div>
 
-        {/* Wordmark Assembly — Progressive L→R Letter Reveal (100% CLEAN TEXT) */}
+        {/* Wordmark Assembly — Progressive L→R Letter Reveal */}
         <div className="mt-3.5 flex items-center justify-center gap-0.5">
           <h1
             className="font-brand font-bold text-light-sweep-dark tracking-tight flex"

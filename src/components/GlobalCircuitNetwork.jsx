@@ -104,6 +104,11 @@ const GlobalCircuitNetwork = () => {
     }
 
     const render = () => {
+      if (document.hidden) {
+        animationFrameId = requestAnimationFrame(render)
+        return
+      }
+
       // Lerp scroll position for smooth acceleration and deceleration
       lerpedScrollY += (targetScrollY - lerpedScrollY) * 0.08
 
