@@ -280,6 +280,26 @@ html.lenis, html.lenis body {
   animation: marquee 35s linear infinite;
 }
 
+/* ── PCB Traveling Light Beam for Buttons ─────────────────────────────── */
+@keyframes pcbBeam {
+  0% {
+    stroke-dasharray: 60 220;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: 60 220;
+    stroke-dashoffset: -280;
+  }
+}
+
+.pcb-border-beam {
+  animation: pcbBeam 3.5s linear infinite;
+}
+
+.group:hover .pcb-border-beam {
+  animation-duration: 1.8s;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

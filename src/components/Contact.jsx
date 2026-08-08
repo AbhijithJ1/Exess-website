@@ -4,6 +4,7 @@ import { MapPin, Mail, Phone, Send, CheckCircle, Clock } from 'lucide-react'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
+import PcbLightButton from './PcbLightButton'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,16 +27,16 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 3000)
+    setTimeout(() => setSubmitted(false), 4000)
   }
 
   return (
     <section id="contact" className="relative section-gap overflow-hidden">
       <div className="section-padding relative z-10 max-w-6xl mx-auto">
         <PowerOnHeader
-          badge="Get In Touch"
-          headline={<>Let&apos;s <span className="text-light-sweep-dark">Connect</span></>}
-          description="Have questions about ExESS workshops, event partnerships, or joining the society? We'd love to hear from you."
+          badge="Direct Outreach"
+          headline={<>LET&apos;S <span className="text-light-sweep-dark">CONNECT</span></>}
+          description="Reach out to ExESS for technical workshops, hardware research partnerships, or society membership inquiries."
         />
 
         <motion.div
@@ -45,18 +46,15 @@ const Contact = () => {
           variants={containerVariants}
           className="grid lg:grid-cols-5 gap-10 sm:gap-12"
         >
-          {/* Left Column: Contact Info & Reserved Campus Photo Container */}
+          {/* Left Column: Essential Info & Campus Image */}
           <div className="lg:col-span-2 space-y-7 sm:space-y-8">
             <motion.div variants={itemVariants}>
-              <h3 className="text-xl sm:text-2xl font-brand text-heading mb-3">
-                Get in Touch
-              </h3>
-              <p className="font-inter text-sm text-body leading-relaxed mb-6">
-                Whether you&apos;re a student looking to join, a company interested in collaboration,
-                or an alumnus wanting to give back &mdash; reach out to us.
+              <p className="font-inter text-sm text-body leading-relaxed mb-6 text-gray-600">
+                Whether you&apos;re a student looking to join, an industry partner interested in research,
+                or an alumnus offering technical mentorship &mdash; submit your query below.
               </p>
 
-              {/* Reserved Media Container for Future Campus & Department Photographs */}
+              {/* Reserved Media Container */}
               <div className="mb-6">
                 <ImagePlaceholder
                   src={null}
@@ -105,7 +103,7 @@ const Contact = () => {
                 >
                   <CheckCircle className="w-14 h-14 text-emerald-500 mx-auto mb-4" />
                   <h3 className="text-xl font-brand text-heading mb-2">Message Sent!</h3>
-                  <p className="font-inter text-sm text-body">We&apos;ll get back to you soon.</p>
+                  <p className="font-inter text-sm text-body">Thank you for reaching out to ExESS. We will respond promptly.</p>
                 </motion.div>
               ) : (
                 <>
@@ -117,7 +115,7 @@ const Contact = () => {
                         value={formState.name}
                         onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter"
-                        placeholder="Your name"
+                        placeholder="Your full name"
                       />
                     </div>
                     <div>
@@ -137,9 +135,8 @@ const Contact = () => {
                     <select className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter text-body">
                       <option>General Inquiry</option>
                       <option>Join ExESS</option>
-                      <option>Sponsorship</option>
-                      <option>Collaboration</option>
-                      <option>Testimonial Submission</option>
+                      <option>Sponsorship / Research</option>
+                      <option>Workshop Collaboration</option>
                     </select>
                   </div>
 
@@ -150,14 +147,14 @@ const Contact = () => {
                       value={formState.message}
                       onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter resize-none"
-                      placeholder="Tell us what's on your mind..."
+                      placeholder="Share your inquiry or project details..."
                     />
                   </div>
 
-                  <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2.5 font-brand text-xs uppercase tracking-wider py-3.5">
-                    <Send className="w-4 h-4" />
+                  {/* Signature PcbLightButton Submit Button */}
+                  <PcbLightButton type="submit" showArrow={false} icon={Send} className="w-full py-4">
                     Send Message
-                  </button>
+                  </PcbLightButton>
                 </>
               )}
             </form>

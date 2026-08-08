@@ -4,12 +4,12 @@ import { Menu, X } from 'lucide-react'
 import Logo from './Logo'
 
 const navLinks = [
-  { name: 'Home', href: '#home' },
-  { name: 'About', href: '#circuits' },
-  { name: 'Team', href: '#team' },
-  { name: 'Events', href: '#events' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'Home', href: '#home', id: 'home' },
+  { name: 'About', href: '#circuits', id: 'circuits' },
+  { name: 'Team', href: '#team', id: 'team' },
+  { name: 'Events', href: '#events', id: 'events' },
+  { name: 'Projects', href: '#projects', id: 'projects' },
+  { name: 'Contact', href: '#contact', id: 'contact' },
 ]
 
 const Navbar = () => {
@@ -25,16 +25,22 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Robust IntersectionObserver & Scroll Spy for Active Bubble
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActiveSection(entry.target.id)
+            const id = entry.target.id
+            if (id === 'circuits' || id === 'about') {
+              setActiveSection('circuits')
+            } else {
+              setActiveSection(id)
+            }
           }
         })
       },
-      { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' }
+      { threshold: 0.15, rootMargin: '-70px 0px -55% 0px' }
     )
 
     navLinks.forEach((link) => {
@@ -45,9 +51,10 @@ const Navbar = () => {
     return () => observer.disconnect()
   }, [])
 
-  const handleNavClick = useCallback((e, href) => {
+  const handleNavClick = useCallback((e, href, id) => {
     e.preventDefault()
     setMobileOpen(false)
+    setActiveSection(id)
     const element = document.querySelector(href)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
@@ -71,8 +78,8 @@ const Navbar = () => {
             {/* ExESS Logo & Michroma Branding in Navbar */}
             <a
               href="#home"
-              onClick={(e) => handleNavClick(e, '#home')}
-              className="flex items-center gap-2.5 py-1.5 group"
+              onClick={(e) => handleNavClick(e, '#home', 'home')}
+              className="flex items-center gap-2.5 py-1.5 group pl-1 sm:pl-2"
             >
               <Logo size={scrolled ? 32 : 36} color="#1E6B93" />
               <span className="font-brand text-base sm:text-lg tracking-tight text-slate-900 group-hover:text-primary transition-colors">
@@ -82,27 +89,28 @@ const Navbar = () => {
 
             {/* Desktop Nav: Clean 6-item navigation in Michroma typography */}
             <div className="hidden lg:flex items-center gap-1.5 sm:gap-2">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
-                  className={`relative px-4 py-2 text-[10.5px] uppercase tracking-[0.16em] font-brand font-semibold transition-colors duration-300 rounded-full ${
-                    activeSection === link.href.slice(1)
-                      ? 'text-primary'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {activeSection === link.href.slice(1) && (
-                    <motion.div
-                      layoutId="activeNav"
-                      className="absolute inset-0 bg-primary/10 rounded-full border border-primary/20"
-                      transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
-                    />
-                  )}
-                  <span className="relative z-10">{link.name}</span>
-                </a>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.id
+                return (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href, link.id)}
+                    className={`relative px-4 py-2 text-[10.5px] uppercase tracking-[0.16em] font-brand font-semibold transition-colors duration-300 rounded-full ${
+                      isActive ? 'text-primary' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeNav"
+                        className="absolute inset-0 bg-primary/10 rounded-full border border-primary/20"
+                        transition={{ type: 'spring', bounce: 0.15, duration: 0.4 }}
+                      />
+                    )}
+                    <span className="relative z-10">{link.name}</span>
+                  </a>
+                )
+              })}
             </div>
 
             {/* Mobile Toggle */}
@@ -152,20 +160,23 @@ const Navbar = () => {
             className="fixed inset-x-0 top-[70px] z-40 p-4 lg:hidden"
           >
             <div className="bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-3xl p-6 shadow-xl space-y-2">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
-                  className={`block px-4 py-3 rounded-2xl text-xs font-brand uppercase tracking-wider font-semibold transition-colors ${
-                    activeSection === link.href.slice(1)
-                      ? 'bg-primary/10 text-primary border border-primary/20'
-                      : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                >
-                  {link.name}
-                </a>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.id
+                return (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href, link.id)}
+                    className={`block px-4 py-3 rounded-2xl text-xs font-brand uppercase tracking-wider font-semibold transition-colors ${
+                      isActive
+                        ? 'bg-primary/10 text-primary border border-primary/20'
+                        : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    {link.name}
+                  </a>
+                )
+              })}
             </div>
           </motion.div>
         )}

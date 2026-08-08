@@ -1,13 +1,10 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
+import PcbLightButton from './PcbLightButton'
 
 /**
- * HeroBackground — Cleaner Engineering Atmosphere
- *
- * Clean, open engineering background with plenty of whitespace:
- * Features subtle PCB traces, blueprint lines, and soft radial background
- * gradients for a high-end engineering feel. No vertical lines crossing navbar.
+ * HeroBackground — Continuous PCB Infrastructure & Signal Beam
+ * PCB traces remain visible and connect towards the central ExESS logo area.
  */
 const HeroBackground = () => (
   <svg
@@ -19,35 +16,42 @@ const HeroBackground = () => (
   >
     <defs>
       <radialGradient id="hlg" cx="50%" cy="45%" r="55%">
-        <stop offset="0%" stopColor="#32C5E8" stopOpacity="0.05" />
-        <stop offset="60%" stopColor="#1E6B93" stopOpacity="0.02" />
+        <stop offset="0%" stopColor="#32C5E8" stopOpacity="0.06" />
+        <stop offset="60%" stopColor="#1E6B93" stopOpacity="0.03" />
         <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
       </radialGradient>
+
+      {/* Signal Light Beam Path Animation */}
+      <linearGradient id="signalPulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#32C5E8" stopOpacity="0" />
+        <stop offset="50%" stopColor="#32C5E8" stopOpacity="1" />
+        <stop offset="100%" stopColor="#1E6B93" stopOpacity="0" />
+      </linearGradient>
     </defs>
 
-    {/* Subtle PCB Copper Routing — Open Whitespace Lines */}
-    <g stroke="rgba(30,107,147,0.10)" strokeWidth="1.2" fill="none" strokeLinecap="square">
-      <path d="M0 140 H160 V90 H320" />
-      <path d="M0 240 H100 V180 H280" stroke="rgba(50,197,232,0.15)" />
+    {/* Continuous PCB Copper Routing Lines Connecting Towards Central Logo */}
+    <g stroke="rgba(30,107,147,0.12)" strokeWidth="1.2" fill="none" strokeLinecap="square">
+      <path d="M0 140 H220 L380 280 H620" />
+      <path d="M0 240 H160 L300 360 H580" stroke="rgba(50,197,232,0.18)" />
 
-      <path d="M1440 140 H1280 V90 H1120" />
-      <path d="M1440 240 H1340 V180 H1160" stroke="rgba(50,197,232,0.15)" />
+      <path d="M1440 140 H1220 L1060 280 H820" />
+      <path d="M1440 240 H1280 L1140 360 H860" stroke="rgba(50,197,232,0.18)" />
 
-      <path d="M0 760 H160 V810 H320" />
-      <path d="M1440 760 H1280 V810 H1120" />
+      <path d="M0 760 H220 L380 620 H620" />
+      <path d="M1440 760 H1220 L1060 620 H820" />
     </g>
 
-    {/* Via Pads at Trace Ends */}
-    <g fill="rgba(30,107,147,0.20)">
-      <circle cx="320" cy="90" r="3" />
-      <circle cx="280" cy="180" r="2.5" />
-      <circle cx="1120" cy="90" r="3" />
-      <circle cx="1160" cy="180" r="2.5" />
-      <circle cx="320" cy="810" r="3" />
-      <circle cx="1120" cy="810" r="3" />
+    {/* Via Pads at Trace Ends near Central Logo */}
+    <g fill="rgba(30,107,147,0.30)">
+      <circle cx="620" cy="280" r="3.5" />
+      <circle cx="580" cy="360" r="3" fill="#32C5E8" />
+      <circle cx="820" cy="280" r="3.5" />
+      <circle cx="860" cy="360" r="3" fill="#32C5E8" />
+      <circle cx="620" cy="620" r="3" />
+      <circle cx="820" cy="620" r="3" />
     </g>
 
-    {/* Corner technical crosshairs */}
+    {/* Technical Crosshairs */}
     <g stroke="rgba(30,107,147,0.15)" strokeWidth="0.8">
       <path d="M24 40 H40 M32 32 V48" />
       <path d="M1416 40 H1400 M1408 32 V48" />
@@ -57,28 +61,6 @@ const HeroBackground = () => (
 
     <rect x="0" y="0" width="1440" height="900" fill="url(#hlg)" />
   </svg>
-)
-
-/**
- * Premium Light-Theme CTA Button — Glass/Neumorphic UI inspired by Apple & Vercel
- */
-const ElectricalSignalButton = ({ onClick }) => (
-  <button
-    id="hero-explore-btn"
-    onClick={onClick}
-    className="group relative inline-flex items-center gap-3.5 px-8 py-3.5 sm:px-10 sm:py-4 rounded-2xl font-brand text-xs sm:text-sm font-semibold tracking-wider text-slate-800 bg-white/95 backdrop-blur-md border border-primary/30 hover:border-primary/70 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_4px_20px_rgba(30,107,147,0.10)] hover:shadow-[0_8px_30px_rgba(30,107,147,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer overflow-hidden"
-  >
-    {/* Smooth blue gradient overlay transition on hover */}
-    <div className="absolute inset-0 bg-gradient-to-r from-[#1E6B93] to-[#187AA3] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none" />
-
-    <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
-      Explore ExESS
-    </span>
-
-    <div className="relative z-10 flex items-center justify-center">
-      <ArrowRight className="w-4 h-4 text-primary group-hover:text-white group-hover:translate-x-1.5 transition-all duration-300 ease-out" />
-    </div>
-  </button>
 )
 
 const Hero = () => {
@@ -93,6 +75,7 @@ const Hero = () => {
     document.querySelector('#circuits')?.scrollIntoView({ behavior: 'smooth' })
 
   const D = 0.1
+  const exessLetters = ['E', 'x', 'E', 'S', 'S']
 
   return (
     <section
@@ -106,30 +89,39 @@ const Hero = () => {
         style={{ scale: heroScale, opacity: heroOpacity, y: heroY }}
         className="relative z-10 w-full max-w-4xl mx-auto section-padding flex flex-col items-center text-center pt-28 sm:pt-36 pb-20"
       >
-        {/* Large ExESS Branding Title in Michroma */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: D, duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-6"
-        >
+        {/* "Expand" Entrance Animation — Letter-by-Letter Reveal */}
+        <motion.div className="mb-6 flex items-center justify-center select-none overflow-hidden">
           <h1
-            className="font-brand font-bold text-light-sweep-dark tracking-tight select-none"
+            className="font-brand font-bold text-light-sweep-dark tracking-tight flex"
             style={{
               fontSize: 'clamp(4.5rem, 15vw, 12rem)',
               lineHeight: '0.9',
               letterSpacing: '-0.04em',
             }}
           >
-            ExESS
+            {exessLetters.map((char, index) => (
+              <motion.span
+                key={index}
+                initial={{ opacity: 0, y: 35, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{
+                  delay: D + index * 0.08,
+                  duration: 0.65,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="inline-block"
+              >
+                {char}
+              </motion.span>
+            ))}
           </h1>
         </motion.div>
 
-        {/* Precision hairline divider */}
+        {/* Precision Hairline Divider */}
         <motion.div
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
-          transition={{ delay: D + 0.15, duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
+          transition={{ delay: D + 0.45, duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
           className="origin-center mb-8"
         >
           <div
@@ -145,7 +137,7 @@ const Hero = () => {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: D + 0.25, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ delay: D + 0.55, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col items-center gap-2 mb-12"
         >
           <p
@@ -162,13 +154,15 @@ const Hero = () => {
           </p>
         </motion.div>
 
-        {/* Premium Redesigned CTA Button */}
+        {/* Signature PcbLightButton CTA */}
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: D + 0.35, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ delay: D + 0.65, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <ElectricalSignalButton onClick={scrollToAbout} />
+          <PcbLightButton onClick={scrollToAbout}>
+            Explore ExESS
+          </PcbLightButton>
         </motion.div>
       </motion.div>
     </section>
