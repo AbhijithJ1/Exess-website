@@ -2,18 +2,18 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Premium 2.2s Lag-Free PCB Circuit Energy Particle Logo Reveal
+ * IntroAnimation — Premium 2.8s Technology Brand Identity Reveal Sequence
  *
- * OPTIMIZED 2.2s CHOREOGRAPHY:
- * • 0.0s – 0.75s: PCB trace formation (lightweight stroke animation)
- * • 0.75s – 0.83s: Brief 80ms pause
- * • 0.83s – 0.88s: Energy particle appears in top gap between upper PCB traces (300, 40)
- * • 0.88s – 1.08s: Particle travels in straight vertical downward path to emblem center (300, 220)
- * • 1.08s – 1.28s: Impact & emblem globe activation; particle vanishes
- * • 1.25s – 1.45s: Energy transfers into connected electronic nodes
- * • 1.35s – 1.70s: ExESS wordmark letters energize progressively L → R (E → x → E → S → S)
- * • 1.70s – 1.90s: Final settle into crisp ExESS dark-blue identity
- * • 1.90s – 2.25s: Smooth preloader exit into website
+ * RHYTHM & PACING CHOREOGRAPHY:
+ * • PCB Formation (0.0s – 0.85s): Controlled stroke drawing of motherboard traces (~0.85s)
+ * • Breathing Pause (0.85s – 1.03s): Intentional 180ms hold
+ * • Particle Appears (1.03s – 1.10s): Single energy particle spawns in upper PCB gap (300, 40)
+ * • Energy Travel (1.10s – 1.50s): Straight vertical downward travel (~400ms) with smooth ease-in-out
+ * • Impact (1.50s – 1.63s): Particle hits emblem center (300, 220) & vanishes; 130ms energy flash
+ * • Emblem Activation (1.63s – 2.00s): Emblem globe lines & orbit illuminate (~370ms)
+ * • Wordmark Formation (2.00s – 2.65s): Letters E → x → E → S → S reveal progressively (~120ms/letter)
+ * • Final Settle (2.65s – 2.95s): Cyan highlight gently fades into dark-blue #1E6B93 logo (~300ms)
+ * • Preloader Exit (2.95s – 3.30s): Smooth unmount into main website
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -153,59 +153,59 @@ const IntroAnimation = ({ onComplete }) => {
       pads.forEach(p => gsap.set(p, { scale: 1, fill: '#1E6B93', opacity: 0.4 }))
     }
 
-    // ── MASTER 2.2s HIGH-PERFORMANCE TIMELINE ─────────
+    // ── MASTER 2.8s PREMIUM CINEMATIC TIMELINE ─────────
     const tl = gsap.timeline({
       onComplete: finishAnimation,
     })
 
-    // STEP 1: PCB TRACE FORMATION (0.0s - 0.75s)
+    // STEP 1: PCB TRACE FORMATION (~0.85s) (0.0s - 0.85s)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 0.65, stagger: 0.03, ease: 'power2.inOut' }, 0.05)
+      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 0.80, stagger: 0.04, ease: 'power2.inOut' }, 0.05)
     }
 
-    // STEP 2: BRIEF PAUSE (0.75s - 0.83s)
-    tl.to({}, { duration: 0.08 }, 0.75)
+    // STEP 2: BREATHING PAUSE (~0.18s) (0.85s - 1.03s)
+    tl.to({}, { duration: 0.18 }, 0.85)
 
-    // STEP 3: SINGLE PARTICLE SPAWNS IN OPEN GAP BETWEEN UPPER PCB TRACES (300, 40) (0.83s - 0.88s)
+    // STEP 3: SINGLE PARTICLE SPAWNS IN OPEN GAP BETWEEN UPPER PCB TRACES (300, 40) (1.03s - 1.10s)
     tl.to(pulseSparkRef.current, {
       opacity: 1,
       scale: 1,
-      duration: 0.05,
+      duration: 0.07,
       ease: 'power1.out',
-    }, 0.83)
+    }, 1.03)
 
-    // STEP 4: PERFECT STRAIGHT VERTICAL DOWNWARD PATH TO EMBLEM CENTER (300, 220) (0.88s - 1.08s)
+    // STEP 4: PERFECT STRAIGHT VERTICAL DOWNWARD TRAVEL (~0.40s) (1.10s - 1.50s)
     tl.to(pulseSparkRef.current, {
       y: 180,
-      duration: 0.20,
-      ease: 'power2.in',
-    }, 0.88)
+      duration: 0.40,
+      ease: 'power2.inOut',
+    }, 1.10)
 
-    // STEP 5: DIRECT IMPACT AT (300, 220) & PARTICLE VANISHES (1.08s)
-    tl.to(pulseSparkRef.current, { opacity: 0, scale: 0.1, duration: 0.04 }, 1.08)
-    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.08 }, 1.08)
+    // STEP 5: DIRECT IMPACT AT (300, 220) & PARTICLE VANISHES (~0.13s) (1.50s - 1.63s)
+    tl.to(pulseSparkRef.current, { opacity: 0, scale: 0.1, duration: 0.06 }, 1.50)
+    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.10 }, 1.50)
 
-    // Controlled light impact highlight (No giant glow / No explosion)
+    // Refined energy impact highlight
     tl.to(emblemWrapperRef.current, {
-      filter: 'drop-shadow(0 0 12px rgba(50,197,232,0.60))',
-      duration: 0.15,
+      filter: 'drop-shadow(0 0 14px rgba(50,197,232,0.70))',
+      duration: 0.13,
       ease: 'power1.out',
-    }, 1.08)
+    }, 1.50)
 
-    // STEP 6: EMBLEM GLOBE LINES & ORBIT ACTIVATION (1.10s - 1.30s)
+    // STEP 6: EMBLEM GLOBE LINES & ORBIT ACTIVATION (~0.37s) (1.63s - 2.00s)
     if (emblemEl) {
       const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
       tl.to(emblemPaths, {
         strokeDashoffset: 0,
         opacity: 1,
-        duration: 0.22,
-        stagger: 0.02,
+        duration: 0.35,
+        stagger: 0.03,
         ease: 'power2.out',
-      }, 1.10)
+      }, 1.63)
     }
 
-    // STEP 7: CONNECTED ELECTRONIC NODES POWER ON (1.25s - 1.45s)
+    // Connected electronic nodes activate
     if (emblemEl) {
       const nodePaths = emblemEl.querySelectorAll('.node-path')
       const nodeFills = emblemEl.querySelectorAll('.node-fill')
@@ -213,43 +213,43 @@ const IntroAnimation = ({ onComplete }) => {
       tl.to(nodePaths, {
         strokeDashoffset: 0,
         opacity: 1,
-        duration: 0.18,
+        duration: 0.25,
         stagger: 0.02,
         ease: 'power2.out',
-      }, 1.25)
+      }, 1.83)
 
       tl.to(nodeFills, {
         opacity: 1,
-        duration: 0.12,
+        duration: 0.15,
         stagger: 0.01,
         ease: 'power1.out',
-      }, 1.32)
+      }, 1.93)
     }
 
-    // STEP 8: EXESS WORDMARK FORMS PROGRESSIVELY L → R (E → x → E → S → S) (1.35s - 1.70s)
+    // STEP 7: EXESS WORDMARK FORMS PROGRESSIVELY L → R (E → x → E → S → S) (~0.65s) (2.00s - 2.65s)
     letters.forEach((letterEl, index) => {
       if (letterEl) {
         tl.to(letterEl, {
           opacity: 1,
-          duration: 0.10,
+          duration: 0.12,
           ease: 'power1.out',
-        }, 1.35 + index * 0.06)
+        }, 2.00 + index * 0.12)
       }
     })
 
-    // STEP 9: FINAL SETTLE INTO CRISP EXESS DARK BLUE IDENTITY (1.70s - 1.90s)
+    // STEP 8: FINAL LOGO SETTLE INTO CRISP EXESS DARK BLUE IDENTITY (~0.30s) (2.65s - 2.95s)
     tl.to(emblemWrapperRef.current, {
       filter: 'drop-shadow(0 0 6px rgba(50,197,232,0.12))',
-      duration: 0.20,
+      duration: 0.30,
       ease: 'power2.out',
-    }, 1.70)
+    }, 2.65)
 
-    // Brief hold before seamless preloader exit (1.90s - 2.25s)
-    tl.to({}, { duration: 0.35 }, 1.90)
+    // Brief hold before seamless preloader exit (2.95s - 3.30s)
+    tl.to({}, { duration: 0.35 }, 2.95)
 
     const safetyTimer = setTimeout(() => {
       finishAnimation()
-    }, 2600)
+    }, 3600)
 
     return () => {
       clearTimeout(safetyTimer)
