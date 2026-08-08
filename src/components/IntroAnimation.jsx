@@ -4,12 +4,15 @@ import { gsap } from 'gsap'
 /**
  * IntroAnimation — Circuit-Powered ExESS Identity Assembly
  *
- * 5-PHASE ANIMATION SEQUENCE:
- * PHASE 1: Circuit Wake-up — PCB traces draw, cyan electrical signals converge inward.
- * PHASE 2: Emblem Formation — Emblem SVG draws/assembles itself from circuit energy with cyan glow (NO WHITE BOARD).
- * PHASE 3: Wordmark Formation — Signal travels L→R revealing 'E'-'x'-'E'-'S'-'S' letters progressively.
- * PHASE 4: Circuit Connection — Final cyan energy pulse sweeps surrounding PCB network.
- * PHASE 5: Transition — Smooth 450ms fade-out into the main ExESS website.
+ * PRECISE ANIMATION CHOREOGRAPHY:
+ * PHASE 1: Circuit Wake-up — Surrounding PCB traces become visible outside logo bounding box.
+ * PHASE 2: Signal Travel — 4 Cyan energy signals travel from outer corners toward central collision node at (300, 140).
+ * PHASE 3: Energy Collision (LOGO HIDDEN) — Signals converge & collide at (300, 140). LOGO IS STILL 100% HIDDEN.
+ * PHASE 4: Collision Resolution — Incoming signals fade out; energy contracts down to emblem origin.
+ * PHASE 5: Emblem Assembly — ExESS emblem SVG draws itself from central energy (NO lines cross text).
+ * PHASE 6: Wordmark Assembly — Letters 'E'-'x'-'E'-'S'-'S' reveal progressively LEFT → RIGHT. Text is 100% clean.
+ * PHASE 7: Surrounding Circuit Settle — Peripheral PCB traces connect around outer logo bounds.
+ * PHASE 8: Transition — Smooth 450ms opacity fade into main website.
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -67,13 +70,14 @@ const EmblemSVG = ({ svgRef }) => (
 )
 
 const IntroAnimation = ({ onComplete }) => {
-  const containerRef   = useRef(null)
-  const pcbSvgRef      = useRef(null)
-  const pulseSvgRef    = useRef(null)
-  const emblemSvgRef   = useRef(null)
-  const lettersRef     = useRef([])
-  const exitPulseRef   = useRef(null)
-  const hasFinishedRef = useRef(false)
+  const containerRef     = useRef(null)
+  const pcbSvgRef        = useRef(null)
+  const pulseSvgRef      = useRef(null)
+  const collisionSparkRef= useRef(null)
+  const logoGroupRef     = useRef(null)
+  const emblemSvgRef     = useRef(null)
+  const lettersRef       = useRef([])
+  const hasFinishedRef   = useRef(false)
 
   const finishAnimation = () => {
     if (hasFinishedRef.current) return
@@ -93,7 +97,11 @@ const IntroAnimation = ({ onComplete }) => {
     const letters = lettersRef.current
     gsap.set(containerRef.current, { opacity: 1 })
 
-    // Setup initial state for Emblem paths
+    // Hide Logo Group Initially (BEFORE Collision)
+    gsap.set(logoGroupRef.current, { opacity: 0 })
+    gsap.set(collisionSparkRef.current, { opacity: 0, scale: 0 })
+
+    // Setup Emblem paths
     const emblemEl = emblemSvgRef.current
     if (emblemEl) {
       const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
@@ -110,11 +118,11 @@ const IntroAnimation = ({ onComplete }) => {
       }
     }
 
-    // Setup initial state for PCB Traces & Signal Pulses
+    // Setup Outer PCB Traces & Signal Pulses (PERIPHERAL ONLY - TERMINATE OUTSIDE LOGO)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
       traces.forEach(el => {
-        const len = (() => { try { return el.getTotalLength() } catch { return 500 } })()
+        const len = (() => { try { return el.getTotalLength() } catch { return 400 } })()
         gsap.set(el, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 })
       })
     }
@@ -122,38 +130,58 @@ const IntroAnimation = ({ onComplete }) => {
     if (pulseSvgRef.current) {
       const pulses = pulseSvgRef.current.querySelectorAll('.pcb-pulse')
       pulses.forEach(el => {
-        const len = (() => { try { return el.getTotalLength() } catch { return 500 } })()
+        const len = (() => { try { return el.getTotalLength() } catch { return 400 } })()
         gsap.set(el, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 })
       })
     }
 
-    // Setup Wordmark Letters Initial State
+    // Setup Wordmark Letters (Hidden initially)
     letters.forEach(letterEl => {
       if (letterEl) {
-        gsap.set(letterEl, { opacity: 0, y: 20, filter: 'blur(8px)' })
+        gsap.set(letterEl, { opacity: 0, y: 16, filter: 'blur(8px)' })
       }
     })
 
-    if (exitPulseRef.current) {
-      gsap.set(exitPulseRef.current, { opacity: 0, strokeDashoffset: 500 })
-    }
-
-    // ── MASTER CHOREOGRAPHED GSAP TIMELINE ──────────────────────
+    // ── MASTER CHOREOGRAPHED TIMELINE ────────────────────────────
     const tl = gsap.timeline({
       onComplete: finishAnimation,
     })
 
-    // PHASE 1: CIRCUIT WAKE-UP (0.0s - 0.7s)
+    // PHASE 1: CIRCUIT WAKE-UP (0.0s - 0.5s)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 0.65, stagger: 0.04, ease: 'power2.inOut' }, 0.05)
-    }
-    if (pulseSvgRef.current) {
-      const pulses = pulseSvgRef.current.querySelectorAll('.pcb-pulse')
-      tl.to(pulses, { strokeDashoffset: 0, opacity: 1, duration: 0.5, stagger: 0.06, ease: 'power1.inOut' }, 0.35)
+      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 0.5, stagger: 0.03, ease: 'power2.inOut' }, 0.05)
     }
 
-    // PHASE 2: EMBLEM FORMATION (0.65s - 1.4s) — Assembly from Circuit Energy (NO White Board)
+    // PHASE 2: INCOMING CONVERGING ENERGY SIGNALS (0.3s - 0.85s)
+    if (pulseSvgRef.current) {
+      const pulses = pulseSvgRef.current.querySelectorAll('.pcb-pulse')
+      tl.to(pulses, { strokeDashoffset: 0, opacity: 1, duration: 0.55, stagger: 0.04, ease: 'power1.inOut' }, 0.3)
+    }
+
+    // PHASE 3 & 4: ENERGY COLLISION AT CENTRAL NODE (0.8s - 1.1s) — LOGO IS STILL 100% HIDDEN!
+    tl.to(collisionSparkRef.current, {
+      opacity: 1,
+      scale: 1.6,
+      duration: 0.25,
+      ease: 'back.out(2)',
+    }, 0.8)
+
+    tl.to(collisionSparkRef.current, {
+      opacity: 0,
+      scale: 0.2,
+      duration: 0.25,
+      ease: 'power2.in',
+    }, 1.05)
+
+    // Clear incoming signal pulses BEFORE logo reveals
+    if (pulseSvgRef.current) {
+      tl.to(pulseSvgRef.current, { opacity: 0, duration: 0.2 }, 1.0)
+    }
+
+    // PHASE 5: EMBLEM ASSEMBLY FROM COLLISION ENERGY (1.1s - 1.65s) — Logo Group Revealed
+    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.1 }, 1.1)
+
     if (emblemEl) {
       const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
       const orbitPath   = emblemEl.querySelector('.emblem-orbit')
@@ -161,45 +189,35 @@ const IntroAnimation = ({ onComplete }) => {
       tl.to(emblemPaths, {
         strokeDashoffset: 0,
         opacity: 1,
-        duration: 0.65,
-        stagger: 0.02,
+        duration: 0.55,
+        stagger: 0.015,
         ease: 'power2.out',
-      }, 0.65)
+      }, 1.1)
 
       if (orbitPath) {
         tl.to(orbitPath, {
           strokeDashoffset: 0,
           opacity: 1,
-          duration: 0.45,
+          duration: 0.4,
           ease: 'power3.out',
-        }, 1.05)
+        }, 1.45)
       }
     }
 
-    // PHASE 3: WORDMARK FORMATION (1.3s - 1.95s) — Signal travels L→R progressively revealing E-x-E-S-S
+    // PHASE 6: WORDMARK REVEAL LEFT → RIGHT (1.6s - 2.15s) — 100% Clean Typography
     letters.forEach((letterEl, index) => {
       if (letterEl) {
         tl.to(letterEl, {
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          duration: 0.4,
+          duration: 0.35,
           ease: 'back.out(1.4)',
-        }, 1.3 + index * 0.1)
+        }, 1.6 + index * 0.09)
       }
     })
 
-    // PHASE 4: CIRCUIT CONNECTION & FINAL SIGNAL SWEEP (2.0s - 2.5s)
-    if (exitPulseRef.current) {
-      tl.to(exitPulseRef.current, {
-        strokeDashoffset: 0,
-        opacity: 1,
-        duration: 0.5,
-        ease: 'power2.inOut',
-      }, 1.95)
-    }
-
-    // Settling pause
+    // Pause before transition
     tl.to({}, { duration: 0.35 }, 2.45)
 
     const safetyTimer = setTimeout(() => {
@@ -221,7 +239,7 @@ const IntroAnimation = ({ onComplete }) => {
       onClick={finishAnimation}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden select-none cursor-pointer bg-white"
     >
-      {/* ── Outer PCB Circuit Lines SVG ── */}
+      {/* ── PERIPHERAL PCB TRACES SVG (TERMINATES OUTSIDE LOGO BOUNDING BOX) ── */}
       <svg
         ref={pcbSvgRef}
         aria-hidden="true"
@@ -231,28 +249,40 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path className="pcb-trace" d="M 20 200 H 180 V 220 H 220" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="180" cy="200" r="3.5" fill="#1E6B93" />
+        {/* Top-Left Trace terminating at (240, 140) */}
+        <path className="pcb-trace" d="M 40 40 H 200 V 140 H 240" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <circle className="pcb-trace" cx="240" cy="140" r="3.5" fill="#1E6B93" />
 
-        <path className="pcb-trace" d="M 20 400 H 180 V 380 H 220" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="180" cy="400" r="3.5" fill="#1E6B93" />
+        {/* Top-Right Trace terminating at (360, 140) */}
+        <path className="pcb-trace" d="M 560 40 H 400 V 140 H 360" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <circle className="pcb-trace" cx="360" cy="140" r="3.5" fill="#1E6B93" />
 
-        <path className="pcb-trace" d="M 580 200 H 420 V 220 H 380" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="420" cy="200" r="3.5" fill="#1E6B93" />
+        {/* Left Side Upper Trace terminating at (150, 240) */}
+        <path className="pcb-trace" d="M 20 240 H 150" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <circle className="pcb-trace" cx="150" cy="240" r="3.5" fill="#1E6B93" />
 
-        <path className="pcb-trace" d="M 580 400 H 420 V 380 H 380" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="420" cy="400" r="3.5" fill="#1E6B93" />
+        {/* Left Side Lower Trace terminating at (150, 360) */}
+        <path className="pcb-trace" d="M 20 360 H 150" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <circle className="pcb-trace" cx="150" cy="360" r="3.5" fill="#1E6B93" />
 
-        <path className="pcb-trace" d="M 220 20 V 170 H 240 V 210" stroke="#32C5E8" strokeWidth="2" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="220" cy="170" r="3.5" fill="#32C5E8" />
+        {/* Right Side Upper Trace terminating at (450, 240) */}
+        <path className="pcb-trace" d="M 580 240 H 450" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <circle className="pcb-trace" cx="450" cy="240" r="3.5" fill="#1E6B93" />
 
-        <path className="pcb-trace" d="M 380 20 V 170 H 360 V 210" stroke="#32C5E8" strokeWidth="2" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="380" cy="170" r="3.5" fill="#32C5E8" />
+        {/* Right Side Lower Trace terminating at (450, 360) */}
+        <path className="pcb-trace" d="M 580 360 H 450" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <circle className="pcb-trace" cx="450" cy="360" r="3.5" fill="#1E6B93" />
 
-        <path className="pcb-trace" d="M 300 420 V 580" stroke="#1E6B93" strokeWidth="2.2" strokeLinecap="square" />
+        {/* Bottom-Left Trace terminating at (240, 460) */}
+        <path className="pcb-trace" d="M 40 560 H 200 V 460 H 240" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <circle className="pcb-trace" cx="240" cy="460" r="3.5" fill="#1E6B93" />
+
+        {/* Bottom-Right Trace terminating at (360, 460) */}
+        <path className="pcb-trace" d="M 560 560 H 400 V 460 H 360" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <circle className="pcb-trace" cx="360" cy="460" r="3.5" fill="#1E6B93" />
       </svg>
 
-      {/* ── Traveling Cyan Electrical Signals SVG ── */}
+      {/* ── CONVERGING SIGNAL PULSES SVG (CONVERGES AT CENTRAL NODE (300, 140) BEFORE LOGO IS REVEALED) ── */}
       <svg
         ref={pulseSvgRef}
         aria-hidden="true"
@@ -262,23 +292,38 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path className="pcb-pulse" d="M 20 200 H 180 V 220 H 220" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
-        <path className="pcb-pulse" d="M 580 200 H 420 V 220 H 380" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
-        <path className="pcb-pulse" d="M 220 20 V 170 H 240 V 210" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
-        <path className="pcb-pulse" d="M 380 20 V 170 H 360 V 210" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
-
-        <path
-          ref={exitPulseRef}
-          d="M 300 420 V 580"
-          stroke="#32C5E8"
-          strokeWidth="3.5"
-          strokeLinecap="round"
-          strokeDasharray="500"
-        />
+        <path className="pcb-pulse" d="M 40 40 H 200 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
+        <path className="pcb-pulse" d="M 560 40 H 400 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
+        <path className="pcb-pulse" d="M 20 240 H 150 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
+        <path className="pcb-pulse" d="M 580 240 H 450 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
       </svg>
 
-      {/* ── Central ExESS Identity Container (NO WHITE RECTANGULAR BOARD) ── */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center p-4">
+      {/* ── PRECISE CENTRAL COLLISION SPARK NODE AT (300, 140) ABOVE EMBLEM ── */}
+      <svg
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{ width: SVG_SIZE, height: SVG_SIZE }}
+        viewBox="0 0 600 600"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g ref={collisionSparkRef} style={{ transformOrigin: '300px 140px' }}>
+          <circle cx="300" cy="140" r="14" fill="url(#sparkGlow)" />
+          <circle cx="300" cy="140" r="4" fill="#FFFFFF" />
+        </g>
+        <defs>
+          <radialGradient id="sparkGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#32C5E8" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#1E6B93" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+      </svg>
+
+      {/* ── CENTRAL ExESS IDENTITY CONTAINER (100% CLEAN & UNOBSTRUCTED) ── */}
+      <div
+        ref={logoGroupRef}
+        className="relative z-10 flex flex-col items-center justify-center text-center p-4"
+      >
         {/* Emblem Assembly */}
         <div
           className="filter drop-shadow-[0_0_16px_rgba(50,197,232,0.30)]"
@@ -287,7 +332,7 @@ const IntroAnimation = ({ onComplete }) => {
           <EmblemSVG svgRef={emblemSvgRef} />
         </div>
 
-        {/* Wordmark Assembly — Progressive L→R Letter Reveal */}
+        {/* Wordmark Assembly — Progressive L→R Letter Reveal (100% CLEAN TEXT) */}
         <div className="mt-4 flex items-center justify-center gap-0.5">
           <h1
             className="font-brand font-bold text-light-sweep-dark tracking-tight flex"
