@@ -2,16 +2,16 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Straight Diagonal Energy Projectile & Direct Impact Logo Activation
+ * IntroAnimation — Invisible Trajectory Energy Particle Impact Logo Activation
  *
- * SEQUENCE CHOREOGRAPHY:
+ * NO VISIBLE SVG LINE / NO BEAM / NO TRAIL:
  * 1. PCB System Initializes (0.0s - 3.2s): PCB traces & socket frame draw & settle first.
- * 2. Projectile Appears Far Top-Left (3.2s - 3.8s): Concentrated cyan projectile appears at (60, 60).
- * 3. Straight Line High-Speed Travel (3.8s - 5.0s): Projectile travels in 1 PERFECT STRAIGHT DIAGONAL LINE to logo (300, 220).
- * 4. Direct Impact & Emblem Power-On (5.0s - 5.8s): Impact at (300, 220) triggers brief energy spark; emblem lines draw.
- * 5. Connected Nodes Power-On (5.6s - 6.2s): Energy flows into terminal nodes & pads below emblem.
- * 6. Wordmark Energization (6.2s - 7.4s): ExESS letters energize progressively LEFT → RIGHT.
- * 7. Energy Trail Fade & Clean Settle (7.4s - 8.2s): Impact glow & trail fade away; stable logo remains for preloader exit.
+ * 2. Particle Spawns Top-Left (3.2s - 3.7s): Small cyan/white energy particle spawns at (60, 60).
+ * 3. Invisible Straight Diagonal Flight (3.7s - 4.7s): Particle flies to (300, 220) with ZERO visible line path.
+ * 4. Direct Impact & Particle Vanishes (4.7s): Impact at (300, 220) triggers brief flash; particle vanishes.
+ * 5. Emblem & Nodes Power On (4.7s - 5.8s): Emblem globe lines draw; connected electronic nodes activate.
+ * 6. Wordmark Energization (5.8s - 7.0s): ExESS letters energize progressively LEFT → RIGHT.
+ * 7. Clean Settle & Transition (7.0s - 7.8s): Crisp ExESS identity remains stable for preloader exit.
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -71,7 +71,6 @@ const EmblemSVG = ({ svgRef }) => (
 const IntroAnimation = ({ onComplete }) => {
   const containerRef       = useRef(null)
   const pcbSvgRef          = useRef(null)
-  const straightTrailRef   = useRef(null)
   const pulseSparkRef      = useRef(null)
   const socketPadsRef      = useRef(null)
   const logoGroupRef       = useRef(null)
@@ -102,12 +101,6 @@ const IntroAnimation = ({ onComplete }) => {
     gsap.set(logoGroupRef.current, { opacity: 0 })
     gsap.set(emblemWrapperRef.current, { filter: 'drop-shadow(0 0 0px transparent)' })
     gsap.set(pulseSparkRef.current, { opacity: 0, scale: 0, x: 0, y: 0 })
-
-    // Setup Straight Diagonal Trail Line (From 60,60 to 300,220)
-    if (straightTrailRef.current) {
-      const len = (() => { try { return straightTrailRef.current.getTotalLength() } catch { return 300 } })()
-      gsap.set(straightTrailRef.current, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 })
-    }
 
     // Setup Emblem paths
     const emblemEl = emblemSvgRef.current
@@ -151,7 +144,7 @@ const IntroAnimation = ({ onComplete }) => {
       pads.forEach(p => gsap.set(p, { scale: 1, fill: '#1E6B93', opacity: 0.4 }))
     }
 
-    // ── MASTER CINEMATIC TIMELINE (8.2s TOTAL DURATION) ─────────
+    // ── MASTER CINEMATIC TIMELINE (7.8s TOTAL DURATION) ─────────
     const tl = gsap.timeline({
       onComplete: finishAnimation,
     })
@@ -162,54 +155,46 @@ const IntroAnimation = ({ onComplete }) => {
       tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 2.8, stagger: 0.1, ease: 'power2.inOut' }, 0.1)
     }
 
-    // STEP 2: CONCENTRATED PROJECTILE APPEARS IN FAR TOP-LEFT (60, 60) (3.2s - 3.8s)
+    // STEP 2: SMALL BRIGHT CYAN/WHITE PARTICLE SPAWNS IN FAR TOP-LEFT (60, 60) (3.2s - 3.7s)
     tl.to(pulseSparkRef.current, {
       opacity: 1,
-      scale: 1.3,
-      duration: 0.6,
+      scale: 1.2,
+      duration: 0.5,
       ease: 'power1.out',
     }, 3.2)
 
-    // STEP 3: PERFECT STRAIGHT DIAGONAL LINE TRAVEL TO LOGO CENTER (300, 220) (3.8s - 5.0s)
-    if (straightTrailRef.current) {
-      tl.to(straightTrailRef.current, {
-        strokeDashoffset: 0,
-        opacity: 1,
-        duration: 1.2,
-        ease: 'power2.in',
-      }, 3.8)
-    }
-
-    // Projectile spark moves in a PERFECT STRAIGHT DIAGONAL VECTOR from (60, 60) to (300, 220)
+    // STEP 3: PARTICLE FLIES IN A STRAIGHT DIAGONAL TRAJECTORY (ZERO VISIBLE LINE) (3.7s - 4.7s)
     tl.to(pulseSparkRef.current, {
       x: 240,
       y: 160,
-      duration: 1.2,
+      duration: 1.0,
       ease: 'power2.in',
-    }, 3.8)
+    }, 3.7)
 
-    // STEP 4: DIRECT IMPACT AT (300, 220) & EMBLEM POWER ON (5.0s - 5.8s)
-    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.15 }, 4.95)
+    // STEP 4: DIRECT IMPACT AT LOGO CENTER (300, 220) & PARTICLE VANISHES (4.7s)
+    tl.to(pulseSparkRef.current, { opacity: 0, scale: 0.1, duration: 0.1 }, 4.7)
+    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.15 }, 4.7)
 
-    // Sharp concentrated impact bloom
+    // Sharp concentrated impact flash bloom
     tl.to(emblemWrapperRef.current, {
-      filter: 'drop-shadow(0 0 24px rgba(50,197,232,0.75))',
-      duration: 0.3,
+      filter: 'drop-shadow(0 0 24px rgba(50,197,232,0.80))',
+      duration: 0.25,
       ease: 'power1.out',
-    }, 5.0)
+    }, 4.7)
 
+    // STEP 5: EMBLEM GLOBE LINES & ORBIT ACTIVATION (4.7s - 5.5s)
     if (emblemEl) {
       const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
       tl.to(emblemPaths, {
         strokeDashoffset: 0,
         opacity: 1,
-        duration: 0.8,
+        duration: 0.75,
         stagger: 0.04,
         ease: 'power2.out',
-      }, 5.0)
+      }, 4.75)
     }
 
-    // STEP 5: CONNECTED ELECTRONIC NODES POWER ON (5.6s - 6.2s)
+    // STEP 6: CONNECTED ELECTRONIC NODES POWER ON (5.4s - 6.0s)
     if (emblemEl) {
       const nodePaths = emblemEl.querySelectorAll('.node-path')
       const nodeFills = emblemEl.querySelectorAll('.node-fill')
@@ -220,17 +205,17 @@ const IntroAnimation = ({ onComplete }) => {
         duration: 0.5,
         stagger: 0.03,
         ease: 'power2.out',
-      }, 5.5)
+      }, 5.3)
 
       tl.to(nodeFills, {
         opacity: 1,
         duration: 0.3,
         stagger: 0.02,
         ease: 'power1.out',
-      }, 5.8)
+      }, 5.6)
     }
 
-    // STEP 6: WORDMARK ENERGIZATION PROGRESSIVELY LEFT → RIGHT (6.2s - 7.4s)
+    // STEP 7: WORDMARK ENERGIZATION PROGRESSIVELY LEFT → RIGHT (5.8s - 7.0s)
     letters.forEach((letterEl, index) => {
       if (letterEl) {
         tl.to(letterEl, {
@@ -239,28 +224,23 @@ const IntroAnimation = ({ onComplete }) => {
           filter: 'blur(0px)',
           duration: 0.45,
           ease: 'back.out(1.4)',
-        }, 6.2 + index * 0.18)
+        }, 5.8 + index * 0.18)
       }
     })
 
-    // STEP 7: TRAIL FADES & CLEAN FINAL LOGO SETTLES (7.2s - 8.2s)
-    if (straightTrailRef.current) {
-      tl.to(straightTrailRef.current, { opacity: 0, duration: 0.7 }, 7.0)
-    }
-    tl.to(pulseSparkRef.current, { opacity: 0, duration: 0.5 }, 7.0)
-
+    // STEP 8: IMPACT GLOW SETTLES & CLEAN FINAL LOGO REMAINS (7.0s - 7.8s)
     tl.to(emblemWrapperRef.current, {
       filter: 'drop-shadow(0 0 8px rgba(50,197,232,0.15))',
       duration: 0.8,
       ease: 'power2.out',
-    }, 7.2)
+    }, 6.8)
 
     // Pause to admire complete stable ExESS identity
-    tl.to({}, { duration: 0.4 }, 7.8)
+    tl.to({}, { duration: 0.4 }, 7.4)
 
     const safetyTimer = setTimeout(() => {
       finishAnimation()
-    }, 8600)
+    }, 8200)
 
     return () => {
       clearTimeout(safetyTimer)
@@ -326,7 +306,7 @@ const IntroAnimation = ({ onComplete }) => {
         <circle className="socket-pad" cx="360" cy="460" r="3.5" />
       </svg>
 
-      {/* ── PERFECT STRAIGHT DIAGONAL LINE PROJECTILE TRAIL (FROM 60,60 DIRECTLY TO LOGO 300,220) ── */}
+      {/* ── FLYING ENERGY PARTICLE (ZERO VISIBLE SVG LINE / ZERO PERSISTENT BEAM) ── */}
       <svg
         aria-hidden="true"
         className="absolute pointer-events-none"
@@ -335,20 +315,10 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Perfect Straight Line Trajectory */}
-        <line
-          ref={straightTrailRef}
-          x1="60" y1="60"
-          x2="300" y2="220"
-          stroke="#32C5E8"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-
-        {/* High-Speed Projectile Spark Node */}
+        {/* High-Speed Flying Energy Particle Spark Node */}
         <g ref={pulseSparkRef} style={{ transformOrigin: '60px 60px' }}>
-          <circle cx="60" cy="60" r="10" fill="url(#sparkGlow)" />
-          <circle cx="60" cy="60" r="3" fill="#FFFFFF" />
+          <circle cx="60" cy="60" r="8" fill="url(#sparkGlow)" />
+          <circle cx="60" cy="60" r="2.8" fill="#FFFFFF" />
         </g>
 
         <defs>
