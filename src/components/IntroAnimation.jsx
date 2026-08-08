@@ -2,15 +2,16 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Cinematic PCB Energy Activation (6–8s Sequence)
+ * IntroAnimation — Energy Light Sweeping From PCB Traces To Form Logo Circle
  *
- * CINEMATIC 6-8 SECOND PACING:
- * 1. Circuit Wake-up (0.0s - 1.5s): PCB motherboard socket frame and traces draw.
- * 2. Energy Signal Travel (1.2s - 3.2s): Cyan electrical signals travel along PCB paths toward logo.
- * 3. Logo Power On (3.0s - 4.8s): Signals reach logo; emblem draws itself & receives subtle activation glow (NO CIRCLE).
- * 4. Wordmark Reveal (4.5s - 6.2s): Letters 'E'-'x'-'E'-'S'-'S' reveal progressively LEFT → RIGHT.
- * 5. Energy Absorption (6.0s - 7.0s): Signal trails fade; logo settles into crisp ExESS blue identity.
- * 6. Preloader Transition (7.0s - 7.5s): Smooth opacity fade-out into the main ExESS website.
+ * ANIMATION CHOREOGRAPHY:
+ * 1. Circuit Wake-up (0.0s - 1.2s): PCB motherboard traces draw inward from outer edges.
+ * 2. Energy Light Travel (1.2s - 2.4s): Cyan energy lights travel along PCB paths from far away toward logo.
+ * 3. Energy Light Circle Formation (2.4s - 3.8s): Energy lights sweep 360° around logo to DRAW/FORM the circle!
+ * 4. Logo Power On (3.8s - 5.0s): Energy circle glows cyan and powers emblem line assembly inside.
+ * 5. Wordmark Reveal (4.8s - 6.2s): Letters 'E'-'x'-'E'-'S'-'S' reveal progressively LEFT → RIGHT.
+ * 6. Energy Absorption (6.0s - 7.0s): Energy circle smoothly absorbs/fades away into crisp ExESS identity.
+ * 7. Preloader Transition (7.0s - 7.5s): Smooth opacity fade-out into main website.
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -63,6 +64,7 @@ const IntroAnimation = ({ onComplete }) => {
   const containerRef     = useRef(null)
   const pcbSvgRef        = useRef(null)
   const pulseSvgRef      = useRef(null)
+  const drawnCircleRef   = useRef(null)
   const socketPadsRef    = useRef(null)
   const logoGroupRef     = useRef(null)
   const emblemWrapperRef = useRef(null)
@@ -92,11 +94,17 @@ const IntroAnimation = ({ onComplete }) => {
     gsap.set(logoGroupRef.current, { opacity: 0 })
     gsap.set(emblemWrapperRef.current, { filter: 'drop-shadow(0 0 0px transparent)' })
 
+    // Setup Energy Circle for drawing sequence
+    const circleEl = drawnCircleRef.current
+    if (circleEl) {
+      const len = (() => { try { return circleEl.getTotalLength() } catch { return 880 } })()
+      gsap.set(circleEl, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 })
+    }
+
     // Setup Emblem paths
     const emblemEl = emblemSvgRef.current
     if (emblemEl) {
       const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
-
       emblemPaths.forEach(el => {
         const len = (() => { try { return el.getTotalLength() } catch { return 200 } })()
         gsap.set(el, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 })
@@ -133,50 +141,59 @@ const IntroAnimation = ({ onComplete }) => {
       pads.forEach(p => gsap.set(p, { scale: 1, fill: '#1E6B93' }))
     }
 
-    // ── MASTER CINEMATIC TIMELINE (7.2s total duration) ─────────
+    // ── MASTER CINEMATIC TIMELINE ──────────────────────────────
     const tl = gsap.timeline({
       onComplete: finishAnimation,
     })
 
-    // STEP 1: CIRCUIT WAKE-UP & SOCKET FRAME DRAWING (0.0s - 1.5s)
+    // STEP 1: CIRCUIT WAKE-UP (0.0s - 1.2s)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 1.4, stagger: 0.08, ease: 'power2.inOut' }, 0.1)
+      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 1.2, stagger: 0.06, ease: 'power2.inOut' }, 0.1)
     }
 
-    // STEP 2: ENERGY SIGNAL TRAVEL ALONG PCB PATHS TOWARD LOGO (1.2s - 3.2s)
+    // STEP 2: ENERGY LIGHT TRAVELS FROM FAR AWAY ALONG PCB TRACES (1.2s - 2.4s)
     if (pulseSvgRef.current) {
       const pulses = pulseSvgRef.current.querySelectorAll('.pcb-pulse')
-      tl.to(pulses, { strokeDashoffset: 0, opacity: 1, duration: 1.8, stagger: 0.1, ease: 'power1.inOut' }, 1.2)
+      tl.to(pulses, { strokeDashoffset: 0, opacity: 1, duration: 1.3, stagger: 0.08, ease: 'power1.inOut' }, 1.2)
     }
 
-    // STEP 3: LOGO POWER ON & EMBLEM REVEAL WITH ACTIVATION GLOW (3.0s - 4.8s) (NO CIRCLE)
-    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.3 }, 3.0)
-
-    if (emblemEl) {
-      const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
-
-      tl.to(emblemPaths, {
+    // STEP 3: ENERGY LIGHT REACHES LOGO & DRAWS/FORMS THE CIRCLE AROUND LOGO (2.4s - 3.8s)
+    if (circleEl) {
+      tl.to(circleEl, {
         strokeDashoffset: 0,
         opacity: 1,
         duration: 1.4,
-        stagger: 0.04,
-        ease: 'power2.out',
-      }, 3.0)
+        ease: 'power2.inOut',
+      }, 2.3)
     }
 
-    // Subtle Cyan Activation Glow when energy powers emblem
+    // STEP 4: FORMED ENERGY CIRCLE POWERS EMBLEM & GLOWS CYAN (3.8s - 5.0s)
+    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.3 }, 3.6)
+
+    if (emblemEl) {
+      const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
+      tl.to(emblemPaths, {
+        strokeDashoffset: 0,
+        opacity: 1,
+        duration: 1.2,
+        stagger: 0.04,
+        ease: 'power2.out',
+      }, 3.6)
+    }
+
+    // Subtle Cyan Activation Glow when circle powers emblem
     tl.to(emblemWrapperRef.current, {
       filter: 'drop-shadow(0 0 20px rgba(50,197,232,0.55))',
       duration: 0.6,
       ease: 'power1.out',
-    }, 3.8)
+    }, 4.0)
 
     tl.to(emblemWrapperRef.current, {
       filter: 'drop-shadow(0 0 10px rgba(50,197,232,0.20))',
       duration: 0.9,
       ease: 'power2.out',
-    }, 4.4)
+    }, 4.6)
 
     // Synchronized Terminal Pads Glow
     if (socketPadsRef.current) {
@@ -187,7 +204,7 @@ const IntroAnimation = ({ onComplete }) => {
         duration: 0.4,
         stagger: 0.05,
         ease: 'back.out(2)',
-      }, 3.8)
+      }, 4.0)
 
       tl.to(pads, {
         fill: '#1E6B93',
@@ -195,28 +212,36 @@ const IntroAnimation = ({ onComplete }) => {
         duration: 0.7,
         stagger: 0.04,
         ease: 'power2.out',
-      }, 4.3)
+      }, 4.5)
     }
 
-    // STEP 4: WORDMARK REVEAL PROGRESSIVELY LEFT → RIGHT (4.5s - 6.2s)
+    // STEP 5: WORDMARK REVEAL PROGRESSIVELY LEFT → RIGHT (4.8s - 6.4s)
     letters.forEach((letterEl, index) => {
       if (letterEl) {
         tl.to(letterEl, {
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          duration: 0.5,
+          duration: 0.45,
           ease: 'back.out(1.4)',
-        }, 4.5 + index * 0.22)
+        }, 4.8 + index * 0.2)
       }
     })
 
-    // STEP 5: SIGNAL TRAILS FADE AWAY & LOGO SETTLES (6.0s - 7.0s)
+    // STEP 6: ENERGY CIRCLE FADES / ABSORBS INTO LOGO (6.0s - 7.0s)
+    if (circleEl) {
+      tl.to(circleEl, {
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power2.out',
+      }, 6.0)
+    }
+
     if (pulseSvgRef.current) {
       tl.to(pulseSvgRef.current, { opacity: 0, duration: 0.9 }, 6.0)
     }
 
-    // Pause to admire complete ExESS identity
+    // Pause to admire clean ExESS identity
     tl.to({}, { duration: 0.5 }, 6.8)
 
     const safetyTimer = setTimeout(() => {
@@ -287,7 +312,7 @@ const IntroAnimation = ({ onComplete }) => {
         <circle className="socket-pad" cx="360" cy="460" r="3.5" />
       </svg>
 
-      {/* ── CONVERGING SIGNAL PULSES ALONG PCB PATHS DIRECTLY TO EMBLEM & SOCKET PADS ── */}
+      {/* ── CONVERGING SIGNAL PULSES ALONG PCB PATHS FROM FAR AWAY ── */}
       <svg
         ref={pulseSvgRef}
         aria-hidden="true"
@@ -303,7 +328,28 @@ const IntroAnimation = ({ onComplete }) => {
         <path className="pcb-pulse" d="M 580 240 H 460" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
       </svg>
 
-      {/* ── CENTRAL ExESS IDENTITY CORE (NO CIRCLE / NO ORBIT) ── */}
+      {/* ── ENERGY LIGHT DRAWN CIRCLE (FORMED BY ENERGY LIGHT COMING FROM FAR AWAY) ── */}
+      <svg
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{ width: SVG_SIZE, height: SVG_SIZE }}
+        viewBox="0 0 600 600"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          ref={drawnCircleRef}
+          cx="300"
+          cy="300"
+          r="140"
+          stroke="#32C5E8"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          fill="none"
+        />
+      </svg>
+
+      {/* ── CENTRAL ExESS IDENTITY CORE ── */}
       <div
         ref={logoGroupRef}
         className="relative z-10 flex flex-col items-center justify-center text-center p-4"
