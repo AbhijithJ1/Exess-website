@@ -2,17 +2,16 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Cinematic PCB-First Energy Activation (10-Second Sequence)
+ * IntroAnimation — Straight Diagonal Energy Projectile & Direct Impact Logo Activation
  *
- * MASTER CHOREOGRAPHY:
- * 1. PCB Network Forms First (0.0s - 4.0s): PCB circuit lines & socket frame draw smoothly. (NO energy signal yet!)
- * 2. PCB Network Holds (4.0s - 4.7s): Completed PCB circuit architecture settles and holds still.
- * 3. Energy Signal Appears in Top-Left (4.7s - 5.5s): Soft cyan energy pulse appears at distant (40, 40).
- * 4. Energy Signal Travels (5.5s - 7.5s): Signal travels deliberately along top-left PCB path toward logo.
- * 5. Logo Power On & Emblem Reveal (7.5s - 8.3s): Signal reaches logo top; emblem lines illuminate with soft glow.
- * 6. Electronic Nodes Power On (8.2s - 8.7s): Signal flows into connected terminal nodes & pads below emblem.
- * 7. Wordmark Energization (8.7s - 9.6s): Signal flows downward; letters 'E'-'x'-'E'-'S'-'S' energize L → R.
- * 8. Energy Settle & Transition (9.6s - 10.7s): Signal trail fades; clean ExESS identity remains stable before preloader transition.
+ * SEQUENCE CHOREOGRAPHY:
+ * 1. PCB System Initializes (0.0s - 3.2s): PCB traces & socket frame draw & settle first.
+ * 2. Projectile Appears Far Top-Left (3.2s - 3.8s): Concentrated cyan projectile appears at (60, 60).
+ * 3. Straight Line High-Speed Travel (3.8s - 5.0s): Projectile travels in 1 PERFECT STRAIGHT DIAGONAL LINE to logo (300, 220).
+ * 4. Direct Impact & Emblem Power-On (5.0s - 5.8s): Impact at (300, 220) triggers brief energy spark; emblem lines draw.
+ * 5. Connected Nodes Power-On (5.6s - 6.2s): Energy flows into terminal nodes & pads below emblem.
+ * 6. Wordmark Energization (6.2s - 7.4s): ExESS letters energize progressively LEFT → RIGHT.
+ * 7. Energy Trail Fade & Clean Settle (7.4s - 8.2s): Impact glow & trail fade away; stable logo remains for preloader exit.
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -72,7 +71,7 @@ const EmblemSVG = ({ svgRef }) => (
 const IntroAnimation = ({ onComplete }) => {
   const containerRef       = useRef(null)
   const pcbSvgRef          = useRef(null)
-  const incomingPulseRef   = useRef(null)
+  const straightTrailRef   = useRef(null)
   const pulseSparkRef      = useRef(null)
   const socketPadsRef      = useRef(null)
   const logoGroupRef       = useRef(null)
@@ -102,12 +101,12 @@ const IntroAnimation = ({ onComplete }) => {
     // Hide Logo Group Initially
     gsap.set(logoGroupRef.current, { opacity: 0 })
     gsap.set(emblemWrapperRef.current, { filter: 'drop-shadow(0 0 0px transparent)' })
-    gsap.set(pulseSparkRef.current, { opacity: 0, scale: 0 })
+    gsap.set(pulseSparkRef.current, { opacity: 0, scale: 0, x: 0, y: 0 })
 
-    // Setup Incoming Top-Left Energy Trail (Hidden until PCB forms)
-    if (incomingPulseRef.current) {
-      const len = (() => { try { return incomingPulseRef.current.getTotalLength() } catch { return 500 } })()
-      gsap.set(incomingPulseRef.current, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 })
+    // Setup Straight Diagonal Trail Line (From 60,60 to 300,220)
+    if (straightTrailRef.current) {
+      const len = (() => { try { return straightTrailRef.current.getTotalLength() } catch { return 300 } })()
+      gsap.set(straightTrailRef.current, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 })
     }
 
     // Setup Emblem paths
@@ -130,7 +129,7 @@ const IntroAnimation = ({ onComplete }) => {
       nodeFills.forEach(el => gsap.set(el, { opacity: 0 }))
     }
 
-    // Setup Outer PCB Motherboard Traces (Ready for Step 1 progressive draw)
+    // Setup Outer PCB Motherboard Traces (Initially hidden)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
       traces.forEach(el => {
@@ -152,48 +151,52 @@ const IntroAnimation = ({ onComplete }) => {
       pads.forEach(p => gsap.set(p, { scale: 1, fill: '#1E6B93', opacity: 0.4 }))
     }
 
-    // ── MASTER CINEMATIC TIMELINE (10.0s TOTAL DURATION) ────────
+    // ── MASTER CINEMATIC TIMELINE (8.2s TOTAL DURATION) ─────────
     const tl = gsap.timeline({
       onComplete: finishAnimation,
     })
 
-    // STEP 1: PCB NETWORK FORMS FIRST (0.0s - 4.0s) — NO ENERGY SIGNAL YET!
+    // STEP 1: PCB SYSTEM INITIALIZES & SETTLES (0.0s - 3.2s)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 3.5, stagger: 0.14, ease: 'power2.inOut' }, 0.1)
+      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 2.8, stagger: 0.1, ease: 'power2.inOut' }, 0.1)
     }
 
-    // STEP 2: COMPLETED PCB NETWORK HOLDS STILL (4.0s - 4.7s)
-    tl.to({}, { duration: 0.7 }, 4.0)
-
-    // STEP 3: SMALL LIGHT-BLUE ENERGY SIGNAL APPEARS IN FAR TOP-LEFT (40, 40) (4.7s - 5.5s)
+    // STEP 2: CONCENTRATED PROJECTILE APPEARS IN FAR TOP-LEFT (60, 60) (3.2s - 3.8s)
     tl.to(pulseSparkRef.current, {
       opacity: 1,
-      scale: 1.2,
-      duration: 0.8,
+      scale: 1.3,
+      duration: 0.6,
       ease: 'power1.out',
-    }, 4.7)
+    }, 3.2)
 
-    // STEP 4: ENERGY SIGNAL TRAVELS SLOWLY THROUGH PCB NETWORK TO LOGO (5.5s - 7.5s)
-    if (incomingPulseRef.current) {
-      tl.to(incomingPulseRef.current, {
+    // STEP 3: PERFECT STRAIGHT DIAGONAL LINE TRAVEL TO LOGO CENTER (300, 220) (3.8s - 5.0s)
+    if (straightTrailRef.current) {
+      tl.to(straightTrailRef.current, {
         strokeDashoffset: 0,
         opacity: 1,
-        duration: 2.0,
-        ease: 'power2.inOut',
-      }, 5.5)
+        duration: 1.2,
+        ease: 'power2.in',
+      }, 3.8)
     }
 
-    // Move pulse spark along top-left path to emblem top (300, 160)
+    // Projectile spark moves in a PERFECT STRAIGHT DIAGONAL VECTOR from (60, 60) to (300, 220)
     tl.to(pulseSparkRef.current, {
-      x: 220,
-      y: 100,
-      duration: 2.0,
-      ease: 'power2.inOut',
-    }, 5.5)
+      x: 240,
+      y: 160,
+      duration: 1.2,
+      ease: 'power2.in',
+    }, 3.8)
 
-    // STEP 5: ENERGY REACHES EMBLEM & POWERS GLOBE LINES (7.5s - 8.3s)
-    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.2 }, 7.4)
+    // STEP 4: DIRECT IMPACT AT (300, 220) & EMBLEM POWER ON (5.0s - 5.8s)
+    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.15 }, 4.95)
+
+    // Sharp concentrated impact bloom
+    tl.to(emblemWrapperRef.current, {
+      filter: 'drop-shadow(0 0 24px rgba(50,197,232,0.75))',
+      duration: 0.3,
+      ease: 'power1.out',
+    }, 5.0)
 
     if (emblemEl) {
       const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
@@ -203,17 +206,10 @@ const IntroAnimation = ({ onComplete }) => {
         duration: 0.8,
         stagger: 0.04,
         ease: 'power2.out',
-      }, 7.5)
+      }, 5.0)
     }
 
-    // Soft Cyan Activation Glow when emblem powers on
-    tl.to(emblemWrapperRef.current, {
-      filter: 'drop-shadow(0 0 16px rgba(50,197,232,0.50))',
-      duration: 0.5,
-      ease: 'power1.out',
-    }, 7.9)
-
-    // STEP 6: ENERGY FLOWS DOWN INTO CONNECTED ELECTRONIC NODES (8.2s - 8.7s)
+    // STEP 5: CONNECTED ELECTRONIC NODES POWER ON (5.6s - 6.2s)
     if (emblemEl) {
       const nodePaths = emblemEl.querySelectorAll('.node-path')
       const nodeFills = emblemEl.querySelectorAll('.node-fill')
@@ -224,17 +220,17 @@ const IntroAnimation = ({ onComplete }) => {
         duration: 0.5,
         stagger: 0.03,
         ease: 'power2.out',
-      }, 8.2)
+      }, 5.5)
 
       tl.to(nodeFills, {
         opacity: 1,
         duration: 0.3,
         stagger: 0.02,
         ease: 'power1.out',
-      }, 8.4)
+      }, 5.8)
     }
 
-    // STEP 7: ENERGY FLOWS DOWNWARD INTO ExESS WORDMARK (8.7s - 9.6s) — L → R Letter Reveal
+    // STEP 6: WORDMARK ENERGIZATION PROGRESSIVELY LEFT → RIGHT (6.2s - 7.4s)
     letters.forEach((letterEl, index) => {
       if (letterEl) {
         tl.to(letterEl, {
@@ -243,28 +239,28 @@ const IntroAnimation = ({ onComplete }) => {
           filter: 'blur(0px)',
           duration: 0.45,
           ease: 'back.out(1.4)',
-        }, 8.7 + index * 0.18)
+        }, 6.2 + index * 0.18)
       }
     })
 
-    // STEP 8: ENERGY SETTLES / TRAIL FADES & COMPLETED IDENTITY REMAINS (9.6s - 10.4s)
-    if (incomingPulseRef.current) {
-      tl.to(incomingPulseRef.current, { opacity: 0, duration: 0.8 }, 9.6)
+    // STEP 7: TRAIL FADES & CLEAN FINAL LOGO SETTLES (7.2s - 8.2s)
+    if (straightTrailRef.current) {
+      tl.to(straightTrailRef.current, { opacity: 0, duration: 0.7 }, 7.0)
     }
-    tl.to(pulseSparkRef.current, { opacity: 0, duration: 0.6 }, 9.6)
+    tl.to(pulseSparkRef.current, { opacity: 0, duration: 0.5 }, 7.0)
 
     tl.to(emblemWrapperRef.current, {
       filter: 'drop-shadow(0 0 8px rgba(50,197,232,0.15))',
       duration: 0.8,
       ease: 'power2.out',
-    }, 9.6)
+    }, 7.2)
 
     // Pause to admire complete stable ExESS identity
-    tl.to({}, { duration: 0.5 }, 10.2)
+    tl.to({}, { duration: 0.4 }, 7.8)
 
     const safetyTimer = setTimeout(() => {
       finishAnimation()
-    }, 10800)
+    }, 8600)
 
     return () => {
       clearTimeout(safetyTimer)
@@ -281,7 +277,7 @@ const IntroAnimation = ({ onComplete }) => {
       onClick={finishAnimation}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden select-none cursor-pointer bg-white"
     >
-      {/* ── PCB MOTHERBOARD TRACES SVG (FORMS FIRST IN STEP 1: 0.0s - 4.0s) ── */}
+      {/* ── PCB MOTHERBOARD TRACES SVG (DRAWS & SETTLES FIRST) ── */}
       <svg
         ref={pcbSvgRef}
         aria-hidden="true"
@@ -330,7 +326,7 @@ const IntroAnimation = ({ onComplete }) => {
         <circle className="socket-pad" cx="360" cy="460" r="3.5" />
       </svg>
 
-      {/* ── DISTANT INCOMING ENERGY PULSE TRAIL FROM TOP-LEFT (40, 40) (APPEARS AT 4.7s) ── */}
+      {/* ── PERFECT STRAIGHT DIAGONAL LINE PROJECTILE TRAIL (FROM 60,60 DIRECTLY TO LOGO 300,220) ── */}
       <svg
         aria-hidden="true"
         className="absolute pointer-events-none"
@@ -339,19 +335,20 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Top-Left Distant Energy Path */}
-        <path
-          ref={incomingPulseRef}
-          d="M 40 40 H 240 V 140 H 260 V 200"
+        {/* Perfect Straight Line Trajectory */}
+        <line
+          ref={straightTrailRef}
+          x1="60" y1="60"
+          x2="300" y2="220"
           stroke="#32C5E8"
-          strokeWidth="2.8"
+          strokeWidth="2.5"
           strokeLinecap="round"
         />
 
-        {/* Small Luminous Leading Pulse Spark */}
-        <g ref={pulseSparkRef} style={{ transformOrigin: '40px 40px' }}>
-          <circle cx="40" cy="40" r="10" fill="url(#sparkGlow)" />
-          <circle cx="40" cy="40" r="3.5" fill="#FFFFFF" />
+        {/* High-Speed Projectile Spark Node */}
+        <g ref={pulseSparkRef} style={{ transformOrigin: '60px 60px' }}>
+          <circle cx="60" cy="60" r="10" fill="url(#sparkGlow)" />
+          <circle cx="60" cy="60" r="3" fill="#FFFFFF" />
         </g>
 
         <defs>
