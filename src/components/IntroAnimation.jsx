@@ -2,16 +2,16 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Energy Light Sweeping From PCB Traces To Form Logo Circle
+ * IntroAnimation — Refined Light-Blue PCB Energy Activation & Stationary Circle Fade
  *
- * ANIMATION CHOREOGRAPHY:
- * 1. Circuit Wake-up (0.0s - 1.2s): PCB motherboard traces draw inward from outer edges.
- * 2. Energy Light Travel (1.2s - 2.4s): Cyan energy lights travel along PCB paths from far away toward logo.
- * 3. Energy Light Circle Formation (2.4s - 3.8s): Energy lights sweep 360° around logo to DRAW/FORM the circle!
- * 4. Logo Power On (3.8s - 5.0s): Energy circle glows cyan and powers emblem line assembly inside.
+ * CINEMATIC 6-8 SECOND SEQUENCE:
+ * 1. Distant Energy & Circuit Wake-up (0.0s - 1.4s): Motherboard traces draw inward from outer edges.
+ * 2. Energy Light Travel (1.2s - 2.6s): Soft cyan/light-blue energy travels along PCB paths from far away toward logo.
+ * 3. Circular Energy Element Formation (2.4s - 3.8s): Energy sweeps around emblem to form the circular energy element.
+ * 4. Logo Power On & Emblem Reveal (3.6s - 4.8s): Emblem lines draw; subtle cyan activation glow illuminates core.
  * 5. Wordmark Reveal (4.8s - 6.2s): Letters 'E'-'x'-'E'-'S'-'S' reveal progressively LEFT → RIGHT.
- * 6. Energy Absorption (6.0s - 7.0s): Energy circle smoothly absorbs/fades away into crisp ExESS identity.
- * 7. Preloader Transition (7.0s - 7.5s): Smooth opacity fade-out into main website.
+ * 6. Stationary Energy Fade (6.0s - 7.2s): Energy circle holds briefly and FADES OUT GRADUALLY (0 reverse/backward motion).
+ * 7. Preloader Transition (7.2s - 7.6s): Smooth opacity fade-out into main ExESS website.
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -94,11 +94,17 @@ const IntroAnimation = ({ onComplete }) => {
     gsap.set(logoGroupRef.current, { opacity: 0 })
     gsap.set(emblemWrapperRef.current, { filter: 'drop-shadow(0 0 0px transparent)' })
 
-    // Setup Energy Circle for drawing sequence
+    // Setup Circular Energy Element for stationary assembly & fade sequence
     const circleEl = drawnCircleRef.current
     if (circleEl) {
       const len = (() => { try { return circleEl.getTotalLength() } catch { return 880 } })()
-      gsap.set(circleEl, { strokeDasharray: len, strokeDashoffset: len, opacity: 1 })
+      gsap.set(circleEl, {
+        strokeDasharray: len,
+        strokeDashoffset: len,
+        opacity: 1,
+        scale: 1.0,
+        transformOrigin: '300px 300px',
+      })
     }
 
     // Setup Emblem paths
@@ -141,34 +147,34 @@ const IntroAnimation = ({ onComplete }) => {
       pads.forEach(p => gsap.set(p, { scale: 1, fill: '#1E6B93' }))
     }
 
-    // ── MASTER CINEMATIC TIMELINE ──────────────────────────────
+    // ── MASTER CINEMATIC TIMELINE (7.6s TOTAL DURATION) ─────────
     const tl = gsap.timeline({
       onComplete: finishAnimation,
     })
 
-    // STEP 1: CIRCUIT WAKE-UP (0.0s - 1.2s)
+    // STEP 1: CIRCUIT WAKE-UP (0.0s - 1.4s)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 1.2, stagger: 0.06, ease: 'power2.inOut' }, 0.1)
+      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 1.3, stagger: 0.06, ease: 'power2.inOut' }, 0.1)
     }
 
-    // STEP 2: ENERGY LIGHT TRAVELS FROM FAR AWAY ALONG PCB TRACES (1.2s - 2.4s)
+    // STEP 2: SOFT CYAN ENERGY TRAVELS FROM FAR AWAY ALONG PCB PATHS (1.2s - 2.6s)
     if (pulseSvgRef.current) {
       const pulses = pulseSvgRef.current.querySelectorAll('.pcb-pulse')
-      tl.to(pulses, { strokeDashoffset: 0, opacity: 1, duration: 1.3, stagger: 0.08, ease: 'power1.inOut' }, 1.2)
+      tl.to(pulses, { strokeDashoffset: 0, opacity: 1, duration: 1.4, stagger: 0.08, ease: 'power1.inOut' }, 1.2)
     }
 
-    // STEP 3: ENERGY LIGHT REACHES LOGO & DRAWS/FORMS THE CIRCLE AROUND LOGO (2.4s - 3.8s)
+    // STEP 3: ENERGY REACHES LOGO & FORMS THE CIRCULAR ENERGY ELEMENT (2.4s - 3.8s)
     if (circleEl) {
       tl.to(circleEl, {
         strokeDashoffset: 0,
         opacity: 1,
         duration: 1.4,
         ease: 'power2.inOut',
-      }, 2.3)
+      }, 2.4)
     }
 
-    // STEP 4: FORMED ENERGY CIRCLE POWERS EMBLEM & GLOWS CYAN (3.8s - 5.0s)
+    // STEP 4: CIRCULAR ENERGY POWERS EMBLEM WITH SUBTLE ACTIVATION GLOW (3.6s - 5.0s)
     tl.to(logoGroupRef.current, { opacity: 1, duration: 0.3 }, 3.6)
 
     if (emblemEl) {
@@ -182,7 +188,7 @@ const IntroAnimation = ({ onComplete }) => {
       }, 3.6)
     }
 
-    // Subtle Cyan Activation Glow when circle powers emblem
+    // Soft Cyan Activation Glow when energy powers emblem
     tl.to(emblemWrapperRef.current, {
       filter: 'drop-shadow(0 0 20px rgba(50,197,232,0.55))',
       duration: 0.6,
@@ -215,7 +221,7 @@ const IntroAnimation = ({ onComplete }) => {
       }, 4.5)
     }
 
-    // STEP 5: WORDMARK REVEAL PROGRESSIVELY LEFT → RIGHT (4.8s - 6.4s)
+    // STEP 5: WORDMARK REVEAL PROGRESSIVELY LEFT → RIGHT (4.8s - 6.2s)
     letters.forEach((letterEl, index) => {
       if (letterEl) {
         tl.to(letterEl, {
@@ -228,25 +234,26 @@ const IntroAnimation = ({ onComplete }) => {
       }
     })
 
-    // STEP 6: ENERGY CIRCLE FADES / ABSORBS INTO LOGO (6.0s - 7.0s)
+    // STEP 6: STATIONARY GRADUAL ENERGY FADE OUT (6.0s - 7.2s) — 0% REVERSE / 0% BACKWARD MOTION
     if (circleEl) {
       tl.to(circleEl, {
         opacity: 0,
-        duration: 0.9,
+        scale: 1.0, // Strictly stationary - zero scale change or backward motion!
+        duration: 1.2,
         ease: 'power2.out',
       }, 6.0)
     }
 
     if (pulseSvgRef.current) {
-      tl.to(pulseSvgRef.current, { opacity: 0, duration: 0.9 }, 6.0)
+      tl.to(pulseSvgRef.current, { opacity: 0, duration: 1.2 }, 6.0)
     }
 
-    // Pause to admire clean ExESS identity
-    tl.to({}, { duration: 0.5 }, 6.8)
+    // Pause to admire complete, stable ExESS identity
+    tl.to({}, { duration: 0.4 }, 7.2)
 
     const safetyTimer = setTimeout(() => {
       finishAnimation()
-    }, 7800)
+    }, 8000)
 
     return () => {
       clearTimeout(safetyTimer)
@@ -328,7 +335,7 @@ const IntroAnimation = ({ onComplete }) => {
         <path className="pcb-pulse" d="M 580 240 H 460" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
       </svg>
 
-      {/* ── ENERGY LIGHT DRAWN CIRCLE (FORMED BY ENERGY LIGHT COMING FROM FAR AWAY) ── */}
+      {/* ── CIRCULAR ENERGY ELEMENT (FORMED BY INCOMING LIGHT-BLUE ENERGY FROM FAR AWAY) ── */}
       <svg
         aria-hidden="true"
         className="absolute pointer-events-none"
