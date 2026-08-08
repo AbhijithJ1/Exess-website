@@ -29,24 +29,31 @@ const HeroBackground = () => (
       </linearGradient>
     </defs>
 
-    {/* Continuous PCB Copper Routing Lines Connecting Towards Central Logo */}
-    <g stroke="rgba(30,107,147,0.12)" strokeWidth="1.2" fill="none" strokeLinecap="square">
-      <path d="M0 140 H220 L380 280 H620" />
-      <path d="M0 240 H160 L300 360 H580" stroke="rgba(50,197,232,0.18)" />
+    {/* Continuous PCB Copper Routing Lines Intelligently Routed AROUND Hero Heading */}
+    <g stroke="rgba(30,107,147,0.14)" strokeWidth="1.2" fill="none" strokeLinecap="square">
+      {/* Upper Left Trace — Routes UP and AROUND top-left of heading */}
+      <path d="M0 140 H200 L280 180 V210" />
 
-      <path d="M1440 140 H1220 L1060 280 H820" />
-      <path d="M1440 240 H1280 L1140 360 H860" stroke="rgba(50,197,232,0.18)" />
+      {/* Lower Left Trace — Routes DOWN and AROUND bottom-left of heading */}
+      <path d="M0 240 H140 L220 440 H280" stroke="rgba(50,197,232,0.22)" />
 
+      {/* Upper Right Trace — Routes UP and AROUND top-right of heading */}
+      <path d="M1440 140 H1240 L1160 180 V210" />
+
+      {/* Lower Right Trace — Routes DOWN and AROUND bottom-right of heading */}
+      <path d="M1440 240 H1300 L1220 440 H1160" stroke="rgba(50,197,232,0.22)" />
+
+      {/* Bottom Outer Traces — Frame CTA Button Area */}
       <path d="M0 760 H220 L380 620 H620" />
       <path d="M1440 760 H1220 L1060 620 H820" />
     </g>
 
-    {/* Via Pads at Trace Ends near Central Logo */}
-    <g fill="rgba(30,107,147,0.30)">
-      <circle cx="620" cy="280" r="3.5" />
-      <circle cx="580" cy="360" r="3" fill="#32C5E8" />
-      <circle cx="820" cy="280" r="3.5" />
-      <circle cx="860" cy="360" r="3" fill="#32C5E8" />
+    {/* Via Pads at Trace Ends Framing Heading & Button */}
+    <g fill="rgba(30,107,147,0.35)">
+      <circle cx="280" cy="210" r="3.5" />
+      <circle cx="280" cy="440" r="3" fill="#32C5E8" />
+      <circle cx="1160" cy="210" r="3.5" />
+      <circle cx="1160" cy="440" r="3" fill="#32C5E8" />
       <circle cx="620" cy="620" r="3" />
       <circle cx="820" cy="620" r="3" />
     </g>

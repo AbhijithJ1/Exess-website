@@ -74,6 +74,15 @@ const GlobalCircuitNetwork = () => {
         if (angleType === 1) nextX = Math.min(width - 30, currentX + segLen * 0.45)
         if (angleType === 2) nextX = Math.max(30, currentX - segLen * 0.45)
 
+        // Intelligent PCB Routing: Push traces to perimeter if entering Hero Heading text zone
+        if (currentY < 480 && nextY > 140 && nextX > 220 && nextX < (width - 220)) {
+          if (nextX < width / 2) {
+            nextX = Math.max(30, Math.min(180, currentX - 120))
+          } else {
+            nextX = Math.min(width - 30, Math.max(width - 180, currentX + 120))
+          }
+        }
+
         segments.push({ x1: currentX, y1: currentY, x2: nextX, y2: nextY })
 
         if (Math.random() > 0.4) {
