@@ -1,4 +1,4 @@
-import { Github, Instagram, Linkedin, Mail, ArrowUpRight } from 'lucide-react'
+import { Github, Instagram, Linkedin, Mail } from 'lucide-react'
 import Logo from './Logo'
 
 const essentialNavLinks = [
@@ -46,9 +46,9 @@ const Footer = () => {
 
       <FooterEngineeringBackground />
 
-      <div className="section-padding pt-8 sm:pt-10 pb-6 relative z-10 max-w-7xl mx-auto">
+      <div className="section-padding pt-8 sm:pt-10 pb-6 relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-border/60">
-          {/* Logo & One-line Description */}
+          {/* LEFT: Logo & One-line Description */}
           <div className="flex items-center gap-3 text-center md:text-left">
             <Logo size={32} color="#1E6B93" />
             <div>
@@ -61,21 +61,21 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Essential Navigation Links */}
-          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6">
+          {/* CENTER: Essential Navigation Links */}
+          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-7">
             {essentialNavLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="font-brand text-[10.5px] uppercase tracking-wider text-gray-600 hover:text-primary transition-colors"
+                className="font-brand text-[10.5px] uppercase tracking-wider text-gray-600 hover:text-primary transition-colors font-semibold"
               >
                 {link.name}
               </a>
             ))}
           </div>
 
-          {/* Social Icons */}
+          {/* RIGHT: Social Links */}
           <div className="flex items-center gap-2">
             {[
               { icon: Linkedin, href: 'https://linkedin.com' },
@@ -96,7 +96,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Copyright & PRODDEC CEC Credit */}
+        {/* BOTTOM: Copyright & PRODDEC CEC Credit */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-inter text-gray-500">
           <p className="text-center sm:text-left text-[11px]">
             &copy; {new Date().getFullYear()} ExESS &mdash; College of Engineering Chengannur. All rights reserved.

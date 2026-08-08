@@ -49,7 +49,7 @@
   }
 
   .section-padding {
-    @apply px-6 sm:px-10 lg:px-16 xl:px-20 2xl:px-24 max-w-[1440px] xl:max-w-[1530px] mx-auto w-full;
+    @apply px-6 sm:px-10 lg:px-14 xl:px-18 2xl:px-20 max-w-[1560px] mx-auto w-full;
   }
 
   .section-gap {
