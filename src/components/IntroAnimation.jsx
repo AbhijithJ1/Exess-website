@@ -2,17 +2,17 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Circuit-Powered ExESS Identity Assembly
+ * IntroAnimation — Circuit-Powered ExESS Identity Assembly & Socket Lock-in
  *
- * PRECISE ANIMATION CHOREOGRAPHY:
- * PHASE 1: Circuit Wake-up — Surrounding PCB traces become visible outside logo bounding box.
- * PHASE 2: Signal Travel — 4 Cyan energy signals travel from outer corners toward central collision node at (300, 140).
- * PHASE 3: Energy Collision (LOGO HIDDEN) — Signals converge & collide at (300, 140). LOGO IS STILL 100% HIDDEN.
- * PHASE 4: Collision Resolution — Incoming signals fade out; energy contracts down to emblem origin.
- * PHASE 5: Emblem Assembly — ExESS emblem SVG draws itself from central energy (NO lines cross text).
- * PHASE 6: Wordmark Assembly — Letters 'E'-'x'-'E'-'S'-'S' reveal progressively LEFT → RIGHT. Text is 100% clean.
- * PHASE 7: Surrounding Circuit Settle — Peripheral PCB traces connect around outer logo bounds.
- * PHASE 8: Transition — Smooth 450ms opacity fade into main website.
+ * CHOREOGRAPHED ANIMATION SEQUENCE:
+ * 1. Circuit Wake-up — Surrounding PCB socket frame and motherboard traces draw.
+ * 2. Energy Signal Convergence — Signals converge at top collision node (300, 140) in empty space.
+ * 3. Collision Event (LOGO HIDDEN) — Signals collide; spark fires and contracts toward emblem origin.
+ * 4. Emblem Assembly — ExESS emblem draws itself and slides gently into upper socket position.
+ * 5. Wordmark Assembly — Letters 'E'-'x'-'E'-'S'-'S' reveal progressively LEFT → RIGHT. Text is 100% clean.
+ * 6. Downward Lock-In — Logo lockup settles +8px downward into PCB frame; terminal pads illuminate in sync.
+ * 7. System Online — Outward pulse ring sweeps socket endpoints as identity becomes fully online.
+ * 8. Preloader Transition — Smooth 450ms opacity fade into main website.
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -70,14 +70,16 @@ const EmblemSVG = ({ svgRef }) => (
 )
 
 const IntroAnimation = ({ onComplete }) => {
-  const containerRef     = useRef(null)
-  const pcbSvgRef        = useRef(null)
-  const pulseSvgRef      = useRef(null)
-  const collisionSparkRef= useRef(null)
-  const logoGroupRef     = useRef(null)
-  const emblemSvgRef     = useRef(null)
-  const lettersRef       = useRef([])
-  const hasFinishedRef   = useRef(false)
+  const containerRef      = useRef(null)
+  const pcbSvgRef         = useRef(null)
+  const pulseSvgRef       = useRef(null)
+  const collisionSparkRef = useRef(null)
+  const lockRingRef       = useRef(null)
+  const socketPadsRef     = useRef(null)
+  const logoGroupRef      = useRef(null)
+  const emblemSvgRef      = useRef(null)
+  const lettersRef        = useRef([])
+  const hasFinishedRef    = useRef(false)
 
   const finishAnimation = () => {
     if (hasFinishedRef.current) return
@@ -98,8 +100,9 @@ const IntroAnimation = ({ onComplete }) => {
     gsap.set(containerRef.current, { opacity: 1 })
 
     // Hide Logo Group Initially (BEFORE Collision)
-    gsap.set(logoGroupRef.current, { opacity: 0 })
+    gsap.set(logoGroupRef.current, { opacity: 0, y: -12 })
     gsap.set(collisionSparkRef.current, { opacity: 0, scale: 0 })
+    gsap.set(lockRingRef.current, { opacity: 0, scale: 0.2 })
 
     // Setup Emblem paths
     const emblemEl = emblemSvgRef.current
@@ -118,7 +121,7 @@ const IntroAnimation = ({ onComplete }) => {
       }
     }
 
-    // Setup Outer PCB Traces & Signal Pulses (PERIPHERAL ONLY - TERMINATE OUTSIDE LOGO)
+    // Setup Outer PCB Socket Frame & Motherboard Traces
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
       traces.forEach(el => {
@@ -135,52 +138,58 @@ const IntroAnimation = ({ onComplete }) => {
       })
     }
 
-    // Setup Wordmark Letters (Hidden initially)
+    // Setup Wordmark Letters
     letters.forEach(letterEl => {
       if (letterEl) {
-        gsap.set(letterEl, { opacity: 0, y: 16, filter: 'blur(8px)' })
+        gsap.set(letterEl, { opacity: 0, y: 14, filter: 'blur(8px)' })
       }
     })
+
+    // Setup Socket Terminal Pads
+    if (socketPadsRef.current) {
+      const pads = socketPadsRef.current.querySelectorAll('.socket-pad')
+      pads.forEach(p => gsap.set(p, { scale: 1, fill: '#1E6B93' }))
+    }
 
     // ── MASTER CHOREOGRAPHED TIMELINE ────────────────────────────
     const tl = gsap.timeline({
       onComplete: finishAnimation,
     })
 
-    // PHASE 1: CIRCUIT WAKE-UP (0.0s - 0.5s)
+    // STEP 1: CIRCUIT WAKE-UP & SOCKET FRAME DRAWING (0.0s - 0.5s)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
       tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 0.5, stagger: 0.03, ease: 'power2.inOut' }, 0.05)
     }
 
-    // PHASE 2: INCOMING CONVERGING ENERGY SIGNALS (0.3s - 0.85s)
+    // STEP 2: CONVERGING ENERGY SIGNALS TO COLLISION NODE (300, 140) (0.3s - 0.85s)
     if (pulseSvgRef.current) {
       const pulses = pulseSvgRef.current.querySelectorAll('.pcb-pulse')
       tl.to(pulses, { strokeDashoffset: 0, opacity: 1, duration: 0.55, stagger: 0.04, ease: 'power1.inOut' }, 0.3)
     }
 
-    // PHASE 3 & 4: ENERGY COLLISION AT CENTRAL NODE (0.8s - 1.1s) — LOGO IS STILL 100% HIDDEN!
+    // STEP 3: ENERGY COLLISION (0.8s - 1.05s) — LOGO STILL 100% HIDDEN!
     tl.to(collisionSparkRef.current, {
       opacity: 1,
       scale: 1.6,
-      duration: 0.25,
+      duration: 0.22,
       ease: 'back.out(2)',
     }, 0.8)
 
     tl.to(collisionSparkRef.current, {
       opacity: 0,
       scale: 0.2,
-      duration: 0.25,
+      duration: 0.22,
       ease: 'power2.in',
-    }, 1.05)
+    }, 1.02)
 
-    // Clear incoming signal pulses BEFORE logo reveals
+    // Clear incoming signal pulses BEFORE emblem appears
     if (pulseSvgRef.current) {
-      tl.to(pulseSvgRef.current, { opacity: 0, duration: 0.2 }, 1.0)
+      tl.to(pulseSvgRef.current, { opacity: 0, duration: 0.18 }, 0.98)
     }
 
-    // PHASE 5: EMBLEM ASSEMBLY FROM COLLISION ENERGY (1.1s - 1.65s) — Logo Group Revealed
-    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.1 }, 1.1)
+    // STEP 4: EMBLEM ASSEMBLY FROM ENERGY (1.05s - 1.55s) — Logo Group Revealed
+    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.1 }, 1.05)
 
     if (emblemEl) {
       const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
@@ -189,40 +198,81 @@ const IntroAnimation = ({ onComplete }) => {
       tl.to(emblemPaths, {
         strokeDashoffset: 0,
         opacity: 1,
-        duration: 0.55,
+        duration: 0.5,
         stagger: 0.015,
         ease: 'power2.out',
-      }, 1.1)
+      }, 1.05)
 
       if (orbitPath) {
         tl.to(orbitPath, {
           strokeDashoffset: 0,
           opacity: 1,
-          duration: 0.4,
+          duration: 0.38,
           ease: 'power3.out',
-        }, 1.45)
+        }, 1.4)
       }
     }
 
-    // PHASE 6: WORDMARK REVEAL LEFT → RIGHT (1.6s - 2.15s) — 100% Clean Typography
+    // STEP 5: WORDMARK REVEAL LEFT → RIGHT (1.5s - 2.0s) — 100% Clean Typography
     letters.forEach((letterEl, index) => {
       if (letterEl) {
         tl.to(letterEl, {
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          duration: 0.35,
+          duration: 0.32,
           ease: 'back.out(1.4)',
-        }, 1.6 + index * 0.09)
+        }, 1.5 + index * 0.08)
       }
     })
 
-    // Pause before transition
-    tl.to({}, { duration: 0.35 }, 2.45)
+    // STEP 6: DOWNWARD LOCK-IN SETTLING MOTION (+8px) (1.95s - 2.35s)
+    tl.to(logoGroupRef.current, {
+      y: 8,
+      duration: 0.4,
+      ease: 'power2.out',
+    }, 1.95)
+
+    // STEP 7: SYNCHRONIZED LOCK-IN PULSE & TERMINAL PADS ILLUMINATION AT (2.05s)
+    tl.to(lockRingRef.current, {
+      opacity: 0.85,
+      scale: 1,
+      duration: 0.2,
+      ease: 'power1.out',
+    }, 2.02)
+
+    tl.to(lockRingRef.current, {
+      opacity: 0,
+      scale: 1.4,
+      duration: 0.35,
+      ease: 'power2.out',
+    }, 2.22)
+
+    if (socketPadsRef.current) {
+      const pads = socketPadsRef.current.querySelectorAll('.socket-pad')
+      tl.to(pads, {
+        fill: '#32C5E8',
+        scale: 1.35,
+        duration: 0.18,
+        stagger: 0.02,
+        ease: 'back.out(2)',
+      }, 2.02)
+
+      tl.to(pads, {
+        fill: '#1E6B93',
+        scale: 1,
+        duration: 0.3,
+        stagger: 0.02,
+        ease: 'power2.out',
+      }, 2.22)
+    }
+
+    // Settling pause
+    tl.to({}, { duration: 0.4 }, 2.5)
 
     const safetyTimer = setTimeout(() => {
       finishAnimation()
-    }, 2900)
+    }, 3100)
 
     return () => {
       clearTimeout(safetyTimer)
@@ -239,7 +289,7 @@ const IntroAnimation = ({ onComplete }) => {
       onClick={finishAnimation}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden select-none cursor-pointer bg-white"
     >
-      {/* ── PERIPHERAL PCB TRACES SVG (TERMINATES OUTSIDE LOGO BOUNDING BOX) ── */}
+      {/* ── PCB SOCKET FRAME SVG (FRAMES THE LOGO SAFELY OUTSIDE AT x:150..450, y:140..460) ── */}
       <svg
         ref={pcbSvgRef}
         aria-hidden="true"
@@ -249,40 +299,46 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Top-Left Trace terminating at (240, 140) */}
+        {/* Socket Outer Framing Brackets */}
         <path className="pcb-trace" d="M 40 40 H 200 V 140 H 240" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="240" cy="140" r="3.5" fill="#1E6B93" />
-
-        {/* Top-Right Trace terminating at (360, 140) */}
         <path className="pcb-trace" d="M 560 40 H 400 V 140 H 360" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="360" cy="140" r="3.5" fill="#1E6B93" />
 
-        {/* Left Side Upper Trace terminating at (150, 240) */}
-        <path className="pcb-trace" d="M 20 240 H 150" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="150" cy="240" r="3.5" fill="#1E6B93" />
+        {/* Left / Right Vertical Socket Boundaries */}
+        <path className="pcb-trace" d="M 20 240 H 140 V 360 H 20" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <path className="pcb-trace" d="M 580 240 H 460 V 360 H 580" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
 
-        {/* Left Side Lower Trace terminating at (150, 360) */}
-        <path className="pcb-trace" d="M 20 360 H 150" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="150" cy="360" r="3.5" fill="#1E6B93" />
-
-        {/* Right Side Upper Trace terminating at (450, 240) */}
-        <path className="pcb-trace" d="M 580 240 H 450" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="450" cy="240" r="3.5" fill="#1E6B93" />
-
-        {/* Right Side Lower Trace terminating at (450, 360) */}
-        <path className="pcb-trace" d="M 580 360 H 450" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="450" cy="360" r="3.5" fill="#1E6B93" />
-
-        {/* Bottom-Left Trace terminating at (240, 460) */}
+        {/* Bottom Framing Brackets */}
         <path className="pcb-trace" d="M 40 560 H 200 V 460 H 240" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="240" cy="460" r="3.5" fill="#1E6B93" />
-
-        {/* Bottom-Right Trace terminating at (360, 460) */}
         <path className="pcb-trace" d="M 560 560 H 400 V 460 H 360" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <circle className="pcb-trace" cx="360" cy="460" r="3.5" fill="#1E6B93" />
+
+        {/* Framing Corner Accents */}
+        <path className="pcb-trace" d="M 140 180 V 140 H 180" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
+        <path className="pcb-trace" d="M 460 180 V 140 H 420" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
+        <path className="pcb-trace" d="M 140 420 V 460 H 180" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
+        <path className="pcb-trace" d="M 460 420 V 460 H 420" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
       </svg>
 
-      {/* ── CONVERGING SIGNAL PULSES SVG (CONVERGES AT CENTRAL NODE (300, 140) BEFORE LOGO IS REVEALED) ── */}
+      {/* ── TERMINAL SOCKET PADS GROUP (OUTSIDE CENTRAL LOGO ZONE) ── */}
+      <svg
+        ref={socketPadsRef}
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{ width: SVG_SIZE, height: SVG_SIZE }}
+        viewBox="0 0 600 600"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle className="socket-pad" cx="240" cy="140" r="3.5" />
+        <circle className="socket-pad" cx="360" cy="140" r="3.5" />
+        <circle className="socket-pad" cx="140" cy="240" r="3.5" />
+        <circle className="socket-pad" cx="140" cy="360" r="3.5" />
+        <circle className="socket-pad" cx="460" cy="240" r="3.5" />
+        <circle className="socket-pad" cx="460" cy="360" r="3.5" />
+        <circle className="socket-pad" cx="240" cy="460" r="3.5" />
+        <circle className="socket-pad" cx="360" cy="460" r="3.5" />
+      </svg>
+
+      {/* ── CONVERGING SIGNAL PULSES (CONVERGE AT TOP COLLISION NODE (300,140) BEFORE LOGO REVEALS) ── */}
       <svg
         ref={pulseSvgRef}
         aria-hidden="true"
@@ -294,11 +350,11 @@ const IntroAnimation = ({ onComplete }) => {
       >
         <path className="pcb-pulse" d="M 40 40 H 200 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
         <path className="pcb-pulse" d="M 560 40 H 400 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
-        <path className="pcb-pulse" d="M 20 240 H 150 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
-        <path className="pcb-pulse" d="M 580 240 H 450 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
+        <path className="pcb-pulse" d="M 20 240 H 140 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
+        <path className="pcb-pulse" d="M 580 240 H 460 V 140 H 300" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" />
       </svg>
 
-      {/* ── PRECISE CENTRAL COLLISION SPARK NODE AT (300, 140) ABOVE EMBLEM ── */}
+      {/* ── PRECISE COLLISION SPARK AT (300, 140) ABOVE EMBLEM ── */}
       <svg
         aria-hidden="true"
         className="absolute pointer-events-none"
@@ -311,6 +367,15 @@ const IntroAnimation = ({ onComplete }) => {
           <circle cx="300" cy="140" r="14" fill="url(#sparkGlow)" />
           <circle cx="300" cy="140" r="4" fill="#FFFFFF" />
         </g>
+
+        {/* Synchronized Outward Lock-In Pulse Ring */}
+        <circle
+          ref={lockRingRef}
+          cx="300" cy="300" r="140"
+          stroke="#32C5E8" strokeWidth="2" fill="none"
+          style={{ transformOrigin: '300px 300px' }}
+        />
+
         <defs>
           <radialGradient id="sparkGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#32C5E8" stopOpacity="0.9" />
@@ -319,25 +384,26 @@ const IntroAnimation = ({ onComplete }) => {
         </defs>
       </svg>
 
-      {/* ── CENTRAL ExESS IDENTITY CONTAINER (100% CLEAN & UNOBSTRUCTED) ── */}
+      {/* ── CENTRAL ExESS IDENTITY CORE (OCCUPIES CENTRAL ~35% OF VIEWPORT, 100% CLEAN) ── */}
       <div
         ref={logoGroupRef}
         className="relative z-10 flex flex-col items-center justify-center text-center p-4"
+        style={{ transformOrigin: 'center center' }}
       >
         {/* Emblem Assembly */}
         <div
-          className="filter drop-shadow-[0_0_16px_rgba(50,197,232,0.30)]"
-          style={{ width: 'clamp(120px, 18vw, 150px)', height: 'clamp(130px, 20vw, 165px)' }}
+          className="filter drop-shadow-[0_0_14px_rgba(50,197,232,0.25)]"
+          style={{ width: 'clamp(110px, 16vw, 135px)', height: 'clamp(120px, 18vw, 150px)' }}
         >
           <EmblemSVG svgRef={emblemSvgRef} />
         </div>
 
         {/* Wordmark Assembly — Progressive L→R Letter Reveal (100% CLEAN TEXT) */}
-        <div className="mt-4 flex items-center justify-center gap-0.5">
+        <div className="mt-3.5 flex items-center justify-center gap-0.5">
           <h1
             className="font-brand font-bold text-light-sweep-dark tracking-tight flex"
             style={{
-              fontSize: 'clamp(2.8rem, 7vw, 4.5rem)',
+              fontSize: 'clamp(2.4rem, 6vw, 3.8rem)',
               lineHeight: '0.95',
               letterSpacing: '-0.04em',
             }}
