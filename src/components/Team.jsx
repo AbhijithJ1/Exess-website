@@ -158,12 +158,8 @@ const Team = () => {
           </div>
         </div>
 
-        {/* Seamless Infinite Horizontal Marquee Track */}
+        {/* Seamless Infinite Horizontal Marquee Track (Full Width, No White Side Masks) */}
         <div className="relative w-full overflow-hidden my-6 py-4 group">
-          {/* Subtle gradient side masks */}
-          <div className="absolute top-0 bottom-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
-          <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none" />
-
           <div className="flex gap-5 w-max animate-marquee group-hover:[animation-play-state:paused] will-change-transform">
             {marqueeList.map((m, idx) => (
               <TeamMemberCard key={`${m.id}-${idx}`} member={m} />

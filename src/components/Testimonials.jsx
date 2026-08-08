@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Quote, Sparkles } from 'lucide-react'
+import { Quote } from 'lucide-react'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
 import { testimonialsData } from '../data/testimonialsData'
@@ -19,12 +19,8 @@ const Testimonials = () => {
           description="Hear from students, faculty mentors, workshop participants, and ExESS core members."
         />
 
-        {/* ── PREMIER INFINITE HORIZONTAL TESTIMONIAL CAROUSEL ──────────── */}
+        {/* ── PREMIER INFINITE HORIZONTAL TESTIMONIAL CAROUSEL (NO WHITE SIDE MASKS) ── */}
         <div className="relative w-full overflow-hidden my-6 py-4 group">
-          {/* Subtle gradient side masks */}
-          <div className="absolute top-0 bottom-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-background via-background/80 to-transparent z-10 pointer-events-none" />
-          <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-background via-background/80 to-transparent z-10 pointer-events-none" />
-
           {/* Continuous Infinite Marquee Track */}
           <div className="flex gap-6 w-max animate-marquee group-hover:[animation-play-state:paused] will-change-transform">
             {testimonialMarqueeList.map((item, idx) => (

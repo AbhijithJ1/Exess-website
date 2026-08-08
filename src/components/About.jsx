@@ -33,20 +33,19 @@ const About = () => {
 
       <div className="section-padding relative z-10 max-w-7xl mx-auto">
 
-        {/* ── 1. Power-On Section Header ───────────────────────────────── */}
+        {/* ── 1. Storytelling Header (No "Departmental Technical Forum" Badge) ── */}
         <PowerOnHeader
-          badge="Departmental Technical Forum"
           headline={
             <>
               Electronics Students Society{' '}
               <span className="text-light-sweep-dark">(ExESS)</span>
             </>
           }
-          description="The official technical forum of the Department of Electronics and Communication Engineering at College of Engineering Chengannur."
+          description="The official technical body of the Department of Electronics and Communication Engineering at College of Engineering Chengannur."
           maxW="max-w-3xl"
         />
 
-        {/* ── 2. Premium Two-Column Editorial Layout & Location Frame ──── */}
+        {/* ── 2. Asymmetric Storytelling Layout & Location Module ─────── */}
         <motion.div
           ref={overviewRef}
           initial={{ opacity: 0, y: 24 }}
@@ -56,14 +55,12 @@ const About = () => {
         >
           <div className="relative py-8 lg:py-12 grid lg:grid-cols-12 gap-10 lg:gap-14 items-center border-y border-border/60">
             <div className="relative z-10 lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/[0.06] border border-primary/15 mb-4">
-                <Cpu className="w-3.5 h-3.5 text-primary" />
-                <span className="text-[10px] font-brand uppercase tracking-[0.20em] text-primary font-semibold">
-                  Engineering Ecosystem
-                </span>
-              </div>
+              <span className="text-xs font-brand uppercase tracking-[0.20em] text-primary mb-3 block font-semibold">
+                ABOUT ExESS
+              </span>
 
-              <h3 className="font-brand text-heading text-xl sm:text-2xl lg:text-3xl mb-6 tracking-tight leading-snug">
+              {/* Large Typographic Headline */}
+              <h3 className="font-brand text-heading text-2xl sm:text-3xl lg:text-4xl mb-6 tracking-tight leading-snug">
                 Pioneering <span className="text-primary font-semibold">Hardware</span> &amp;{' '}
                 <span className="text-primary font-semibold">Embedded Systems</span> Excellence at CEC
               </h3>
@@ -108,16 +105,16 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* ── 3. Mission & Vision — Converging from Left and Right ────────── */}
+        {/* ── 3. Mission & Vision — Opposing Directional Convergence ────────── */}
         <div ref={mvRef} className="relative pt-4">
           <PCBConvergenceLines />
 
           <div className="grid md:grid-cols-2 gap-8 sm:gap-10">
             {/* VISION — Reveals from Left */}
             <motion.div
-              initial={{ opacity: 0, x: -45 }}
-              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -45 }}
-              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, x: -60 }}
+              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -60 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="group relative bg-white rounded-3xl p-6 sm:p-8 border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
             >
               <div>
@@ -138,9 +135,9 @@ const About = () => {
 
             {/* MISSION — Reveals from Right */}
             <motion.div
-              initial={{ opacity: 0, x: 45 }}
-              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 45 }}
-              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, x: 60 }}
+              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 60 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="group relative bg-white rounded-3xl p-6 sm:p-8 border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
             >
               <div>

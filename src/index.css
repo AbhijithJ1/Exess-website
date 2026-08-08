@@ -49,7 +49,7 @@
   }
 
   .section-padding {
-    @apply px-4 sm:px-8 lg:px-16 xl:px-24 2xl:px-32;
+    @apply px-6 sm:px-10 lg:px-16 xl:px-20 2xl:px-24 max-w-[1440px] xl:max-w-[1530px] mx-auto w-full;
   }
 
   .section-gap {
@@ -277,7 +277,7 @@ html.lenis, html.lenis body {
 }
 
 .animate-marquee {
-  animation: marquee 35s linear infinite;
+  animation: marquee 50s linear infinite;
 }
 
 /* ── PCB Traveling Light Beam for Buttons ─────────────────────────────── */

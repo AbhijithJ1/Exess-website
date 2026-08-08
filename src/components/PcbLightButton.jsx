@@ -2,9 +2,11 @@ import React from 'react'
 import { ArrowRight } from 'lucide-react'
 
 /**
- * PcbLightButton — Signature ExESS Engineered Button Component
- * Features a glowing PCB electrical signal traveling around the outer border,
- * glass surface, smooth hover transitions, and press feedback.
+ * PcbLightButton — Signature ExESS Light-Theme Engineered Button
+ *
+ * Default: White/pale blue surface, thin blue border, dark text, clean arrow.
+ * Hover: Surface stays light (bg-slate-50), border light beam accelerates,
+ * text stays bold dark, arrow slides 4px forward, 2px lift. NO solid blue fill.
  */
 const PcbLightButton = ({
   children,
@@ -20,7 +22,7 @@ const PcbLightButton = ({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`group relative inline-flex items-center justify-center gap-3 px-7 py-3.5 sm:px-8 sm:py-4 rounded-2xl font-brand text-xs sm:text-sm font-semibold tracking-wider text-slate-800 bg-white/95 backdrop-blur-md border border-primary/25 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_4px_20px_rgba(30,107,147,0.08)] hover:shadow-[0_8px_30px_rgba(30,107,147,0.22)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer overflow-hidden ${
+      className={`group relative inline-flex items-center justify-center gap-3.5 px-8 py-3.5 sm:px-9 sm:py-4 rounded-2xl font-brand text-xs sm:text-sm font-bold tracking-wider text-slate-900 bg-white/95 backdrop-blur-md border border-primary/30 hover:border-primary/70 hover:bg-slate-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_4px_20px_rgba(30,107,147,0.08)] hover:shadow-[0_8px_30px_rgba(30,107,147,0.20)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer overflow-hidden ${
         disabled ? 'opacity-60 pointer-events-none' : ''
       } ${className}`}
     >
@@ -43,28 +45,28 @@ const PcbLightButton = ({
         <defs>
           <linearGradient id="pcbBeamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#32C5E8" stopOpacity="1" />
-            <stop offset="50%" stopColor="#1E6B93" stopOpacity="0.4" />
+            <stop offset="50%" stopColor="#1E6B93" stopOpacity="0.5" />
             <stop offset="100%" stopColor="#32C5E8" stopOpacity="0.1" />
           </linearGradient>
         </defs>
       </svg>
 
-      {/* Surface Blue Gradient Fill on Hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#1E6B93] to-[#187AA3] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none" />
+      {/* Subtle Luminous Halo on Hover (Light Surface Preserved) */}
+      <div className="absolute inset-0 bg-primary/[0.04] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none" />
 
-      {/* Optional Custom Left Icon */}
+      {/* Optional Left Icon */}
       {Icon && (
-        <Icon className="relative z-10 w-4 h-4 text-primary group-hover:text-white transition-colors duration-300" />
+        <Icon className="relative z-10 w-4 h-4 text-primary group-hover:text-primary transition-colors duration-300" />
       )}
 
-      {/* Button Text */}
-      <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
+      {/* Button Text — Remains Dark & Crisp */}
+      <span className="relative z-10 text-slate-900 group-hover:text-slate-950 transition-colors duration-300">
         {children}
       </span>
 
-      {/* Clean Arrow Icon */}
+      {/* Clean Arrow Icon — Slides 4px Forward */}
       {showArrow && (
-        <ArrowRight className="relative z-10 w-4 h-4 text-primary group-hover:text-white group-hover:translate-x-1.5 transition-all duration-300 ease-out" />
+        <ArrowRight className="relative z-10 w-4 h-4 text-primary group-hover:translate-x-1.5 transition-all duration-300 ease-out" />
       )}
     </button>
   )
