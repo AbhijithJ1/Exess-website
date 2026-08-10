@@ -1,45 +1,72 @@
-﻿import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 /**
- * ExESS Intro Animation — Energy Transformation State Machine
+ * ExESS Intro Animation — High-Complexity Futuristic PCB Network
  *
- * ONE immutable PCB geometry. The PCB is the energy source.
- * All energy converges to ONE CENTRAL CORE, which then transforms/forges the ExESS logo.
- * Convergence streams FADE OUT completely before central core blooming / emblem formation.
+ * ONE immutable, highly detailed symmetrical 20-trace PCB geometry framing the logo.
+ * Outer circular electronic terminals -> Energy pulses -> Inner node activation ->
+ * Strong central energy convergence -> Powerful core bloom -> Logo formation -> Retraction -> Final stable state.
  *
  * TIMELINE (seconds):
- *  0.00 – 1.10  Step 1: PCB traces draw in (outer to inner)
- *  1.10 – 1.40  Step 2: Outer endpoints activate (simultaneous cyan glow)
- *  1.40 – 2.30  Step 3: Energy pulse travels outer to inner along 90° PCB paths
- *  2.30 – 2.55  Step 4: Inner endpoints charge & pulse intensely
- *  2.55 – 3.10  Step 5: STRONG CONVERGENCE — Energy streams travel from all inner pads to center (300,295) and vanish as core forms
- *  3.10 – 3.65  Step 6: POWERFUL CENTRAL CORE — Pure white-hot core blooms into 16-ray starburst (NO convergence lines, NO emblem yet)
- *  3.65 – 4.35  Step 7: EMBLEM FORGED — Central core transforms/expands to draw ExESS emblem & lower legs
- *  4.35 – 4.90  Step 8: WORDMARK FORGED — Energy extends downward from core to construct "ExESS" wordmark
- *  4.90 – 5.65  Step 9: ENERGY RETRACTS — Glowing pulse pulls backward inner to outer along SAME PCB paths
- *  5.65 – 6.40  Step 10: FINAL STABLE LOGO — Clean ExESS emblem + wordmark + original PCB framing
+ *  0.00 – 1.10  Step 1: PCB traces draw in (progressive path drawing)
+ *  1.10 – 1.40  Step 2: Outer circular terminal nodes activate (wave of cyan glow & 1.15x pulse)
+ *  1.40 – 2.30  Step 3: Energy pulses travel along exact 90° PCB paths from outer to inner terminals
+ *  2.30 – 2.55  Step 4: Inner terminal nodes charge & pulse intensely
+ *  2.55 – 3.10  Step 5: STRONG CONVERGENCE — 20 energy streams converge to center (300, 295)
+ *  3.10 – 3.65  Step 6: POWERFUL CENTRAL CORE — White-hot core + 16-ray starburst bloom
+ *  3.65 – 4.35  Step 7: EMBLEM FORGED — Emblem forms from central core energy
+ *  4.35 – 4.90  Step 8: WORDMARK FORGED — "ExESS" wordmark initialized
+ *  4.90 – 5.65  Step 9: ENERGY RETRACTS — Energy pulls back inner to outer along PCB paths
+ *  5.65 – 6.40  Step 10: FINAL STABLE LOGO — Clean ExESS logo + complex PCB framing
  */
 
-// PCB GEOMETRY — IMMUTABLE. One definition used in every frame.
-// 600x600 coordinate space. Centre = (300, 295)
-// Outer endpoints = pts[0]   Inner endpoints = pts[last]
+// HIGH-COMPLEXITY PCB GEOMETRY (20 Symmetrical Traces: 10 Left, 10 Right)
+// 600x600 coordinate space. Center = (300, 295)
+// Protected Central Safe Zone: X (215 .. 385), Y (170 .. 455)
 const TRACES = [
-  // Top-left
-  { pts: [[48, 48],  [196, 48],  [196, 148], [196, 148]] },
-  // Top-right
-  { pts: [[552, 48], [404, 48],  [404, 148], [404, 148]] },
-  // Mid-left upper
-  { pts: [[24, 232], [148, 232], [148, 248], [196, 248]] },
-  // Mid-right upper
-  { pts: [[576, 232],[452, 232], [452, 248], [404, 248]] },
-  // Mid-left lower
-  { pts: [[24, 362], [148, 362], [148, 346], [196, 346]] },
-  // Mid-right lower
-  { pts: [[576, 362],[452, 362], [452, 346], [404, 346]] },
-  // Bottom-left
-  { pts: [[48, 550], [196, 550], [196, 448], [196, 448]] },
-  // Bottom-right
-  { pts: [[552, 550],[404, 550], [404, 448], [404, 448]] },
+  // --- LEFT SIDE TRACES (10) ---
+  // 1. Top-Left Far Corner (TL1)
+  { pts: [[40, 36], [160, 36], [160, 110], [195, 110]] },
+  // 2. Top-Left Inner Branch (TL2)
+  { pts: [[70, 72], [130, 72], [130, 140], [180, 140]] },
+  // 3. Upper-Left Stepped (UL1)
+  { pts: [[24, 150], [110, 150], [110, 180], [170, 180]] },
+  // 4. Mid-Left Upper Outer (ML1)
+  { pts: [[20, 210], [125, 210], [125, 225], [175, 225]] },
+  // 5. Mid-Left Main (ML2)
+  { pts: [[20, 260], [110, 260], [110, 270], [165, 270]] },
+  // 6. Mid-Left Lower (ML3)
+  { pts: [[20, 310], [110, 310], [110, 305], [165, 305]] },
+  // 7. Lower-Left Stepped (LL1)
+  { pts: [[24, 360], [125, 360], [125, 345], [175, 345]] },
+  // 8. Lower-Left Branch (LL2)
+  { pts: [[30, 420], [135, 420], [135, 400], [185, 400]] },
+  // 9. Bottom-Left Stepped (BL1)
+  { pts: [[40, 480], [150, 480], [150, 460], [190, 460]] },
+  // 10. Bottom-Left Far Corner (BL2)
+  { pts: [[50, 550], [195, 550], [195, 485], [210, 485]] },
+
+  // --- RIGHT SIDE TRACES (10 - Mirrored across CX=300) ---
+  // 11. Top-Right Far Corner (TR1)
+  { pts: [[560, 36], [440, 36], [440, 110], [405, 110]] },
+  // 12. Top-Right Inner Branch (TR2)
+  { pts: [[530, 72], [470, 72], [470, 140], [420, 140]] },
+  // 13. Upper-Right Stepped (UR1)
+  { pts: [[576, 150], [490, 150], [490, 180], [430, 180]] },
+  // 14. Mid-Right Upper Outer (MR1)
+  { pts: [[580, 210], [475, 210], [475, 225], [425, 225]] },
+  // 15. Mid-Right Main (MR2)
+  { pts: [[580, 260], [490, 260], [490, 270], [435, 270]] },
+  // 16. Mid-Right Lower (MR3)
+  { pts: [[580, 310], [490, 310], [490, 305], [435, 305]] },
+  // 17. Lower-Right Stepped (LR1)
+  { pts: [[576, 360], [475, 360], [475, 345], [425, 345]] },
+  // 18. Lower-Right Branch (LR2)
+  { pts: [[570, 420], [465, 420], [465, 400], [415, 400]] },
+  // 19. Bottom-Right Stepped (BR1)
+  { pts: [[560, 480], [450, 480], [450, 460], [410, 460]] },
+  // 20. Bottom-Right Far Corner (BR2)
+  { pts: [[550, 550], [405, 550], [405, 485], [390, 485]] },
 ]
 
 const CX = 300, CY = 295
@@ -107,17 +134,49 @@ const C_PCB   = '#1E6B93'
 const C_CYAN  = '#32C5E8'
 const C_WHITE = '#FFFFFF'
 
-// --- Emblem ---
+// --- Circular Electronic Terminal Node Renderer ---
+function drawTerminalNode(ctx, x, y, r, alpha, isCyan = false, glowMultiplier = 1) {
+  ctx.save()
+  ctx.globalAlpha = alpha
+
+  // 1. Outer cyan glow ring if active
+  if (isCyan && glowMultiplier > 0) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.8 * glowMultiplier)
+    g.addColorStop(0, 'rgba(50, 197, 232, ' + (0.90 * alpha) + ')')
+    g.addColorStop(0.5, 'rgba(50, 197, 232, ' + (0.35 * alpha) + ')')
+    g.addColorStop(1, 'rgba(50, 197, 232, 0)')
+    ctx.fillStyle = g
+    ctx.beginPath()
+    ctx.arc(x, y, r * 2.8 * glowMultiplier, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // 2. Main circular electronic terminal ring (flush connected to trace)
+  ctx.strokeStyle = isCyan ? C_CYAN : C_PCB
+  ctx.lineWidth = 1.8
+  ctx.beginPath()
+  ctx.arc(x, y, r, 0, Math.PI * 2)
+  ctx.stroke()
+
+  // 3. Inner solid terminal center core
+  ctx.fillStyle = isCyan ? C_WHITE : C_PCB
+  ctx.beginPath()
+  ctx.arc(x, y, r * 0.42, 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.restore()
+}
+
+// --- Emblem Renderer ---
 const GCX = CX, GCY = CY - 35, GR = 56
 const globeBottomY = GCY + GR // 316
 
 function drawEmblem(ctx, p) {
-  // p: 0 -> 1 (Energy-constructed reveal from central core outward)
   ctx.save()
   ctx.globalAlpha = p
   ctx.lineCap = 'round'
 
-  // Outer circle (sweeps outward from top/bottom)
+  // Outer circle (sweeps outward)
   ctx.strokeStyle = C_PCB
   ctx.lineWidth = 3.5
   ctx.beginPath()
@@ -165,7 +224,7 @@ function drawEmblem(ctx, p) {
   ctx.stroke()
   ctx.restore()
 
-  // Top Circuit Squares (matching Logo.jsx)
+  // Top Circuit Squares
   if (p > 0.6) {
     const topP = clamp((p - 0.6) / 0.4)
     ctx.fillStyle = C_PCB
@@ -176,12 +235,7 @@ function drawEmblem(ctx, p) {
     ctx.beginPath(); ctx.roundRect(GCX + 24, GCY - GR - 12, 6, 6, 1); ctx.fill()
   }
 
-  // 5 Continuous Circuit Connectors — Single continuous paths starting at exact globe bottom edge (globeBottomY = 316)
-  // Far Left (272, 316 -> 272, 335 -> 250, 335 -> 250, 357)
-  // Inner Left (286.5, 316 -> 286.5, 346 -> 272, 346 -> 272, 369)
-  // Center (300, 316 -> 300, 352)
-  // Inner Right (313.5, 316 -> 313.5, 346 -> 328, 346 -> 328, 369)
-  // Far Right (328, 316 -> 328, 335 -> 350, 335 -> 350, 357)
+  // 5 Continuous Circuit Connectors starting at globe bottom edge (316)
   const CONNECTORS = [
     [[272, 316], [272, 335], [250, 335], [250, 357]],
     [[286.5, 316], [286.5, 346], [272, 346], [272, 369]],
@@ -205,7 +259,7 @@ function drawEmblem(ctx, p) {
     ctx.stroke()
   }
 
-  // 5 Square Nodes (Attached directly with zero gap to connector line endpoints)
+  // 5 Square Connector Nodes
   if (p > 0.65) {
     const padP = eo3(clamp((p - 0.65) / 0.35))
     ctx.globalAlpha = padP
@@ -225,7 +279,6 @@ function drawEmblem(ctx, p) {
       ctx.roundRect(node.x, node.y, node.w, node.h, 2.5)
       ctx.stroke()
 
-      // Inner solid square fill
       ctx.fillStyle = C_PCB
       ctx.globalAlpha = padP * 0.6
       ctx.beginPath()
@@ -238,8 +291,8 @@ function drawEmblem(ctx, p) {
   ctx.restore()
 }
 
-// --- Wordmark ---
-const WM_Y        = 422   // Clear 39px breathing space below lowest node (y=383)
+// --- Wordmark Renderer ---
+const WM_Y        = 422
 const WM_FS       = 62
 const WM_CW       = WM_FS * 0.63
 const WM_LETTERS  = ['E','x','E','S','S']
@@ -322,95 +375,92 @@ const IntroAnimation = ({ onComplete }) => {
       ctx.translate(getOX(), getOY())
       ctx.scale(getS(), getS())
 
-      // === STEP 1: PCB TRACES — drawn every frame, geometry is IMMUTABLE ===
+      // === STEP 1: PCB TRACES & TERMINALS DRAW IN 0.00–1.10 ===
       const pcbP = eio3(ph(t, 0, 1.10))
-      TD.forEach(td => {
+      TD.forEach((td, idx) => {
         ctx.save()
         ctx.strokeStyle  = C_PCB
-        ctx.lineWidth    = 1.9
+        ctx.lineWidth    = 1.8
         ctx.lineCap      = 'square'
         ctx.globalAlpha  = 0.88
         strokeSeg(ctx, td, 0, pcbP)
         ctx.restore()
+
+        // Terminal Nodes (Outer & Inner) drawn as trace progresses
+        if (pcbP > 0.05) {
+          const [ox, oy] = td.outerPt
+          drawTerminalNode(ctx, ox, oy, 5.0, pcbP * 0.85, false, 0)
+        }
+        if (pcbP >= 0.95) {
+          const [ix, iy] = td.innerPt
+          drawTerminalNode(ctx, ix, iy, 4.0, pcbP * 0.75, false, 0)
+        }
       })
 
-      // === STEP 2: Outer endpoints activate 1.10–1.40 ===
+      // === STEP 2: Outer Circular Terminals Wave Activation 1.10–1.40 ===
       const outerActP  = eo3(ph(t, 1.10, 0.30))
       const outerFadeP = t > 2.7 ? clamp(1 - (t - 2.7) / 0.35) : 1
       if (outerActP > 0) {
-        TD.forEach(td => {
-          const [ox, oy] = td.outerPt
-          ctx.fillStyle   = C_PCB
-          ctx.globalAlpha = outerActP * 0.50
-          ctx.beginPath(); ctx.arc(ox, oy, 4.5, 0, Math.PI*2); ctx.fill()
-          if (outerFadeP > 0) {
-            const a = outerActP * outerFadeP
-            const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, 12)
-            g.addColorStop(0, 'rgba(50,197,232,' + (0.92 * a) + ')')
-            g.addColorStop(1, 'rgba(50,197,232,0)')
-            ctx.fillStyle   = g; ctx.globalAlpha = a
-            ctx.beginPath(); ctx.arc(ox, oy, 12, 0, Math.PI*2); ctx.fill()
-            ctx.fillStyle   = C_CYAN; ctx.globalAlpha = a
-            ctx.beginPath(); ctx.arc(ox, oy, 4.5, 0, Math.PI*2); ctx.fill()
+        TD.forEach((td, idx) => {
+          const waveOffset = (idx % 5) * 0.04
+          const actProgress = clamp((outerActP - waveOffset) / (1 - waveOffset))
+          if (actProgress > 0) {
+            const [ox, oy] = td.outerPt
+            const pulseScale = 1 + Math.sin(actProgress * Math.PI) * 0.20
+            drawTerminalNode(ctx, ox, oy, 5.5 * pulseScale, actProgress * outerFadeP, true, pulseScale)
           }
         })
       }
 
-      // === STEP 3: Energy pulse travels outer to inner along 90° paths 1.40–2.30 ===
+      // === STEP 3: Energy Pulses Travel Outer -> Inner along 90° PCB Paths 1.40–2.30 ===
       const eFwdP = eio3(ph(t, 1.40, 0.90))
       if (eFwdP > 0 && eFwdP < 1.0001) {
-        const DASH = 0.22
-        TD.forEach(td => {
-          const headT = eFwdP
+        const DASH = 0.20
+        TD.forEach((td, idx) => {
+          const staggeredP = clamp((eFwdP - (idx % 4) * 0.03) / 0.88)
+          if (staggeredP <= 0) return
+
+          const headT = staggeredP
           const tailT = Math.max(0, headT - DASH)
           const hPt   = posAt(td, headT)
           const tPt   = posAt(td, tailT)
+
           ctx.save()
           ctx.lineCap   = 'round'
-          ctx.lineWidth = 3.2
-          ctx.shadowColor = C_CYAN; ctx.shadowBlur = 10
+          ctx.lineWidth = 3.0
+          ctx.shadowColor = C_CYAN
+          ctx.shadowBlur = 12
+
           const g = ctx.createLinearGradient(tPt[0], tPt[1], hPt[0], hPt[1])
           g.addColorStop(0,    'rgba(50,197,232,0)')
           g.addColorStop(0.35, 'rgba(50,197,232,0.92)')
           g.addColorStop(1,    'rgba(255,255,255,1)')
-          ctx.strokeStyle = g; ctx.globalAlpha = 1
+          ctx.strokeStyle = g
+          ctx.globalAlpha = 1
           strokeSeg(ctx, td, tailT, headT)
           ctx.restore()
         })
       }
 
-      // === STEP 4: Inner endpoints charge & pulse 2.30–2.55 ===
+      // === STEP 4: Inner Terminals Charge & Pulse 2.30–2.55 ===
       const innerP     = eo3(ph(t, 2.30, 0.25))
       const innerFadeP = t > 3.00 ? clamp(1 - (t - 3.00) / 0.25) : 1
       if (innerP > 0) {
-        const pulse = 1 + Math.sin(t * 20) * 0.18
-        TD.forEach(td => {
+        const pulse = 1 + Math.sin(t * 22) * 0.18
+        TD.forEach((td) => {
           const [ix, iy] = td.innerPt
-          ctx.fillStyle = C_PCB; ctx.globalAlpha = 0.45
-          ctx.beginPath(); ctx.arc(ix, iy, 4, 0, Math.PI*2); ctx.fill()
           if (innerFadeP > 0) {
             const a = innerP * innerFadeP
-            ctx.save()
-            ctx.shadowColor = C_CYAN
-            ctx.shadowBlur = 20 * a
-            const g = ctx.createRadialGradient(ix, iy, 0, ix, iy, 20 * pulse * a)
-            g.addColorStop(0, 'rgba(255,255,255,' + a + ')')
-            g.addColorStop(0.35, 'rgba(50,197,232,' + (0.95 * a) + ')')
-            g.addColorStop(1, 'rgba(50,197,232,0)')
-            ctx.fillStyle = g; ctx.globalAlpha = a
-            ctx.beginPath(); ctx.arc(ix, iy, 20 * pulse * a, 0, Math.PI*2); ctx.fill()
-            ctx.fillStyle = C_WHITE; ctx.globalAlpha = a
-            ctx.beginPath(); ctx.arc(ix, iy, 5, 0, Math.PI*2); ctx.fill()
-            ctx.restore()
+            drawTerminalNode(ctx, ix, iy, 4.5 * pulse, a, true, pulse * 1.2)
           }
         })
       }
 
-      // === STEP 5: STRONG ENERGY CONVERGENCE 2.55–3.10 ===
+      // === STEP 5: STRONG ENERGY CONVERGENCE (20 Streams) 2.55–3.10 ===
       const convP    = ei2(ph(t, 2.55, 0.50))
       const convFade = t > 2.95 ? clamp(1 - (t - 2.95) / 0.15) : 1
       if (convP > 0 && convFade > 0) {
-        TD.forEach(td => {
+        TD.forEach((td) => {
           const [ix, iy] = td.innerPt
           const dx = CX - ix
           const dy = CY - iy
@@ -437,7 +487,7 @@ const IntroAnimation = ({ onComplete }) => {
           ctx.lineTo(headX, headY)
           ctx.stroke()
 
-          // 2. Travelling energy particles along convergence stream
+          // 2. Travelling energy particles along stream
           for (let pIdx = 0; pIdx < 3; pIdx++) {
             const pOffset = (pIdx * 0.26)
             const pProgress = clamp(convP * 1.35 - pOffset)
@@ -465,10 +515,10 @@ const IntroAnimation = ({ onComplete }) => {
       if (coreInP > 0 && coreFade > 0) {
         const a = coreInP * coreFade
         const pulseR = 1 + Math.sin(coreInP * Math.PI) * 0.40
-        const r = 36 * coreInP * pulseR
+        const r = 38 * coreInP * pulseR
 
         ctx.save()
-        // 1. Radial Starburst Rays
+        // 1. Radial Starburst Rays (16 Rays)
         const numRays = 16
         const rotAngle = t * 0.9
         for (let i = 0; i < numRays; i++) {
@@ -490,7 +540,7 @@ const IntroAnimation = ({ onComplete }) => {
           ctx.stroke()
         }
 
-        // 2. Wide Outer Bloom
+        // 2. Wide Outer Radial Bloom
         const gBloom = ctx.createRadialGradient(CX, CY, 0, CX, CY, r * 2.8)
         gBloom.addColorStop(0,   'rgba(50,197,232,' + (0.70 * a) + ')')
         gBloom.addColorStop(0.4, 'rgba(50,197,232,' + (0.32 * a) + ')')
@@ -505,7 +555,7 @@ const IntroAnimation = ({ onComplete }) => {
         gC.addColorStop(0.60, 'rgba(50,197,232,' + (0.92 * a) + ')')
         gC.addColorStop(1,    'rgba(50,197,232,0)')
         ctx.fillStyle = gC; ctx.globalAlpha = 1
-        ctx.shadowColor = C_CYAN; ctx.shadowBlur = 28 * a
+        ctx.shadowColor = C_CYAN; ctx.shadowBlur = 32 * a
         ctx.beginPath(); ctx.arc(CX, CY, r, 0, Math.PI*2); ctx.fill()
 
         // 4. Pure white center hot-spot
@@ -514,18 +564,18 @@ const IntroAnimation = ({ onComplete }) => {
         ctx.restore()
       }
 
-      // === STEP 7: CENTRAL CORE TRANSFORMS INTO EXESS EMBLEM 3.65–4.35 ===
+      // === STEP 7: EMBLEM FORGED FROM CENTRAL CORE 3.65–4.35 ===
       const emblemP = eo3(ph(t, 3.65, 0.70))
       if (emblemP > 0) drawEmblem(ctx, emblemP)
 
-      // === STEP 8: THE SAME ENERGY FORMS THE WORDMARK 4.35–4.90 ===
+      // === STEP 8: WORDMARK FORGED 4.35–4.90 ===
       const wmP = Math.max(0, (t - 4.35) / 0.11)
       if (wmP > 0) drawWordmark(ctx, wmP)
 
-      // === STEP 9: ENERGY RETRACTS inner to outer along SAME 90° PCB paths 4.90–5.65 ===
+      // === STEP 9: ENERGY RETRACTS Inner -> Outer along 90° PCB Paths 4.90–5.65 ===
       const retP = eio3(ph(t, 4.90, 0.75))
       if (retP > 0) {
-        const DASH = 0.22
+        const DASH = 0.20
         TD.forEach(td => {
           const headT = 1 - retP
           const tailT = Math.min(1, headT + DASH)
@@ -533,7 +583,7 @@ const IntroAnimation = ({ onComplete }) => {
           const tPt   = posAt(td, tailT)
           ctx.save()
           ctx.lineCap   = 'round'
-          ctx.lineWidth = 3.2
+          ctx.lineWidth = 3.0
           ctx.shadowColor = C_CYAN; ctx.shadowBlur = 10
           const g = ctx.createLinearGradient(tPt[0], tPt[1], hPt[0], hPt[1])
           g.addColorStop(0,   'rgba(50,197,232,0)')
@@ -543,32 +593,24 @@ const IntroAnimation = ({ onComplete }) => {
           strokeSeg(ctx, td, headT, tailT)
           ctx.restore()
         })
-        // Re-illuminate outer endpoints as pulse arrives back
+        // Re-illuminate outer circular nodes as retraction pulse completes
         if (retP > 0.75) {
           const ogP = eo3(clamp((retP - 0.75) / 0.25))
           TD.forEach(td => {
             const [ox, oy] = td.outerPt
-            const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, 12)
-            g.addColorStop(0, 'rgba(50,197,232,' + (0.80 * ogP) + ')')
-            g.addColorStop(1, 'rgba(50,197,232,0)')
-            ctx.fillStyle = g; ctx.globalAlpha = ogP
-            ctx.beginPath(); ctx.arc(ox, oy, 12, 0, Math.PI*2); ctx.fill()
-            ctx.fillStyle = C_CYAN; ctx.globalAlpha = ogP
-            ctx.beginPath(); ctx.arc(ox, oy, 4.5, 0, Math.PI*2); ctx.fill()
+            drawTerminalNode(ctx, ox, oy, 5.0, ogP, true, ogP)
           })
         }
       }
 
-      // === STEP 10: Final stable state 5.65+ ===
+      // === STEP 10: Final Stable State 5.65+ ===
       if (t >= 5.65) {
         const sP = eo3(clamp((t - 5.65) / 0.45))
         TD.forEach(td => {
           const [ox, oy] = td.outerPt
-          ctx.fillStyle = C_PCB; ctx.globalAlpha = 0.40 * sP
-          ctx.beginPath(); ctx.arc(ox, oy, 4.5, 0, Math.PI*2); ctx.fill()
+          drawTerminalNode(ctx, ox, oy, 4.5, sP * 0.75, false, 0)
           const [ix, iy] = td.innerPt
-          ctx.fillStyle = C_PCB; ctx.globalAlpha = 0.28 * sP
-          ctx.beginPath(); ctx.arc(ix, iy, 3.5, 0, Math.PI*2); ctx.fill()
+          drawTerminalNode(ctx, ix, iy, 3.8, sP * 0.60, false, 0)
         })
       }
 
