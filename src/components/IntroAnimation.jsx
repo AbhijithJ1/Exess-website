@@ -108,7 +108,8 @@ const C_CYAN  = '#32C5E8'
 const C_WHITE = '#FFFFFF'
 
 // --- Emblem ---
-const GCX = CX, GCY = CY - 10, GR = 56
+const GCX = CX, GCY = CY - 35, GR = 56
+const globeBottomY = GCY + GR // 316
 
 function drawEmblem(ctx, p) {
   // p: 0 -> 1 (Energy-constructed reveal from central core outward)
@@ -164,63 +165,81 @@ function drawEmblem(ctx, p) {
   ctx.stroke()
   ctx.restore()
 
-  // PCB legs
-  const legY = GCY + GR + 6
-  const LEGS = [
-    [-22, 18, -38, 36],
-    [ -9, 24, -22, 46],
-    [  0, 30,   0, 30],
-    [  9, 24,  22, 46],
-    [ 22, 18,  38, 36],
+  // Top Circuit Squares (matching Logo.jsx)
+  if (p > 0.6) {
+    const topP = clamp((p - 0.6) / 0.4)
+    ctx.fillStyle = C_PCB
+    ctx.globalAlpha = topP
+    ctx.beginPath(); ctx.roundRect(GCX - 8, GCY - GR - 14, 8, 8, 1.5); ctx.fill()
+    ctx.beginPath(); ctx.roundRect(GCX + 8, GCY - GR - 18, 10, 10, 1.5); ctx.fill()
+    ctx.fillStyle = C_CYAN
+    ctx.beginPath(); ctx.roundRect(GCX + 24, GCY - GR - 12, 6, 6, 1); ctx.fill()
+  }
+
+  // 5 Continuous Circuit Connectors — Single continuous paths starting at exact globe bottom edge (globeBottomY = 316)
+  // Far Left (272, 316 -> 272, 335 -> 250, 335 -> 250, 357)
+  // Inner Left (286.5, 316 -> 286.5, 346 -> 272, 346 -> 272, 369)
+  // Center (300, 316 -> 300, 352)
+  // Inner Right (313.5, 316 -> 313.5, 346 -> 328, 346 -> 328, 369)
+  // Far Right (328, 316 -> 328, 335 -> 350, 335 -> 350, 357)
+  const CONNECTORS = [
+    [[272, 316], [272, 335], [250, 335], [250, 357]],
+    [[286.5, 316], [286.5, 346], [272, 346], [272, 369]],
+    [[300, 316], [300, 352]],
+    [[313.5, 316], [313.5, 346], [328, 346], [328, 369]],
+    [[328, 316], [328, 335], [350, 335], [350, 357]],
   ]
-  ctx.globalAlpha = p * 0.9
+
+  ctx.globalAlpha = p * 0.95
   ctx.strokeStyle = C_PCB
-  ctx.lineWidth = 2.4
-  ctx.lineCap = 'square'
-  for (const [sx, sh, ex, eh] of LEGS) {
+  ctx.lineWidth = 2.5
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+
+  for (const pts of CONNECTORS) {
     ctx.beginPath()
-    if (sx === ex) {
-      ctx.moveTo(GCX + sx, legY)
-      ctx.lineTo(GCX + ex, legY + eh * p)
-    } else {
-      const midY = legY + sh * p
-      ctx.moveTo(GCX + sx, legY)
-      ctx.lineTo(GCX + sx, midY)
-      if (p > 0.5) {
-        const hP = clamp((p - 0.5) / 0.5)
-        ctx.lineTo(GCX + sx + (ex - sx) * hP, midY)
-      }
+    ctx.moveTo(pts[0][0], pts[0][1])
+    for (let i = 1; i < pts.length; i++) {
+      ctx.lineTo(pts[i][0], pts[i][1])
     }
     ctx.stroke()
   }
 
-  // Terminal pads
-  if (p > 0.72) {
-    const padP = eo3(clamp((p - 0.72) / 0.28))
+  // 5 Square Nodes (Attached directly with zero gap to connector line endpoints)
+  if (p > 0.65) {
+    const padP = eo3(clamp((p - 0.65) / 0.35))
     ctx.globalAlpha = padP
     ctx.strokeStyle = C_PCB
-    ctx.lineWidth = 1.8
-    const pads = [
-      [GCX - 38, legY + 36], [GCX - 22, legY + 46], [GCX, legY + 30],
-      [GCX + 22, legY + 46], [GCX + 38, legY + 36],
+    ctx.lineWidth = 2.0
+
+    const NODES = [
+      { x: 243, y: 357, w: 14, h: 14 },
+      { x: 265, y: 369, w: 14, h: 14 },
+      { x: 292, y: 352, w: 16, h: 16 },
+      { x: 321, y: 369, w: 14, h: 14 },
+      { x: 343, y: 357, w: 14, h: 14 },
     ]
-    for (const [px, py] of pads) {
+
+    for (const node of NODES) {
       ctx.beginPath()
-      ctx.roundRect(px - 6, py - 6, 12, 12, 2)
+      ctx.roundRect(node.x, node.y, node.w, node.h, 2.5)
       ctx.stroke()
+
+      // Inner solid square fill
       ctx.fillStyle = C_PCB
-      ctx.globalAlpha = padP * 0.4
+      ctx.globalAlpha = padP * 0.6
       ctx.beginPath()
-      ctx.roundRect(px - 2.5, py - 2.5, 5, 5, 1)
+      ctx.roundRect(node.x + node.w / 2 - 2, node.y + node.h / 2 - 2, 4, 4, 1)
       ctx.fill()
       ctx.globalAlpha = padP
     }
   }
+
   ctx.restore()
 }
 
 // --- Wordmark ---
-const WM_Y        = GCY + GR + 6 + 46 + 36   // 270 - 10 + 56 + 6 + 46 + 36 = 404
+const WM_Y        = 422   // Clear 39px breathing space below lowest node (y=383)
 const WM_FS       = 62
 const WM_CW       = WM_FS * 0.63
 const WM_LETTERS  = ['E','x','E','S','S']
@@ -388,8 +407,6 @@ const IntroAnimation = ({ onComplete }) => {
       }
 
       // === STEP 5: STRONG ENERGY CONVERGENCE 2.55–3.10 ===
-      // Energy streams travel from ALL 8 inner endpoints toward ONE central point (CX, CY).
-      // Streams fade out COMPLETELY by t=3.10 as central core forms.
       const convP    = ei2(ph(t, 2.55, 0.50))
       const convFade = t > 2.95 ? clamp(1 - (t - 2.95) / 0.15) : 1
       if (convP > 0 && convFade > 0) {
@@ -443,8 +460,6 @@ const IntroAnimation = ({ onComplete }) => {
       }
 
       // === STEP 6: POWERFUL CENTRAL ENERGY CORE 3.10–3.65 ===
-      // Pure white-hot center, 16 radial starburst rays, intense cyan glow.
-      // NO LOGO VISIBLE YET. NO DIAGONAL CONVERGENCE LINES REMAIN.
       const coreInP  = eo4(ph(t, 3.05, 0.45))
       const coreFade = t > 3.60 ? clamp(1 - (t - 3.60) / 0.35) : 1
       if (coreInP > 0 && coreFade > 0) {
@@ -500,7 +515,6 @@ const IntroAnimation = ({ onComplete }) => {
       }
 
       // === STEP 7: CENTRAL CORE TRANSFORMS INTO EXESS EMBLEM 3.65–4.35 ===
-      // Emblem is energy-forged outward from the central core
       const emblemP = eo3(ph(t, 3.65, 0.70))
       if (emblemP > 0) drawEmblem(ctx, emblemP)
 

@@ -42,21 +42,21 @@ const Logo = ({ className = '', size = 40, color = '#1E6B93', svgRef = null, pat
       <rect x="108" y="18" width="10" height="10" rx="1.5" fill={color} />
       <rect x="124" y="24" width="6" height="6" rx="1" fill="#32C5E8" />
 
-      {/* Circuit Traces from Globe */}
-      <path className={pathClassName} d="M75 135 L70 155 L55 155 L55 175" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path className={pathClassName} d="M90 135 L90 160 L75 160 L75 185" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path className={pathClassName} d="M110 135 L110 155 L125 155 L125 175" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path className={pathClassName} d="M125 135 L130 160 L145 160 L145 185" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path className={pathClassName} d="M100 135 L100 165" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      {/* Connected 5 Circuit Connectors — Continuous single paths originating at globe bottom edge (y=135) */}
+      <path className={pathClassName} d="M75 135 L75 152 L55 152 L55 173" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path className={pathClassName} d="M88 135 L88 162 L75 162 L75 183" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path className={pathClassName} d="M100 135 L100 168" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <path className={pathClassName} d="M112 135 L112 162 L125 162 L125 183" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path className={pathClassName} d="M125 135 L125 152 L145 152 L145 173" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
 
-      {/* Circuit Nodes (Outer Squares) */}
+      {/* Circuit Nodes (Outer Squares attached directly to connectors) */}
       <rect className={pathClassName} x="48" y="173" width="14" height="14" rx="2.5" stroke={color} strokeWidth="2" fill="none" />
       <rect className={pathClassName} x="68" y="183" width="14" height="14" rx="2.5" stroke={color} strokeWidth="2" fill="none" />
       <rect className={pathClassName} x="92" y="168" width="16" height="16" rx="2.5" stroke={color} strokeWidth="2" fill="none" />
       <rect className={pathClassName} x="118" y="183" width="14" height="14" rx="2.5" stroke={color} strokeWidth="2" fill="none" />
       <rect className={pathClassName} x="138" y="173" width="14" height="14" rx="2.5" stroke={color} strokeWidth="2" fill="none" />
 
-      {/* Inner Squares in Nodes */}
+      {/* Inner Solid Squares inside Nodes */}
       <rect x="53" y="178" width="4" height="4" rx="1" fill={color} />
       <rect x="73" y="188" width="4" height="4" rx="1" fill={color} />
       <rect x="98" y="174" width="4" height="4" rx="1" fill={color} />
