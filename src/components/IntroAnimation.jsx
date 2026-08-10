@@ -1,27 +1,27 @@
 ﻿import { useEffect, useRef } from 'react'
 
 /**
- * ExESS Intro Animation — Canvas State Machine
+ * ExESS Intro Animation — High-Intensity Canvas State Machine
  *
  * ONE immutable PCB geometry. Animation only affects:
- *   energy travel / glow / particles / logo formation.
+ *   energy travel / glow / particles / convergence streams / central core / logo.
  *   The PCB traces are drawn identically in EVERY FRAME.
  *
- * TIMELINE  (seconds)
- *  0.00 – 1.10  Phase 1 : PCB traces draw in (outer to inner)
- *  1.10 – 1.40  Phase 2 : Outer endpoints activate (simultaneous cyan glow)
- *  1.40 – 2.30  Phase 3 : Energy pulse travels outer to inner along ACTUAL paths
- *  2.30 – 2.60  Phase 4 : Inner endpoints charge / glow
- *  2.60 – 3.10  Phase 5 : Convergence particles inner pads to centre
- *  3.10 – 3.45  Phase 6 : Central energy core blooms
- *  3.45 – 4.25  Phase 7 : ExESS emblem forms from core
- *  4.25 – 4.80  Phase 8 : Wordmark forms letter-by-letter L to R
- *  4.80 – 5.55  Phase 9 : Energy retracts inner to outer along SAME paths
- *  5.55 – 6.20  Phase 10: Final stable hold — PCB + logo
+ * TIMELINE (seconds):
+ *  0.00 – 1.10  Step 1: PCB traces draw in (outer to inner)
+ *  1.10 – 1.40  Step 2: Outer endpoints activate (simultaneous cyan glow)
+ *  1.40 – 2.30  Step 3: Energy pulse travels outer to inner along ACTUAL 90° PCB paths
+ *  2.30 – 2.55  Step 4: Inner endpoints charge intensely (cyan-white pulsing nodes)
+ *  2.55 – 3.25  Step 5: STRONG ENERGY CONVERGENCE (Luminous streams + particles + radial rays inner -> center)
+ *  3.25 – 3.75  Step 6: POWERFUL CENTRAL ENERGY CORE (White-hot core, radial starburst rays, energetic bloom)
+ *  3.75 – 4.45  Step 7: ExESS emblem forms from core
+ *  4.45 – 5.00  Step 8: Wordmark forms letter-by-letter L to R
+ *  5.00 – 5.75  Step 9: Energy RETRACTS inner to outer along SAME PCB paths
+ *  5.75 – 6.50  Step 10: Final stable hold — PCB + logo
  */
 
 // PCB GEOMETRY — IMMUTABLE. One definition used in every frame.
-// 600x600 coordinate space.  Centre = (300, 295)
+// 600x600 coordinate space. Centre = (300, 295)
 // Outer endpoints = pts[0]   Inner endpoints = pts[last]
 const TRACES = [
   // Top-left
@@ -105,6 +105,7 @@ const ph    = (t, s, d) => clamp((t - s) / d)
 // --- Colors ---
 const C_PCB  = '#1E6B93'
 const C_CYAN = '#32C5E8'
+const C_WHITE = '#FFFFFF'
 
 // --- Emblem ---
 const GCX = CX, GCY = CY - 10, GR = 56
@@ -301,7 +302,7 @@ const IntroAnimation = ({ onComplete }) => {
       ctx.translate(getOX(), getOY())
       ctx.scale(getS(), getS())
 
-      // === PCB TRACES — drawn every frame, always full geometry after phase 1 ===
+      // === STEP 1: PCB TRACES — drawn every frame, geometry is IMMUTABLE ===
       const pcbP = eio3(ph(t, 0, 1.10))
       TD.forEach(td => {
         ctx.save()
@@ -313,7 +314,7 @@ const IntroAnimation = ({ onComplete }) => {
         ctx.restore()
       })
 
-      // === PHASE 2 — Outer endpoints activate 1.10–1.40 ===
+      // === STEP 2: Outer endpoints activate 1.10–1.40 ===
       const outerActP  = eo3(ph(t, 1.10, 0.30))
       const outerFadeP = t > 2.8 ? clamp(1 - (t - 2.8) / 0.35) : 1
       if (outerActP > 0) {
@@ -335,7 +336,7 @@ const IntroAnimation = ({ onComplete }) => {
         })
       }
 
-      // === PHASE 3 — Energy pulse outer to inner 1.40–2.30 ===
+      // === STEP 3: Energy pulse travels outer to inner along 90° paths 1.40–2.30 ===
       const eFwdP = eio3(ph(t, 1.40, 0.90))
       if (eFwdP > 0 && eFwdP < 1.0001) {
         const DASH = 0.22
@@ -358,75 +359,171 @@ const IntroAnimation = ({ onComplete }) => {
         })
       }
 
-      // === PHASE 4 — Inner endpoints charge 2.30–2.60 ===
-      const innerP     = eo3(ph(t, 2.30, 0.30))
-      const innerFadeP = t > 3.30 ? clamp(1 - (t - 3.30) / 0.40) : 1
+      // === STEP 4: Inner endpoints charge & pulse intensely 2.30–2.55 ===
+      const innerP     = eo3(ph(t, 2.30, 0.25))
+      const innerFadeP = t > 3.40 ? clamp(1 - (t - 3.40) / 0.40) : 1
       if (innerP > 0) {
+        const pulse = 1 + Math.sin(t * 20) * 0.18
         TD.forEach(td => {
           const [ix, iy] = td.innerPt
           ctx.fillStyle = C_PCB; ctx.globalAlpha = 0.45
           ctx.beginPath(); ctx.arc(ix, iy, 4, 0, Math.PI*2); ctx.fill()
           if (innerFadeP > 0) {
             const a = innerP * innerFadeP
-            const g = ctx.createRadialGradient(ix, iy, 0, ix, iy, 14)
-            g.addColorStop(0, 'rgba(50,197,232,' + (0.95 * a) + ')')
+            ctx.save()
+            ctx.shadowColor = C_CYAN
+            ctx.shadowBlur = 20 * a
+            const g = ctx.createRadialGradient(ix, iy, 0, ix, iy, 20 * pulse * a)
+            g.addColorStop(0, 'rgba(255,255,255,' + a + ')')
+            g.addColorStop(0.35, 'rgba(50,197,232,' + (0.95 * a) + ')')
             g.addColorStop(1, 'rgba(50,197,232,0)')
             ctx.fillStyle = g; ctx.globalAlpha = a
-            ctx.beginPath(); ctx.arc(ix, iy, 14, 0, Math.PI*2); ctx.fill()
-            ctx.fillStyle = '#ffffff'; ctx.globalAlpha = a
-            ctx.beginPath(); ctx.arc(ix, iy, 4, 0, Math.PI*2); ctx.fill()
+            ctx.beginPath(); ctx.arc(ix, iy, 20 * pulse * a, 0, Math.PI*2); ctx.fill()
+            ctx.fillStyle = C_WHITE; ctx.globalAlpha = a
+            ctx.beginPath(); ctx.arc(ix, iy, 5, 0, Math.PI*2); ctx.fill()
+            ctx.restore()
           }
         })
       }
 
-      // === PHASE 5 — Convergence particles 2.60–3.10 ===
-      const convP = ei2(ph(t, 2.60, 0.50))
+      // === STEP 5: STRONG ENERGY CONVERGENCE 2.55–3.25 ===
+      // From EVERY inner endpoint, create clearly visible luminous energy streams & particles
+      // converging synchronously toward the central point (CX, CY).
+      const convP = ei2(ph(t, 2.55, 0.70))
       if (convP > 0) {
         TD.forEach(td => {
           const [ix, iy] = td.innerPt
-          const px = ix + (CX - ix) * convP
-          const py = iy + (CY - iy) * convP
-          const alpha = convP < 0.80 ? Math.min(1, convP * 4) : clamp((1 - convP) / 0.20)
+          const dx = CX - ix
+          const dy = CY - iy
+          const headX = ix + dx * convP
+          const headY = iy + dy * convP
+
           ctx.save()
-          ctx.shadowColor = C_CYAN; ctx.shadowBlur = 14
-          ctx.fillStyle   = '#ffffff'; ctx.globalAlpha = Math.max(0, alpha)
-          ctx.beginPath(); ctx.arc(px, py, 3.8, 0, Math.PI*2); ctx.fill()
+          // 1. Draw glowing tapered energy beam from innerPt to current head position
+          ctx.shadowColor = C_CYAN
+          ctx.shadowBlur  = 18 * convP
+          ctx.lineCap     = 'round'
+
+          const streamGrad = ctx.createLinearGradient(ix, iy, headX, headY)
+          streamGrad.addColorStop(0,    'rgba(50,197,232,0.30)')
+          streamGrad.addColorStop(0.4,  'rgba(50,197,232,0.90)')
+          streamGrad.addColorStop(0.85, 'rgba(168,235,248,0.98)')
+          streamGrad.addColorStop(1,    'rgba(255,255,255,1.0)')
+
+          ctx.strokeStyle = streamGrad
+          ctx.lineWidth   = 2.4 + convP * 2.0
+          ctx.globalAlpha = Math.min(1, convP * 2.2)
+          ctx.beginPath()
+          ctx.moveTo(ix, iy)
+          ctx.lineTo(headX, headY)
+          ctx.stroke()
+
+          // 2. Travelling energy particles along each convergence stream
+          for (let pIdx = 0; pIdx < 3; pIdx++) {
+            const pOffset = (pIdx * 0.26)
+            const pProgress = clamp(convP * 1.35 - pOffset)
+            if (pProgress > 0 && pProgress <= 1) {
+              const px = ix + dx * pProgress
+              const py = iy + dy * pProgress
+              const pAlpha = (1 - pProgress * 0.25) * Math.min(1, convP * 2.2)
+
+              ctx.shadowColor = C_CYAN
+              ctx.shadowBlur  = 14
+              ctx.fillStyle   = C_WHITE
+              ctx.globalAlpha = pAlpha
+              ctx.beginPath()
+              ctx.arc(px, py, 3.5 * (1 - pProgress * 0.35), 0, Math.PI*2)
+              ctx.fill()
+            }
+          }
           ctx.restore()
         })
+
+        // 3. Radial light rays connecting center to inner endpoints as energy arrives
+        if (convP > 0.25) {
+          const rayP = clamp((convP - 0.25) / 0.75)
+          ctx.save()
+          TD.forEach(td => {
+            const [ix, iy] = td.innerPt
+            ctx.shadowColor = C_CYAN
+            ctx.shadowBlur  = 12 * rayP
+            ctx.strokeStyle = 'rgba(168,235,248,' + (0.55 * rayP) + ')'
+            ctx.lineWidth   = 1.5
+            ctx.beginPath()
+            ctx.moveTo(CX, CY)
+            ctx.lineTo(ix, iy)
+            ctx.stroke()
+          })
+          ctx.restore()
+        }
       }
 
-      // === PHASE 6 — Central energy core 3.10–3.45 ===
-      const coreInP  = eo4(ph(t, 3.10, 0.35))
-      const coreFade = t > 3.55 ? clamp(1 - (t - 3.55) / 0.35) : 1
+      // === STEP 6: POWERFUL CENTRAL ENERGY CORE 3.25–3.75 ===
+      // Intense cyan-white energy bloom, white-hot center, radial starburst rays, controlled pulse
+      const coreInP  = eo4(ph(t, 3.20, 0.50))
+      const coreFade = t > 3.65 ? clamp(1 - (t - 3.65) / 0.40) : 1
       if (coreInP > 0 && coreFade > 0) {
         const a = coreInP * coreFade
-        const r = 26 * coreInP
+        const pulseR = 1 + Math.sin(coreInP * Math.PI) * 0.40
+        const r = 36 * coreInP * pulseR
+
         ctx.save()
-        const gB = ctx.createRadialGradient(CX, CY, 0, CX, CY, r * 2.2)
-        gB.addColorStop(0,   'rgba(50,197,232,' + (0.45 * a) + ')')
-        gB.addColorStop(0.5, 'rgba(50,197,232,' + (0.18 * a) + ')')
-        gB.addColorStop(1,   'rgba(50,197,232,0)')
-        ctx.fillStyle = gB; ctx.globalAlpha = 1
-        ctx.beginPath(); ctx.arc(CX, CY, r * 2.2, 0, Math.PI*2); ctx.fill()
+        // 1. Radial Starburst Rays (Panel 5 & 6 style)
+        const numRays = 16
+        const rotAngle = t * 0.9
+        for (let i = 0; i < numRays; i++) {
+          const angle = (i * Math.PI * 2) / numRays + rotAngle
+          const rayLen = r * (2.0 + (i % 2 === 0 ? 1.0 : 0.4))
+          const rx = CX + Math.cos(angle) * rayLen
+          const ry = CY + Math.sin(angle) * rayLen
+
+          const rayG = ctx.createLinearGradient(CX, CY, rx, ry)
+          rayG.addColorStop(0,   'rgba(255,255,255,' + (0.95 * a) + ')')
+          rayG.addColorStop(0.35,'rgba(50,197,232,' + (0.75 * a) + ')')
+          rayG.addColorStop(1,   'rgba(50,197,232,0)')
+
+          ctx.strokeStyle = rayG
+          ctx.lineWidth   = (i % 2 === 0 ? 3.0 : 1.8) * a
+          ctx.beginPath()
+          ctx.moveTo(CX, CY)
+          ctx.lineTo(rx, ry)
+          ctx.stroke()
+        }
+
+        // 2. Wide Outer Bloom
+        const gBloom = ctx.createRadialGradient(CX, CY, 0, CX, CY, r * 2.8)
+        gBloom.addColorStop(0,   'rgba(50,197,232,' + (0.70 * a) + ')')
+        gBloom.addColorStop(0.4, 'rgba(50,197,232, ' + (0.32 * a) + ')')
+        gBloom.addColorStop(1,   'rgba(50,197,232,0)')
+        ctx.fillStyle = gBloom; ctx.globalAlpha = 1
+        ctx.beginPath(); ctx.arc(CX, CY, r * 2.8, 0, Math.PI*2); ctx.fill()
+
+        // 3. Intense White-Hot Core
         const gC = ctx.createRadialGradient(CX, CY, 0, CX, CY, r)
-        gC.addColorStop(0,   'rgba(255,255,255,' + a + ')')
-        gC.addColorStop(0.4, 'rgba(50,197,232,' + (0.9*a) + ')')
-        gC.addColorStop(1,   'rgba(50,197,232,0)')
+        gC.addColorStop(0,    'rgba(255,255,255,' + a + ')')
+        gC.addColorStop(0.28, 'rgba(235,250,255,' + (0.98 * a) + ')')
+        gC.addColorStop(0.60, 'rgba(50,197,232,' + (0.92 * a) + ')')
+        gC.addColorStop(1,    'rgba(50,197,232,0)')
         ctx.fillStyle = gC; ctx.globalAlpha = 1
+        ctx.shadowColor = C_CYAN; ctx.shadowBlur = 28 * a
         ctx.beginPath(); ctx.arc(CX, CY, r, 0, Math.PI*2); ctx.fill()
+
+        // 4. Pure white center hot-spot
+        ctx.fillStyle = C_WHITE; ctx.globalAlpha = a
+        ctx.beginPath(); ctx.arc(CX, CY, Math.max(4, 9 * coreInP), 0, Math.PI*2); ctx.fill()
         ctx.restore()
       }
 
-      // === PHASE 7 — Emblem forms 3.45–4.25 ===
-      const emblemP = eo3(ph(t, 3.45, 0.80))
+      // === STEP 7: ExESS EMBLEM FORMS 3.75–4.45 ===
+      const emblemP = eo3(ph(t, 3.75, 0.70))
       if (emblemP > 0) drawEmblem(ctx, emblemP)
 
-      // === PHASE 8 — Wordmark forms 4.25–4.80 ===
-      const wmP = Math.max(0, (t - 4.25) / 0.11)
+      // === STEP 8: WORDMARK FORMS 4.45–5.00 ===
+      const wmP = Math.max(0, (t - 4.45) / 0.11)
       if (wmP > 0) drawWordmark(ctx, wmP)
 
-      // === PHASE 9 — Energy retracts inner to outer 4.80–5.55 ===
-      const retP = eio3(ph(t, 4.80, 0.75))
+      // === STEP 9: ENERGY RETRACTS inner to outer along SAME 90° PCB paths 5.00–5.75 ===
+      const retP = eio3(ph(t, 5.00, 0.75))
       if (retP > 0) {
         const DASH = 0.22
         TD.forEach(td => {
@@ -462,9 +559,9 @@ const IntroAnimation = ({ onComplete }) => {
         }
       }
 
-      // === PHASE 10 — Final stable state 5.55+ ===
-      if (t >= 5.55) {
-        const sP = eo3(clamp((t - 5.55) / 0.45))
+      // === STEP 10: Final stable state 5.75+ ===
+      if (t >= 5.75) {
+        const sP = eo3(clamp((t - 5.75) / 0.45))
         TD.forEach(td => {
           const [ox, oy] = td.outerPt
           ctx.fillStyle = C_PCB; ctx.globalAlpha = 0.40 * sP
@@ -477,7 +574,7 @@ const IntroAnimation = ({ onComplete }) => {
 
       ctx.restore()
 
-      if (t < 6.20 && !doneRef.current) {
+      if (t < 6.50 && !doneRef.current) {
         rafRef.current = requestAnimationFrame(draw)
       } else if (!doneRef.current) {
         requestAnimationFrame(finish)
@@ -485,7 +582,7 @@ const IntroAnimation = ({ onComplete }) => {
     }
 
     rafRef.current = requestAnimationFrame(draw)
-    const safety   = setTimeout(finish, 8000)
+    const safety   = setTimeout(finish, 8500)
 
     return () => {
       cancelAnimationFrame(rafRef.current)
