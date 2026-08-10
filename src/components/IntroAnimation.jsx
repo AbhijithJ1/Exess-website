@@ -2,20 +2,17 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Rebuilt Single-Timeline PCB Energy Reveal & Permanent Technological Frame
+ * IntroAnimation — Rebuilt Hero Intro: PCB → Energy Flow → Convergence → Identity
  *
- * CORE METAPHOR: "THE PCB CIRCUIT POWERS THE EXESS LOGO."
- *
- * ONE COORDINATED STAGE TIMELINE (~4.9s TOTAL):
- * Stage 1: PCB Circuit Formation (0.0s – 1.0s): Clean 90° PCB traces draw into position.
- * Stage 2: Outer Endpoints Activate (1.0s – 1.3s): All outer starting pads glow bright cyan.
- * Stage 3: Energy Travels Along PCB Paths (1.3s – 2.1s): Bright cyan pulses travel ALONG actual SVG PCB paths.
- * Stage 4: Inner Endpoints Brighten (2.1s – 2.4s): Inner socket pads flare cyan upon energy arrival.
- * Stage 5: Particles Converge to Center (2.4s – 2.8s): Energy sparks move from inner pads to center (300, 220) (NO RADIAL LINES!).
- * Stage 6: Central Energy Core Forms (2.8s – 3.1s): Central core dot at (300, 220) intensifies with soft cyan bloom.
- * Stage 7: Emblem Globe Forms (3.1s – 3.8s): Core energy powers emblem globe & cyan orbit reveal.
- * Stage 8: Wordmark Forms L → R (3.8s – 4.4s): ExESS wordmark reveals progressively (E → x → E → S → S).
- * Stage 9: Final Permanent State (4.4s – 5.0s): Energy settles; PCB circuit REMAINS PERMANENTLY VISIBLE framing logo.
+ * ABSOLUTE RULES:
+ * 1. NO top / top-left / sky energy particles.
+ * 2. All pulse beams start with inline opacity: 0 so no flash occurs on DOM mount.
+ * 3. Energy originates simultaneously at outer PCB endpoints.
+ * 4. Energy travels strictly ALONG existing 90° SVG PCB paths.
+ * 5. Inner PCB endpoints illuminate as energy collection nodes.
+ * 6. Energy particles move from inner endpoints to central core (300, 220) (NO radial lines).
+ * 7. Central core powers ExESS emblem & wordmark reveal (L -> R).
+ * 8. PCB circuit REMAINS PERMANENTLY VISIBLE in exact fixed position as the hero technological frame.
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -147,7 +144,7 @@ const IntroAnimation = ({ onComplete }) => {
       })
     }
 
-    // High-visibility energy pulse overlay (60px pulse dash with bright cyan stroke)
+    // Energy pulse overlays (hidden with opacity: 0 initially)
     if (pulseGroupRef.current) {
       const pulses = pulseGroupRef.current.querySelectorAll('.pulse-beam')
       pulses.forEach((el, idx) => {
@@ -200,7 +197,7 @@ const IntroAnimation = ({ onComplete }) => {
     // STAGE 3: ENERGY TRAVELS ALONG ACTUAL PCB TRACES (1.3s – 2.1s)
     if (pulseGroupRef.current) {
       const pulses = pulseGroupRef.current.querySelectorAll('.pulse-beam')
-      // Make pulses INSTANTLY 100% visible at 1.30s as they travel along SVG paths!
+      // Make pulses 100% visible at 1.30s ONLY as they begin moving along SVG paths!
       tl.to(pulses, { opacity: 1, duration: 0.06 }, 1.30)
       pulses.forEach((el) => {
         tl.to(el, { strokeDashoffset: 0, duration: 0.75, ease: 'power2.inOut' }, 1.30)
@@ -384,7 +381,7 @@ const IntroAnimation = ({ onComplete }) => {
         <circle className="outer-pad" cx="560" cy="560" r="4.5" />
       </svg>
 
-      {/* ── STAGE 3: SYNCHRONIZED ENERGY PULSE BEAMS (TRAVELLING ALONG SAME PCB PATHS) ── */}
+      {/* ── STAGE 3: SYNCHRONIZED ENERGY PULSE BEAMS (OPACITY 0 INLINE TO PREVENT DOM FLASH) ── */}
       <svg
         ref={pulseGroupRef}
         aria-hidden="true"
@@ -394,14 +391,14 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path className="pulse-beam" d="M 40 40 H 180 V 120 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 560 40 H 420 V 120 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 20 260 H 130 V 270 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 20 340 H 130 V 330 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 580 260 H 470 V 270 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 580 340 H 470 V 320 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 40 560 H 180 V 480 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 560 560 H 420 V 480 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 40 40 H 180 V 120 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 560 40 H 420 V 120 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 20 260 H 130 V 270 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 20 340 H 130 V 330 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 580 260 H 470 V 270 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 580 340 H 470 V 320 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 40 560 H 180 V 480 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 560 560 H 420 V 480 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
       </svg>
 
       {/* ── STAGE 4: TERMINAL SOCKET PADS GROUP (INNER ENDPOINTS ILLUMINATE) ── */}
