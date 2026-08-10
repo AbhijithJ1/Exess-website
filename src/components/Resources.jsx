@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Download, X, FileText, ArrowRight } from 'lucide-react'
-import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { Download, X, FileText } from 'lucide-react'
 import PowerOnHeader from './PowerOnHeader'
 import PcbLightButton from './PcbLightButton'
 import { resourcesData } from '../data/resourcesData'
 
 const Resources = () => {
-  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation()
   const [showAllModal, setShowAllModal] = useState(false)
 
   // Curated 4 resources on homepage
@@ -31,20 +29,21 @@ const Resources = () => {
 
   return (
     <section id="resources" className="relative section-gap overflow-hidden bg-transparent">
-      <div className="section-padding relative z-10">
+      <div className="section-padding max-w-7xl mx-auto relative z-10">
+        {/* ── 1. Unified Section Header Rhythm ─────────────────────────── */}
         <PowerOnHeader
-          badge="Learning Vault & Resources"
+          badge="LEARNING VAULT & RESOURCES"
           headline={<>Knowledge for <span className="text-light-sweep-dark">Hardware</span> Engineers</>}
           description="Curated technical documentation, PCB layout guides, synthesizable RTL templates, and engineering assets."
           align="left"
         />
 
-        {/* Curated Resources Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
+        {/* ── 2. Strict 4-Column Desktop Resource Grid ─────────────────── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch mb-12">
           {curatedResources.map((res) => (
             <div
               key={res.id}
-              className="group p-6 sm:p-8 flex flex-col justify-between bg-white border border-border/70 rounded-3xl hover:border-primary/30 hover:shadow-soft-lg transition-all duration-300"
+              className="group p-6 flex flex-col justify-between bg-white border border-border/70 rounded-3xl hover:border-primary/30 hover:shadow-soft-lg transition-all duration-300 h-full"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -56,34 +55,34 @@ const Resources = () => {
                   </span>
                 </div>
 
-                <span className="text-[10px] font-brand uppercase tracking-[0.16em] text-primary mb-1 block">
+                <span className="text-[10px] font-brand uppercase tracking-[0.16em] text-primary mb-1 block font-semibold">
                   {res.category}
                 </span>
-                <h3 className="text-lg font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors">
+                <h3 className="text-base font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors">
                   {res.title}
                 </h3>
-                <p className="font-inter text-xs text-body leading-relaxed mb-6">
+                <p className="font-inter text-xs text-body leading-relaxed mb-6 line-clamp-3">
                   {res.description}
                 </p>
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                <span className="text-xs font-mono text-slate-400">
-                  Size: {res.fileSize} &bull; {res.downloads} downloads
+                <span className="text-[11px] font-mono text-slate-400">
+                  {res.fileSize}
                 </span>
                 <a
                   href={res.url}
                   className="inline-flex items-center gap-1.5 text-[10px] font-brand uppercase tracking-wider text-primary hover:text-secondary transition-colors font-semibold"
                 >
-                  Download Asset <Download className="w-3.5 h-3.5" />
+                  Asset <Download className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
           ))}
         </div>
 
-        {/* View All Resources Button */}
-        <div className="flex justify-center">
+        {/* ── 3. Standalone Centered CTA ──────────────────────────────── */}
+        <div className="flex justify-center mt-12">
           <PcbLightButton onClick={() => setShowAllModal(true)}>
             VIEW ALL RESOURCES
           </PcbLightButton>
@@ -131,7 +130,7 @@ const Resources = () => {
                         <FileText className="w-5 h-5" />
                       </div>
                       <div>
-                        <span className="text-[9px] font-brand uppercase tracking-wider text-primary">{res.category} &bull; {res.format}</span>
+                        <span className="text-[9px] font-brand uppercase tracking-wider text-primary font-semibold">{res.category} &bull; {res.format}</span>
                         <h4 className="font-brand text-sm text-heading font-bold">{res.title}</h4>
                         <p className="text-xs font-inter text-gray-500">{res.description}</p>
                       </div>

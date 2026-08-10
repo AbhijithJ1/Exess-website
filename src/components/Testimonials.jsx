@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { Quote } from 'lucide-react'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
@@ -40,15 +39,16 @@ const Testimonials = () => {
       {/* PCB Circuit Traces Flowing Across Full Viewport Width */}
       <TestimonialsPCBBackground />
 
-      <div className="section-padding relative z-10">
+      <div className="section-padding max-w-7xl mx-auto relative z-10">
+        {/* ── 1. Unified Section Header Rhythm ─────────────────────────── */}
         <PowerOnHeader
-          badge="Community Voices"
+          badge="COMMUNITY VOICES"
           headline={<>Impact &amp; <span className="text-light-sweep-dark">Testimonials</span></>}
           description="Hear from students, faculty mentors, workshop participants, and ExESS core members."
           align="left"
         />
 
-        {/* ── PREMIER INFINITE HORIZONTAL TESTIMONIAL CAROUSEL (NO WHITE SIDE MASKS) ── */}
+        {/* ── 2. Premier Infinite Horizontal Testimonial Carousel ───────── */}
         <div className="relative w-full overflow-hidden my-6 py-4 group">
           {/* Continuous Infinite Marquee Track (50s Slow Calm Speed) */}
           <div className="flex gap-6 w-max animate-marquee group-hover:[animation-play-state:paused] will-change-transform">

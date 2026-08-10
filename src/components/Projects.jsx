@@ -35,21 +35,22 @@ const Projects = () => {
 
   return (
     <section id="projects" className="relative section-gap overflow-hidden">
-      <div className="section-padding relative z-10">
+      <div className="section-padding max-w-7xl mx-auto relative z-10">
+        {/* ── 1. Unified Section Header Rhythm ─────────────────────────── */}
         <PowerOnHeader
-          badge="Innovation & Projects"
+          badge="INNOVATION & PROJECTS"
           headline={<>Engineering in <span className="text-light-sweep-dark">Action</span></>}
           description="Real-world hardware & embedded projects engineered by ExESS members. From circuit prototypes to working systems."
           align="left"
         />
 
-        {/* Curated Projects Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 mb-12">
+        {/* ── 2. Equal-Height Curated Projects Grid (3 Columns) ────────── */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 items-stretch mb-12">
           {curatedProjects.map((project) => (
             <div
               key={project.id}
               onClick={() => setSelectedProject(project)}
-              className="group cursor-pointer flex flex-col justify-between border-b border-border/50 pb-6 transition-all duration-300"
+              className="group cursor-pointer flex flex-col justify-between border-b border-border/50 pb-6 transition-all duration-300 h-full"
             >
               <div>
                 <ImagePlaceholder
@@ -62,10 +63,10 @@ const Projects = () => {
 
                 <div className="pt-5">
                   <div className="flex items-center justify-between mb-3">
-                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-brand tracking-wide ${
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide font-semibold ${
                       project.status === 'Completed'
                         ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
-                        : 'text-amber-600'
+                        : 'text-amber-600 bg-amber-50/50'
                     }`}>
                       {project.status}
                     </span>
@@ -81,22 +82,23 @@ const Projects = () => {
                   <p className="font-inter text-xs text-body leading-relaxed mb-4 line-clamp-2">
                     {project.description}
                   </p>
-
-                  <div className="flex flex-wrap gap-1.5 mb-2 font-mono">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 rounded-lg text-[9px] font-semibold bg-gray-100/80 text-gray-600"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
                 </div>
               </div>
 
               <div>
-                <span className="inline-flex items-center gap-2 text-[10px] font-brand uppercase tracking-wider text-primary group-hover:text-secondary transition-colors">
+                {/* Tech Tags positioned at consistent bottom baseline */}
+                <div className="flex flex-wrap gap-1.5 mb-4 font-mono">
+                  {project.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-0.5 rounded-lg text-[9px] font-semibold bg-gray-100/80 text-gray-600"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <span className="inline-flex items-center gap-2 text-[10px] font-brand uppercase tracking-wider text-primary group-hover:text-secondary transition-colors font-semibold">
                   Documentation <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
@@ -104,8 +106,8 @@ const Projects = () => {
           ))}
         </div>
 
-        {/* View All Projects Button */}
-        <div className="flex justify-center">
+        {/* ── 3. Standalone Centered CTA ──────────────────────────────── */}
+        <div className="flex justify-center mt-12">
           <PcbLightButton onClick={() => setShowAllModal(true)}>
             VIEW ALL PROJECTS
           </PcbLightButton>
@@ -150,12 +152,14 @@ const Projects = () => {
                       setShowAllModal(false)
                       setSelectedProject(proj)
                     }}
-                    className="p-4 rounded-2xl border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50"
+                    className="p-4 rounded-2xl border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50 flex flex-col justify-between"
                   >
-                    <span className="text-[9px] font-brand uppercase tracking-wider text-primary block mb-1">{proj.status}</span>
-                    <h4 className="font-brand text-sm text-heading font-bold mb-1">{proj.title}</h4>
-                    <p className="text-xs text-gray-500 line-clamp-2 mb-3 font-inter">{proj.description}</p>
-                    <span className="text-[10px] font-brand text-primary font-semibold flex items-center gap-1">
+                    <div>
+                      <span className="text-[9px] font-brand uppercase tracking-wider text-primary block mb-1">{proj.status}</span>
+                      <h4 className="font-brand text-sm text-heading font-bold mb-1">{proj.title}</h4>
+                      <p className="text-xs text-gray-500 line-clamp-2 mb-3 font-inter">{proj.description}</p>
+                    </div>
+                    <span className="text-[10px] font-brand text-primary font-semibold flex items-center gap-1 pt-2">
                       Documentation <ArrowRight className="w-3 h-3" />
                     </span>
                   </div>

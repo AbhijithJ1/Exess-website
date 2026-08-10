@@ -41,25 +41,26 @@ const Events = () => {
 
   return (
     <section id="events" className="relative section-gap overflow-hidden">
-      <div className="section-padding relative z-10">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 sm:gap-8 mb-12 sm:mb-16">
+      <div className="section-padding max-w-7xl mx-auto relative z-10">
+        {/* ── 1. Control Bar: Left Heading + Right Filter Tabs ─────────── */}
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 sm:gap-8 mb-12 sm:mb-16 border-b border-border/60 pb-6">
           <PowerOnHeader
-            badge="Events & Hackathons"
+            badge="EVENTS & HACKATHONS"
             headline={<>What&apos;s <span className="text-light-sweep-dark">Happening</span></>}
             description="From hands-on workshops to national hackathons, explore our lineup of engineering events."
             align="left"
             className="mb-0 max-w-2xl"
           />
 
-          <div className="flex gap-2 border-b border-border/60 pb-2 w-fit max-w-full overflow-x-auto no-scrollbar">
+          <div className="flex gap-2 p-1.5 rounded-2xl bg-white border border-border/80 shadow-soft w-fit max-w-full overflow-x-auto no-scrollbar flex-shrink-0 self-start lg:self-end">
             {['all', 'upcoming', 'past'].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3.5 py-1.5 rounded-lg text-[10px] uppercase font-brand tracking-wider font-semibold transition-all duration-300 whitespace-nowrap cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-[10px] uppercase font-brand tracking-wider font-semibold transition-all duration-300 whitespace-nowrap cursor-pointer ${
                   filter === f
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-body hover:text-heading'
+                    ? 'bg-primary text-white shadow-sm font-bold'
+                    : 'text-gray-600 hover:text-heading hover:bg-slate-50'
                 }`}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -68,8 +69,8 @@ const Events = () => {
           </div>
         </div>
 
-        {/* Curated Selection Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 mb-12">
+        {/* ── 2. Equal-Height Curated Selection Grid (3 Columns) ───────── */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 items-stretch mb-12">
           <AnimatePresence mode="popLayout">
             {curatedEvents.map((event) => (
               <motion.div
@@ -80,7 +81,7 @@ const Events = () => {
                 exit={{ opacity: 0, scale: 0.97 }}
                 transition={{ duration: 0.35 }}
                 onClick={() => setSelectedEvent(event)}
-                className="group cursor-pointer flex flex-col justify-between border-b border-border/50 pb-6 transition-all duration-300"
+                className="group cursor-pointer flex flex-col justify-between border-b border-border/50 pb-6 transition-all duration-300 h-full"
               >
                 <div>
                   <ImagePlaceholder
@@ -93,13 +94,13 @@ const Events = () => {
 
                   <div className="pt-5">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-[9px] font-brand text-primary tracking-wider uppercase">
+                      <span className="text-[9px] font-brand text-primary tracking-wider uppercase font-semibold">
                         {event.category}
                       </span>
-                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-brand tracking-wide ${
+                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide font-semibold ${
                         event.status === 'upcoming'
                           ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
-                          : 'text-gray-400'
+                          : 'text-gray-400 bg-slate-100'
                       }`}>
                         {event.status === 'upcoming' ? 'Upcoming' : 'Completed'}
                       </span>
@@ -126,8 +127,8 @@ const Events = () => {
                   </div>
                 </div>
 
-                <div>
-                  <span className="inline-flex items-center gap-2 text-[10px] font-brand uppercase tracking-wider text-primary group-hover:text-secondary transition-colors">
+                <div className="pt-2">
+                  <span className="inline-flex items-center gap-2 text-[10px] font-brand uppercase tracking-wider text-primary group-hover:text-secondary transition-colors font-semibold">
                     View Details <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </span>
                 </div>
@@ -136,8 +137,8 @@ const Events = () => {
           </AnimatePresence>
         </div>
 
-        {/* View All Events Button */}
-        <div className="flex justify-center">
+        {/* ── 3. Standalone Centered CTA ──────────────────────────────── */}
+        <div className="flex justify-center mt-12">
           <PcbLightButton onClick={() => setShowAllModal(true)}>
             VIEW ALL EVENTS
           </PcbLightButton>
@@ -182,12 +183,14 @@ const Events = () => {
                       setShowAllModal(false)
                       setSelectedEvent(ev)
                     }}
-                    className="p-4 rounded-2xl border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50"
+                    className="p-4 rounded-2xl border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50 flex flex-col justify-between"
                   >
-                    <span className="text-[9px] font-brand uppercase tracking-wider text-primary block mb-1">{ev.category}</span>
-                    <h4 className="font-brand text-sm text-heading font-bold mb-1">{ev.title}</h4>
-                    <p className="text-xs text-gray-500 line-clamp-2 mb-3 font-inter">{ev.description}</p>
-                    <span className="text-[10px] font-brand text-primary font-semibold flex items-center gap-1">
+                    <div>
+                      <span className="text-[9px] font-brand uppercase tracking-wider text-primary block mb-1">{ev.category}</span>
+                      <h4 className="font-brand text-sm text-heading font-bold mb-1">{ev.title}</h4>
+                      <p className="text-xs text-gray-500 line-clamp-2 mb-3 font-inter">{ev.description}</p>
+                    </div>
+                    <span className="text-[10px] font-brand text-primary font-semibold flex items-center gap-1 pt-2">
                       Details <ArrowRight className="w-3 h-3" />
                     </span>
                   </div>

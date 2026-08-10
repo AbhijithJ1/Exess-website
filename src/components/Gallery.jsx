@@ -35,17 +35,17 @@ const Gallery = () => {
 
   return (
     <section id="gallery" className="relative section-gap overflow-hidden">
-      <div className="section-padding relative z-10">
+      <div className="section-padding max-w-7xl mx-auto relative z-10">
+        {/* ── 1. Unified Section Header Rhythm ─────────────────────────── */}
         <PowerOnHeader
-          badge="Visual Showcase"
+          badge="VISUAL SHOWCASE"
           headline={<>Life at <span className="text-light-sweep-dark">ExESS</span></>}
           description="A glimpse into our fests, workshops, lab sessions, and community events."
           align="left"
         />
 
-        {/* ── PREMIER INFINITE HORIZONTAL IMAGE CAROUSEL (NO WHITE SIDE MASKS) ── */}
+        {/* ── 2. Premier Infinite Horizontal Image Carousel ───────────── */}
         <div className="relative w-full overflow-hidden my-6 py-4 group">
-          {/* Continuous Infinite Marquee Track */}
           <div className="flex gap-5 w-max animate-marquee group-hover:[animation-play-state:paused] will-change-transform">
             {galleryMarqueeList.map((item, idx) => (
               <div
@@ -63,7 +63,7 @@ const Gallery = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover/card:opacity-100 transition-opacity duration-300 p-4 sm:p-5 flex flex-col justify-end">
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-[9px] font-brand uppercase tracking-wider text-accent block">
+                          <span className="text-[9px] font-brand uppercase tracking-wider text-accent block font-semibold">
                             {item.category}
                           </span>
                           <h4 className="text-xs sm:text-sm font-bold font-brand text-white mt-0.5">
@@ -82,8 +82,8 @@ const Gallery = () => {
           </div>
         </div>
 
-        {/* View All Moments Button */}
-        <div className="flex justify-center mt-6">
+        {/* ── 3. Standalone Centered CTA ──────────────────────────────── */}
+        <div className="flex justify-center mt-10">
           <PcbLightButton onClick={() => setShowAllModal(true)}>
             VIEW ALL MOMENTS
           </PcbLightButton>
@@ -138,7 +138,7 @@ const Gallery = () => {
                       badge={item.category}
                     />
                     <div className="p-3 bg-white">
-                      <span className="text-[9px] font-brand uppercase text-primary block">{item.category}</span>
+                      <span className="text-[9px] font-brand uppercase text-primary block font-semibold">{item.category}</span>
                       <h4 className="font-brand text-xs text-heading font-bold">{item.title}</h4>
                     </div>
                   </div>
@@ -187,7 +187,7 @@ const Gallery = () => {
                 />
 
                 <div>
-                  <span className="text-[10px] font-brand text-accent uppercase tracking-widest">
+                  <span className="text-[10px] font-brand text-accent uppercase tracking-widest font-semibold">
                     {selectedImage.category} &bull; {selectedImage.date}
                   </span>
                   <h3 className="text-lg sm:text-xl font-bold font-brand text-white mt-1 mb-2">

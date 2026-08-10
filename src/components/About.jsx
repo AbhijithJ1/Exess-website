@@ -31,45 +31,37 @@ const About = () => {
     <section id="circuits" className="relative section-gap overflow-hidden bg-transparent">
       <div id="about" className="absolute -top-24" />
 
-      <div className="section-padding relative z-10">
-
-        {/* ── 1. Storytelling Header ───────────────────────────────────── */}
+      <div className="section-padding max-w-7xl mx-auto relative z-10">
+        {/* ── 1. Eyebrow -> Large Heading -> Supporting Line Stack ────────── */}
         <PowerOnHeader
+          badge="ABOUT ExESS"
           headline={
             <>
-              Electronics Students Society{' '}
-              <span className="text-light-sweep-dark">(ExESS)</span>
+              Pioneering <span className="text-primary font-bold">Hardware</span> &amp;{' '}
+              <span className="text-primary font-bold">Embedded Systems</span> Excellence
             </>
           }
           description="The official technical forum of the Department of Electronics and Communication Engineering at College of Engineering Chengannur."
-          maxW="max-w-3xl"
+          align="left"
+          maxW="max-w-4xl"
         />
 
-        {/* ── 2. Editorial Layout with Scroll Scale & Reveal Animation ── */}
+        {/* ── 2. Asymmetric 55/45 Editorial Block (Top-Aligned Anchor) ───── */}
         <motion.div
           ref={overviewRef}
-          initial={{ opacity: 0, scale: 1.05, filter: 'blur(8px)' }}
-          animate={overviewVisible ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : { opacity: 0, scale: 1.05, filter: 'blur(8px)' }}
+          initial={{ opacity: 0, scale: 1.03, filter: 'blur(6px)' }}
+          animate={overviewVisible ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : { opacity: 0, scale: 1.03, filter: 'blur(6px)' }}
           transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-20 sm:mb-28"
+          className="mb-16 sm:mb-24"
         >
-          <div className="relative py-8 lg:py-12 grid lg:grid-cols-12 gap-10 lg:gap-16 items-center border-y border-border/60">
-            {/* Left Column (60%): Exact Official ExESS Narrative Content */}
-            <div className="relative z-10 lg:col-span-7 text-left">
-              <span className="text-xs font-brand uppercase tracking-[0.22em] text-primary mb-3 block font-bold">
-                ABOUT ExESS
-              </span>
-
-              <h2 className="font-brand text-heading text-2xl sm:text-4xl lg:text-5xl font-bold mb-6 tracking-tight leading-[1.15]">
-                Pioneering <span className="text-primary font-bold">Hardware</span> &amp;{' '}
-                <span className="text-primary font-bold">Embedded Systems</span> Excellence at CEC
-              </h2>
-
-              <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-700 mb-5 font-normal">
+          <div className="relative py-8 lg:py-10 grid lg:grid-cols-12 gap-10 lg:gap-14 items-start border-y border-border/60">
+            {/* Left Column (55% / 7 cols): Narrative Content */}
+            <div className="relative z-10 lg:col-span-7 text-left space-y-4">
+              <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-700 font-normal">
                 Electronics Students Society (ExESS) is a technical forum for students in the electronics department of College of Engineering Chengannur. The primary goal of ExESS is to explore and strengthen the technical knowledge and practical skills of our students and make them industry-ready. We also intend to highlight what’s new and coming in the realm of electronics to help students comprehend technology and push it beyond what the world has seen.
               </p>
 
-              <p className="font-inter text-body text-sm sm:text-base leading-relaxed text-gray-600 mb-5">
+              <p className="font-inter text-body text-sm sm:text-base leading-relaxed text-gray-600">
                 ExESS arranges a variety of activities for students throughout the year. Its workshops to gain hands-on experience, hackathons for practical problem solving, and quiz programmes were marked by active participation of our students. Webinar series on some of the most relevant topics by eminent personnel were also conducted.
               </p>
 
@@ -78,7 +70,7 @@ const About = () => {
               </p>
             </div>
 
-            {/* Right Column (40%): Hardware Visual Frame */}
+            {/* Right Column (45% / 5 cols): Top-Anchored Hardware Visual Frame */}
             <div className="relative z-10 lg:col-span-5 w-full">
               <div className="rounded-3xl overflow-hidden border border-border/70 shadow-soft bg-white p-2.5">
                 <ImagePlaceholder
@@ -93,17 +85,17 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* ── 3. Mission & Vision — Opposing Directional Convergence ────────── */}
-        <div ref={mvRef} className="relative pt-6">
+        {/* ── 3. Full-Width Equal-Height Mission & Vision Row ────────────── */}
+        <div ref={mvRef} className="relative pt-4">
           <PCBConvergenceLines />
 
-          <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
-            {/* VISION — Enters from LEFT */}
+          <div className="grid md:grid-cols-2 gap-8 sm:gap-10 items-stretch">
+            {/* VISION CARD */}
             <motion.div
-              initial={{ opacity: 0, x: -60 }}
-              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -60 }}
+              initial={{ opacity: 0, x: -50 }}
+              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
               transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative bg-white rounded-3xl p-8 sm:p-10 border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
+              className="group relative bg-white rounded-3xl p-8 sm:p-10 border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between h-full"
             >
               <div>
                 <div className="w-14 h-14 rounded-2xl bg-accent/[0.12] flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
@@ -121,12 +113,12 @@ const About = () => {
               </div>
             </motion.div>
 
-            {/* MISSION — Enters from RIGHT */}
+            {/* MISSION CARD */}
             <motion.div
-              initial={{ opacity: 0, x: 60 }}
-              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 60 }}
+              initial={{ opacity: 0, x: 50 }}
+              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
               transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative bg-white rounded-3xl p-8 sm:p-10 border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
+              className="group relative bg-white rounded-3xl p-8 sm:p-10 border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between h-full"
             >
               <div>
                 <div className="w-14 h-14 rounded-2xl bg-primary/[0.08] flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">

@@ -32,8 +32,9 @@ const Contact = () => {
 
   return (
     <section id="contact" className="relative section-gap overflow-hidden">
-      <div className="section-padding relative z-10">
+      <div className="section-padding max-w-7xl mx-auto relative z-10">
         <PowerOnHeader
+          badge="CONTACT & CONNECT"
           headline={<>LET&apos;S <span className="text-light-sweep-dark">CONNECT</span></>}
           description="Reach out to ExESS for technical workshops, hardware research partnerships, or society membership inquiries."
           align="left"
@@ -44,18 +45,48 @@ const Contact = () => {
           initial="hidden"
           animate={contentVisible ? 'visible' : 'hidden'}
           variants={containerVariants}
-          className="grid lg:grid-cols-12 gap-10 lg:gap-14"
+          className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start"
         >
-          {/* Left Column (5 Columns): Connection Text, Contact Info & Integrated Google Maps Link Frame */}
-          <div className="lg:col-span-5 space-y-6">
+          {/* Left Column (45% / 5 Cols): Structured Info Hierarchy */}
+          <div className="lg:col-span-5 space-y-8">
+            {/* Group 1: Introduction text */}
             <motion.div variants={itemVariants}>
-              <p className="font-inter text-sm sm:text-base text-gray-600 leading-relaxed mb-6">
+              <p className="font-inter text-sm sm:text-base text-gray-600 leading-relaxed">
                 Whether you&apos;re a student looking to join, an industry partner interested in research,
                 or an alumnus offering technical mentorship &mdash; submit your query below.
               </p>
+            </motion.div>
 
-              {/* Integrated Campus Location Map & Direct Google Maps Embed Module */}
-              <div className="rounded-3xl border border-primary/20 bg-white p-4 shadow-soft space-y-3 mb-6">
+            {/* Group 2: Contact Details List */}
+            <motion.div variants={itemVariants} className="space-y-4 pt-2 border-t border-border/50">
+              <span className="text-[10px] font-brand uppercase tracking-[0.18em] text-primary font-bold block mb-3">
+                DIRECT CONTACT CHANNELS
+              </span>
+              {[
+                { icon: Mail, title: 'Email', lines: ['exess@cec.ac.in', 'contact.exess@gmail.com'] },
+                { icon: Phone, title: 'Phone', lines: ['+91 98765 43210'] },
+                { icon: Clock, title: 'Office Hours', lines: ['Mon - Fri: 9:00 AM - 5:00 PM'] },
+              ].map((item) => (
+                <div key={item.title} className="flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-primary/[0.06] flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <item.icon className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="text-[11px] font-brand text-heading uppercase tracking-wider mb-0.5 font-semibold">{item.title}</h4>
+                    {item.lines.map((line, i) => (
+                      <p key={i} className="text-xs font-inter text-gray-600">{line}</p>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Group 3: Location & Google Maps Embed Module */}
+            <motion.div variants={itemVariants} className="pt-2 border-t border-border/50">
+              <span className="text-[10px] font-brand uppercase tracking-[0.18em] text-primary font-bold block mb-3">
+                CAMPUS LOCATION
+              </span>
+              <div className="rounded-3xl border border-primary/20 bg-white p-4 shadow-soft space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -77,7 +108,6 @@ const Contact = () => {
                   </a>
                 </div>
 
-                {/* Styled Map Preview Frame */}
                 <div className="rounded-2xl overflow-hidden border border-border/60">
                   <ImagePlaceholder
                     src={null}
@@ -100,29 +130,9 @@ const Contact = () => {
                 </div>
               </div>
             </motion.div>
-
-            <div className="space-y-4 pt-2">
-              {[
-                { icon: Mail, title: 'Email', lines: ['exess@cec.ac.in', 'contact.exess@gmail.com'] },
-                { icon: Phone, title: 'Phone', lines: ['+91 98765 43210'] },
-                { icon: Clock, title: 'Office Hours', lines: ['Mon - Fri: 9:00 AM - 5:00 PM'] },
-              ].map((item) => (
-                <motion.div key={item.title} variants={itemVariants} className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-primary/[0.06] flex items-center justify-center flex-shrink-0">
-                    <item.icon className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="text-[11px] font-brand text-heading uppercase tracking-wider mb-0.5">{item.title}</h4>
-                    {item.lines.map((line, i) => (
-                      <p key={i} className="text-xs font-inter text-gray-600">{line}</p>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
           </div>
 
-          {/* Right Column (7 Columns): Contact Form with SEND MESSAGE PcbLightButton */}
+          {/* Right Column (55% / 7 Cols): Actionable Contact Form */}
           <motion.div variants={itemVariants} className="lg:col-span-7">
             <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-10 border border-border/80 shadow-soft">
               {submitted ? (
@@ -132,14 +142,14 @@ const Contact = () => {
                   className="text-center py-12 sm:py-16"
                 >
                   <CheckCircle className="w-14 h-14 text-emerald-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-brand text-heading mb-2">Message Sent!</h3>
+                  <h3 className="text-xl font-brand text-heading mb-2 font-bold">Message Sent!</h3>
                   <p className="font-inter text-sm text-gray-600">Thank you for reaching out to ExESS. We will respond promptly.</p>
                 </motion.div>
               ) : (
                 <>
                   <div className="grid sm:grid-cols-2 gap-5 mb-5">
                     <div>
-                      <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2">Name</label>
+                      <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Name</label>
                       <input
                         type="text" required
                         value={formState.name}
@@ -149,7 +159,7 @@ const Contact = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2">Email</label>
+                      <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Email</label>
                       <input
                         type="email" required
                         value={formState.email}
@@ -161,7 +171,7 @@ const Contact = () => {
                   </div>
 
                   <div className="mb-5">
-                    <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2">Subject</label>
+                    <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Subject</label>
                     <select className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter text-body">
                       <option>General Inquiry</option>
                       <option>Join ExESS</option>
@@ -171,7 +181,7 @@ const Contact = () => {
                   </div>
 
                   <div className="mb-7 sm:mb-8">
-                    <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2">Message</label>
+                    <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Message</label>
                     <textarea
                       required rows={5}
                       value={formState.message}
@@ -181,7 +191,6 @@ const Contact = () => {
                     />
                   </div>
 
-                  {/* Signature PcbLightButton Submit Button */}
                   <PcbLightButton type="submit" icon={Send} className="w-full py-4">
                     SEND MESSAGE
                   </PcbLightButton>
