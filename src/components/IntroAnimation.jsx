@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react'
  *
  * TIGHTLY PACKED HIGH-DENSITY PCB GEOMETRY:
  * Exactly 8 traces Left + 8 traces Right with compressed vertical gaps for a dense, technical PCB cluster feel.
+ * Bottom-left (L8) & bottom-right (R8) inner endpoints are pulled outward to provide generous clearance around ExESS wordmark.
  * 16 Outer Circular Terminals -> 16 PCB Traces -> 16 Inner Nodes -> Central Energy Core -> ExESS Emblem & Wordmark -> Final Stable Logo
  * (NO REVERSE ENERGY FLOW)
  *
@@ -21,11 +22,11 @@ import { useEffect, useRef } from 'react'
  *  5.60 – 6.20  Step 10: FINAL STABLE LOGO — Clean ExESS logo + 16-trace PCB framing
  */
 
-// EXACTLY 16 TRACES (8 Left, 8 Right) — TIGHT VERTICAL SPACING FOR HIGH DENSITY
+// EXACTLY 16 TRACES (8 Left, 8 Right) — TIGHT VERTICAL SPACING & WORDMARK CLEARANCE
 // 600x600 coordinate space. Center = (300, 295)
-// Protected Central Safe Zone: X (205 .. 395), Y (160 .. 445)
+// Wordmark Safe Exclusion Zone: X (175 .. 425), Y (400 .. 460)
 const TRACES = [
-  // --- LEFT SIDE TRACES (8) — Dense Vertical Cluster ---
+  // --- LEFT SIDE TRACES (8) ---
   // L1. Top Outer Trace
   { pts: [[40, 70], [165, 70], [165, 130], [195, 130]] },
   // L2. Upper Trace
@@ -40,8 +41,8 @@ const TRACES = [
   { pts: [[25, 345], [125, 345], [125, 325], [175, 325]] },
   // L7. Lower Trace
   { pts: [[35, 410], [140, 410], [140, 375], [185, 375]] },
-  // L8. Bottom Outer Trace
-  { pts: [[50, 485], [190, 485], [190, 435], [205, 435]] },
+  // L8. Bottom Outer Trace (Shortened inner endpoint for wordmark clearance)
+  { pts: [[50, 485], [175, 485], [175, 450]] },
 
   // --- RIGHT SIDE TRACES (8) — Mirrored across CX=300 ---
   // R1. Top Outer Trace
@@ -58,8 +59,8 @@ const TRACES = [
   { pts: [[575, 345], [475, 345], [475, 325], [425, 325]] },
   // R7. Lower Trace
   { pts: [[565, 410], [460, 410], [460, 375], [415, 375]] },
-  // R8. Bottom Outer Trace
-  { pts: [[550, 485], [410, 485], [410, 435], [395, 435]] },
+  // R8. Bottom Outer Trace (Shortened inner endpoint for wordmark clearance)
+  { pts: [[550, 485], [425, 485], [425, 450]] },
 ]
 
 const CX = 300, CY = 295
