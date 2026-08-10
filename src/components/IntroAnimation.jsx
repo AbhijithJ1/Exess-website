@@ -1,248 +1,247 @@
-import { useEffect, useRef } from 'react'
+﻿import { useEffect, useRef } from 'react'
 
 /**
- * IntroAnimation — Ground-Up Canvas Rebuild
+ * ExESS Intro Animation — Canvas State Machine
  *
- * USES A SINGLE HTML CANVAS for the entire animation sequence.
- * This completely eliminates:
- *   - React DOM mount flashes (no SVG elements ever visible at time-zero)
- *   - GSAP SVG attribute animation compatibility bugs (cx/cy not animatable without AttrPlugin)
- *   - Independent Framer Motion / CSS animations interfering
- *   - Stale HMR cache issues
+ * ONE immutable PCB geometry. Animation only affects:
+ *   energy travel / glow / particles / logo formation.
+ *   The PCB traces are drawn identically in EVERY FRAME.
  *
- * SEQUENCE:
- *   Phase 1: PCB traces draw from outer endpoints inward                    (0.0 – 1.0s)
- *   Phase 2: Outer endpoint pads light up simultaneously                    (1.0 – 1.25s)
- *   Phase 3: Energy pulse travels along ACTUAL PCB paths (dash animation)   (1.25 – 2.1s)
- *   Phase 4: Inner endpoint pads charge and glow                            (2.1 – 2.4s)
- *   Phase 5: Particles move from inner pads to central core                 (2.4 – 2.9s)
- *   Phase 6: Central energy core forms                                      (2.9 – 3.2s)
- *   Phase 7: ExESS emblem strokes draw from center outward                  (3.2 – 3.9s)
- *   Phase 8: ExESS wordmark letters reveal L→R                             (3.9 – 4.5s)
- *   Phase 9: Final stable state — PCB REMAINS PERMANENTLY VISIBLE           (4.5 – 5.0s)
+ * TIMELINE  (seconds)
+ *  0.00 – 1.10  Phase 1 : PCB traces draw in (outer to inner)
+ *  1.10 – 1.40  Phase 2 : Outer endpoints activate (simultaneous cyan glow)
+ *  1.40 – 2.30  Phase 3 : Energy pulse travels outer to inner along ACTUAL paths
+ *  2.30 – 2.60  Phase 4 : Inner endpoints charge / glow
+ *  2.60 – 3.10  Phase 5 : Convergence particles inner pads to centre
+ *  3.10 – 3.45  Phase 6 : Central energy core blooms
+ *  3.45 – 4.25  Phase 7 : ExESS emblem forms from core
+ *  4.25 – 4.80  Phase 8 : Wordmark forms letter-by-letter L to R
+ *  4.80 – 5.55  Phase 9 : Energy retracts inner to outer along SAME paths
+ *  5.55 – 6.20  Phase 10: Final stable hold — PCB + logo
  */
 
-// ──────────────────────────────────────────────────────────────
-// PCB GEOMETRY — 8 traces, each defined as a series of [x, y] waypoints
-// All coordinates in a 600×600 SVG viewBox.
-// Outer endpoints are the START of each trace.
-// Inner endpoints are the END of each trace (nearest to center).
-// CENTER = (300, 300) — where the logo sits
-// ──────────────────────────────────────────────────────────────
+// PCB GEOMETRY — IMMUTABLE. One definition used in every frame.
+// 600x600 coordinate space.  Centre = (300, 295)
+// Outer endpoints = pts[0]   Inner endpoints = pts[last]
 const TRACES = [
   // Top-left
-  { pts: [[40, 40], [180, 40], [180, 130], [175, 130]] },
+  { pts: [[48, 48],  [196, 48],  [196, 148], [196, 148]] },
   // Top-right
-  { pts: [[560, 40], [420, 40], [420, 130], [425, 130]] },
-  // Middle-left upper
-  { pts: [[20, 220], [130, 220], [130, 235], [175, 235]] },
-  // Middle-left lower
-  { pts: [[20, 370], [130, 370], [130, 355], [175, 355]] },
-  // Middle-right upper
-  { pts: [[580, 220], [470, 220], [470, 235], [425, 235]] },
-  // Middle-right lower
-  { pts: [[580, 370], [470, 370], [470, 355], [425, 355]] },
+  { pts: [[552, 48], [404, 48],  [404, 148], [404, 148]] },
+  // Mid-left upper
+  { pts: [[24, 232], [148, 232], [148, 248], [196, 248]] },
+  // Mid-right upper
+  { pts: [[576, 232],[452, 232], [452, 248], [404, 248]] },
+  // Mid-left lower
+  { pts: [[24, 362], [148, 362], [148, 346], [196, 346]] },
+  // Mid-right lower
+  { pts: [[576, 362],[452, 362], [452, 346], [404, 346]] },
   // Bottom-left
-  { pts: [[40, 560], [180, 560], [180, 470], [175, 470]] },
+  { pts: [[48, 550], [196, 550], [196, 448], [196, 448]] },
   // Bottom-right
-  { pts: [[560, 560], [420, 560], [420, 470], [425, 470]] },
+  { pts: [[552, 550],[404, 550], [404, 448], [404, 448]] },
 ]
 
-// Pre-compute segment lengths and total length for each trace
-function computeTraceData(trace) {
+const CX = 300, CY = 295
+
+// --- Geometry Utilities ---
+function buildTrace(trace) {
   const { pts } = trace
-  const segments = []
+  const segs = []
   let total = 0
   for (let i = 0; i < pts.length - 1; i++) {
     const dx = pts[i + 1][0] - pts[i][0]
     const dy = pts[i + 1][1] - pts[i][1]
-    const len = Math.sqrt(dx * dx + dy * dy)
-    segments.push({ x0: pts[i][0], y0: pts[i][1], x1: pts[i + 1][0], y1: pts[i + 1][1], len })
+    const len = Math.hypot(dx, dy)
+    if (len < 0.001) continue
+    segs.push({ x0: pts[i][0], y0: pts[i][1], x1: pts[i+1][0], y1: pts[i+1][1], len })
     total += len
   }
-  return { pts, segments, total }
+  return { pts, segs, total, outerPt: pts[0], innerPt: pts[pts.length - 1] }
 }
 
-// Get the (x, y) position at progress t (0–1) along a trace
-function tracePosAt(traceData, t) {
-  const dist = t * traceData.total
-  let acc = 0
-  for (const seg of traceData.segments) {
-    if (acc + seg.len >= dist) {
-      const f = (dist - acc) / seg.len
-      return [seg.x0 + (seg.x1 - seg.x0) * f, seg.y0 + (seg.y1 - seg.y0) * f]
+function posAt(td, t) {
+  let rem = Math.max(0, Math.min(1, t)) * td.total
+  for (const s of td.segs) {
+    if (rem <= s.len) {
+      const f = rem / s.len
+      return [s.x0 + (s.x1 - s.x0) * f, s.y0 + (s.y1 - s.y0) * f]
     }
-    acc += seg.len
+    rem -= s.len
   }
-  const last = traceData.pts[traceData.pts.length - 1]
-  return [last[0], last[1]]
+  return [td.innerPt[0], td.innerPt[1]]
 }
 
-// Easing functions
-const easeInOut = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
-const easeOut   = (t) => 1 - Math.pow(1 - t, 3)
-const easeIn    = (t) => t * t * t
+function strokeSeg(ctx, td, tStart, tEnd) {
+  const dStart = tStart * td.total
+  const dEnd   = tEnd   * td.total
+  let acc = 0, started = false
+  ctx.beginPath()
+  for (const s of td.segs) {
+    const sEnd = acc + s.len
+    if (sEnd <= dStart) { acc += s.len; continue }
+    if (acc   >= dEnd)  break
+    const from = Math.max(acc, dStart)
+    const to   = Math.min(sEnd, dEnd)
+    const fF   = (from - acc) / s.len
+    const fT   = (to   - acc) / s.len
+    const x0 = s.x0 + (s.x1 - s.x0) * fF, y0 = s.y0 + (s.y1 - s.y0) * fF
+    const x1 = s.x0 + (s.x1 - s.x0) * fT, y1 = s.y0 + (s.y1 - s.y0) * fT
+    if (!started) { ctx.moveTo(x0, y0); started = true }
+    ctx.lineTo(x1, y1)
+    acc += s.len
+  }
+  ctx.stroke()
+}
 
-// Colors
-const C_PCB   = '#1E6B93'
-const C_CYAN  = '#32C5E8'
-const C_WHITE = '#FFFFFF'
+// --- Easing ---
+const eio3  = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2
+const eo3   = t => 1 - Math.pow(1-t, 3)
+const ei2   = t => t * t
+const eo4   = t => 1 - Math.pow(1-t, 4)
+const clamp = t => Math.max(0, Math.min(1, t))
+const ph    = (t, s, d) => clamp((t - s) / d)
 
-// ExESS emblem strokes to draw (in 600×600 canvas coordinates)
-// Globe center at (300, 270), radius 58
-const GLB_CX = 300, GLB_CY = 270, GLB_R = 58
+// --- Colors ---
+const C_PCB  = '#1E6B93'
+const C_CYAN = '#32C5E8'
 
-function drawEmblemStrokes(ctx, progress, scale = 1) {
-  // progress: 0..1 — reveals emblem from center outward
+// --- Emblem ---
+const GCX = CX, GCY = CY - 10, GR = 56
+
+function drawEmblem(ctx, p) {
   ctx.save()
-  ctx.translate(GLB_CX, GLB_CY)
-  ctx.scale(scale, scale)
-  ctx.translate(-GLB_CX, -GLB_CY)
-
-  const p = easeOut(Math.min(progress, 1))
   ctx.globalAlpha = p
   ctx.lineCap = 'round'
 
   // Outer circle
-  ctx.beginPath()
-  ctx.arc(GLB_CX, GLB_CY, GLB_R, -Math.PI / 2 - Math.PI * p, -Math.PI / 2 + Math.PI * p)
   ctx.strokeStyle = C_PCB
   ctx.lineWidth = 3.5
+  ctx.beginPath()
+  ctx.arc(GCX, GCY, GR, -Math.PI/2 - Math.PI*p, -Math.PI/2 + Math.PI*p)
   ctx.stroke()
   ctx.beginPath()
-  ctx.arc(GLB_CX, GLB_CY, GLB_R, Math.PI / 2 - Math.PI * p, Math.PI / 2 + Math.PI * p)
-  ctx.strokeStyle = C_PCB
-  ctx.lineWidth = 3.5
+  ctx.arc(GCX, GCY, GR,  Math.PI/2 - Math.PI*p,  Math.PI/2 + Math.PI*p)
   ctx.stroke()
 
-  // Latitude ellipses — 3 of them
-  for (const ry of [14, 28, 40]) {
-    ctx.beginPath()
+  // Latitude ellipses
+  ctx.lineWidth = 1.5
+  for (const ry of [GR * 0.25, GR * 0.50, GR * 0.72]) {
     ctx.save()
-    ctx.translate(GLB_CX, GLB_CY)
-    ctx.scale(1, ry / GLB_R)
-    ctx.arc(0, 0, GLB_R, -Math.PI * p, Math.PI * p)
-    ctx.restore()
+    ctx.translate(GCX, GCY)
+    ctx.scale(1, ry / GR)
+    ctx.globalAlpha = p * 0.72
     ctx.strokeStyle = C_PCB
-    ctx.lineWidth = 1.5
-    ctx.globalAlpha = p * 0.7
-    ctx.stroke()
-  }
-  ctx.globalAlpha = p
-
-  // Vertical lines — 3 of them
-  for (const [xOff, h] of [
-    [0, GLB_R], [-30, GLB_R * 0.8], [30, GLB_R * 0.8]
-  ]) {
     ctx.beginPath()
-    ctx.moveTo(GLB_CX + xOff, GLB_CY - h * p)
-    ctx.lineTo(GLB_CX + xOff, GLB_CY + h * p)
+    ctx.arc(0, 0, GR, -Math.PI * p, Math.PI * p)
+    ctx.stroke()
+    ctx.restore()
+  }
+
+  // Meridians
+  ctx.lineWidth = 1.5
+  for (const [xOff, h] of [[0, GR], [-GR*0.52, GR*0.86], [GR*0.52, GR*0.86]]) {
+    ctx.globalAlpha = p * 0.72
     ctx.strokeStyle = C_PCB
-    ctx.lineWidth = 1.5
-    ctx.globalAlpha = p * 0.7
+    ctx.beginPath()
+    ctx.moveTo(GCX + xOff, GCY - h * p)
+    ctx.lineTo(GCX + xOff, GCY + h * p)
     ctx.stroke()
   }
 
   // Cyan orbit ellipse
   ctx.globalAlpha = p
-  ctx.save()
-  ctx.translate(GLB_CX, GLB_CY)
-  ctx.rotate(-12 * Math.PI / 180)
-  ctx.scale(1, 20 / 68)
-  ctx.beginPath()
-  ctx.arc(0, 0, 68, -Math.PI * p, Math.PI * p)
-  ctx.restore()
   ctx.strokeStyle = C_CYAN
   ctx.lineWidth = 3
+  ctx.save()
+  ctx.translate(GCX, GCY)
+  ctx.rotate(-13 * Math.PI / 180)
+  ctx.scale(1, 0.30)
+  ctx.beginPath()
+  ctx.arc(0, 0, GR * 1.18, -Math.PI * p, Math.PI * p)
   ctx.stroke()
+  ctx.restore()
 
-  // PCB legs below globe
-  const legY = GLB_CY + GLB_R + 4
-  const legs = [
-    [GLB_CX - 25, legY, GLB_CX - 30, legY + 20, GLB_CX - 45, legY + 20, GLB_CX - 45, legY + 42],
-    [GLB_CX - 10, legY, GLB_CX - 10, legY + 25, GLB_CX - 25, legY + 25, GLB_CX - 25, legY + 52],
-    [GLB_CX,      legY, GLB_CX,      legY + 32],
-    [GLB_CX + 10, legY, GLB_CX + 10, legY + 22, GLB_CX + 25, legY + 22, GLB_CX + 25, legY + 42],
-    [GLB_CX + 25, legY, GLB_CX + 30, legY + 25, GLB_CX + 45, legY + 25, GLB_CX + 45, legY + 52],
+  // PCB legs
+  const legY = GCY + GR + 6
+  const LEGS = [
+    [-22, 18, -38, 36],
+    [ -9, 24, -22, 46],
+    [  0, 30,   0, 30],
+    [  9, 24,  22, 46],
+    [ 22, 18,  38, 36],
   ]
-  ctx.globalAlpha = p * 0.85
+  ctx.globalAlpha = p * 0.9
   ctx.strokeStyle = C_PCB
-  ctx.lineWidth = 2.5
-  for (const leg of legs) {
+  ctx.lineWidth = 2.4
+  ctx.lineCap = 'square'
+  for (const [sx, sh, ex, eh] of LEGS) {
     ctx.beginPath()
-    // Animate each leg segment partially
-    const drawLen = leg.length / 2
-    for (let i = 0; i < drawLen - 1; i++) {
-      const t2 = Math.min(p * drawLen - i, 1)
-      if (t2 <= 0) break
-      const x0 = leg[i * 2], y0 = leg[i * 2 + 1]
-      const x1 = leg[(i + 1) * 2], y1 = leg[(i + 1) * 2 + 1]
-      ctx.moveTo(x0, y0)
-      ctx.lineTo(x0 + (x1 - x0) * t2, y0 + (y1 - y0) * t2)
+    if (sx === ex) {
+      ctx.moveTo(GCX + sx, legY)
+      ctx.lineTo(GCX + ex, legY + eh * p)
+    } else {
+      const midY = legY + sh * p
+      ctx.moveTo(GCX + sx, legY)
+      ctx.lineTo(GCX + sx, midY)
+      if (p > 0.5) {
+        const hP = clamp((p - 0.5) / 0.5)
+        ctx.lineTo(GCX + sx + (ex - sx) * hP, midY)
+      }
     }
     ctx.stroke()
   }
 
-  // Terminal pads at leg ends
-  const pads = [
-    [GLB_CX - 45, legY + 42],
-    [GLB_CX - 25, legY + 52],
-    [GLB_CX,      legY + 32],
-    [GLB_CX + 25, legY + 42],
-    [GLB_CX + 45, legY + 52],
-  ]
-  if (p > 0.7) {
-    const padP = (p - 0.7) / 0.3
+  // Terminal pads
+  if (p > 0.72) {
+    const padP = eo3(clamp((p - 0.72) / 0.28))
+    ctx.globalAlpha = padP
+    ctx.strokeStyle = C_PCB
+    ctx.lineWidth = 1.8
+    const pads = [
+      [GCX - 38, legY + 36], [GCX - 22, legY + 46], [GCX, legY + 30],
+      [GCX + 22, legY + 46], [GCX + 38, legY + 36],
+    ]
     for (const [px, py] of pads) {
-      ctx.globalAlpha = padP
-      ctx.strokeStyle = C_PCB
-      ctx.lineWidth = 2
       ctx.beginPath()
-      ctx.roundRect(px - 7, py - 7, 14, 14, 2)
+      ctx.roundRect(px - 6, py - 6, 12, 12, 2)
       ctx.stroke()
       ctx.fillStyle = C_PCB
-      ctx.globalAlpha = padP * 0.5
+      ctx.globalAlpha = padP * 0.4
       ctx.beginPath()
-      ctx.roundRect(px - 3, py - 3, 6, 6, 1)
+      ctx.roundRect(px - 2.5, py - 2.5, 5, 5, 1)
       ctx.fill()
+      ctx.globalAlpha = padP
     }
   }
-
   ctx.restore()
 }
 
-// Draw ExESS wordmark letters — drawn in 600×600 coordinate space
-// (called inside the scaled+translated canvas context)
+// --- Wordmark ---
+const WM_Y        = GCY + GR + 6 + 46 + 36
+const WM_FS       = 62
+const WM_CW       = WM_FS * 0.63
+const WM_LETTERS  = ['E','x','E','S','S']
+const WM_X0       = CX - (WM_LETTERS.length * WM_CW) / 2 + WM_CW / 2
+
 function drawWordmark(ctx, progress) {
-  // progress is per-letter: 0..5 float
-  const letters = ['E', 'x', 'E', 'S', 'S']
-  // Font size in 600×600 units
-  const fontSize = 68
   ctx.save()
-  ctx.font = `bold ${fontSize}px "Space Grotesk", system-ui, sans-serif`
-  ctx.textAlign = 'center'
+  ctx.font = 'bold ' + WM_FS + 'px "Space Grotesk", system-ui, sans-serif'
+  ctx.textAlign    = 'center'
   ctx.textBaseline = 'middle'
-
-  // Center each letter around cx=300
-  const charW = fontSize * 0.62  // approximate glyph advance
-  const totalW = letters.length * charW
-  const startX = 300 - totalW / 2 + charW / 2
-  const y = GLB_CY + GLB_R + 90
-
-  letters.forEach((ch, i) => {
-    const lp = Math.max(0, Math.min(1, progress - i))
+  WM_LETTERS.forEach((ch, i) => {
+    const lp = clamp(progress - i)
     if (lp <= 0) return
-    const p = easeOut(lp)
-    ctx.globalAlpha = p
-    ctx.fillStyle = '#1E6B93'
-    ctx.fillText(ch, startX + i * charW, y)
+    ctx.globalAlpha = eo3(lp)
+    ctx.fillStyle   = C_PCB
+    ctx.fillText(ch, WM_X0 + i * WM_CW, WM_Y)
   })
   ctx.restore()
 }
 
-// ──────────────────────────────────────────────────────────────
+// =============================================================
 // MAIN COMPONENT
-// ──────────────────────────────────────────────────────────────
+// =============================================================
 const IntroAnimation = ({ onComplete }) => {
   const containerRef = useRef(null)
   const canvasRef    = useRef(null)
@@ -253,25 +252,21 @@ const IntroAnimation = ({ onComplete }) => {
   const finish = () => {
     if (doneRef.current) return
     doneRef.current = true
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    cancelAnimationFrame(rafRef.current)
     const el = containerRef.current
     if (el) {
-      el.style.transition = 'opacity 0.4s ease-out'
-      el.style.opacity = '0'
-      setTimeout(() => { if (onComplete) onComplete() }, 400)
-    } else if (onComplete) {
-      onComplete()
+      el.style.transition = 'opacity 0.45s cubic-bezier(0.4,0,0.2,1)'
+      el.style.opacity    = '0'
+      setTimeout(() => { if (onComplete) onComplete() }, 460)
+    } else {
+      if (onComplete) onComplete()
     }
   }
 
   useEffect(() => {
-    // Skip animation for reduced-motion preference
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      finish()
-      return
-    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return }
 
-    const canvas  = canvasRef.current
+    const canvas    = canvasRef.current
     const container = containerRef.current
     if (!canvas) return
 
@@ -282,357 +277,243 @@ const IntroAnimation = ({ onComplete }) => {
     const resize = () => {
       W = container.clientWidth
       H = container.clientHeight
-      canvas.width  = W * dpr
-      canvas.height = H * dpr
+      canvas.width        = Math.round(W * dpr)
+      canvas.height       = Math.round(H * dpr)
       canvas.style.width  = W + 'px'
       canvas.style.height = H + 'px'
     }
     resize()
     window.addEventListener('resize', resize)
 
-    // Pre-compute all trace data
-    const traceData = TRACES.map(computeTraceData)
+    const TD   = TRACES.map(buildTrace)
+    const getS  = () => Math.min(W, H) / 600 * 0.90
+    const getOX = () => (W - 600 * getS()) / 2
+    const getOY = () => (H - 600 * getS()) / 2
 
-    // Scale factor: our geometry is in 600×600 coords, canvas is variable size
-    const getScale = () => {
-      const s = Math.min(W, H) / 600 * 0.92
-      return s
-    }
-    const getOffset = () => {
-      const s = getScale()
-      return { ox: (W - 600 * s) / 2, oy: (H - 600 * s) / 2 }
-    }
-
-    // ── DRAW FRAME ────────────────────────────────────────────
     const draw = (ts) => {
       if (!startRef.current) startRef.current = ts
-      const elapsed = (ts - startRef.current) / 1000 // seconds
+      const t = (ts - startRef.current) / 1000
 
       const ctx = canvas.getContext('2d')
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-
       ctx.save()
       ctx.scale(dpr, dpr)
+      ctx.translate(getOX(), getOY())
+      ctx.scale(getS(), getS())
 
-      const s  = getScale()
-      const { ox, oy } = getOffset()
-
-      // Transform into 600×600 coordinate space
-      ctx.translate(ox, oy)
-      ctx.scale(s, s)
-
-      // ─────────────────────────────────────────────
-      // PHASE 1: PCB TRACE FORMATION  0.0 – 1.0s
-      // ─────────────────────────────────────────────
-      const pcbP = Math.min(1, elapsed / 1.0)
-
-      traceData.forEach((td) => {
-        const p = easeInOut(pcbP)
-        // Draw trace up to progress p
-        let remaining = p * td.total
-
-        ctx.beginPath()
-        ctx.lineCap = 'square'
-        ctx.strokeStyle = C_PCB
-        ctx.lineWidth = 1.8
-        ctx.globalAlpha = 0.85
-
-        let started = false
-        for (const seg of td.segments) {
-          if (remaining <= 0) break
-          const draw = Math.min(remaining, seg.len)
-          const f = draw / seg.len
-          if (!started) {
-            ctx.moveTo(seg.x0, seg.y0)
-            started = true
-          }
-          ctx.lineTo(seg.x0 + (seg.x1 - seg.x0) * f, seg.y0 + (seg.y1 - seg.y0) * f)
-          remaining -= draw
-        }
-        ctx.stroke()
+      // === PCB TRACES — drawn every frame, always full geometry after phase 1 ===
+      const pcbP = eio3(ph(t, 0, 1.10))
+      TD.forEach(td => {
+        ctx.save()
+        ctx.strokeStyle  = C_PCB
+        ctx.lineWidth    = 1.9
+        ctx.lineCap      = 'square'
+        ctx.globalAlpha  = 0.88
+        strokeSeg(ctx, td, 0, pcbP)
+        ctx.restore()
       })
 
-      // ─────────────────────────────────────────────
-      // PHASE 2: OUTER ENDPOINTS ACTIVATE  1.0 – 1.25s
-      // ─────────────────────────────────────────────
-      const outerP = Math.min(1, Math.max(0, (elapsed - 1.0) / 0.25))
-
-      if (outerP > 0) {
-        // Glow fades out after energy has moved through (~3.5s)
-        const outerFade = elapsed > 3.5 ? Math.max(0, 1 - (elapsed - 3.5) / 0.5) : 1
-        const p = easeOut(outerP)
-        traceData.forEach((td) => {
-          const [ox2, oy2] = td.pts[0]
-          ctx.globalAlpha = p * 0.45  // always show dim dot
-          ctx.fillStyle = C_PCB
-          ctx.beginPath()
-          ctx.arc(ox2, oy2, 4.5, 0, Math.PI * 2)
-          ctx.fill()
-          // Glow ring only during active phase
-          if (outerFade > 0) {
-            const grad = ctx.createRadialGradient(ox2, oy2, 0, ox2, oy2, 10)
-            grad.addColorStop(0, `rgba(50,197,232,${0.9 * outerFade})`)
-            grad.addColorStop(1, 'rgba(50,197,232,0)')
-            ctx.fillStyle = grad
-            ctx.globalAlpha = outerFade
-            ctx.beginPath()
-            ctx.arc(ox2, oy2, 10, 0, Math.PI * 2)
-            ctx.fill()
-            ctx.fillStyle = C_CYAN
-            ctx.globalAlpha = outerFade
-            ctx.beginPath()
-            ctx.arc(ox2, oy2, 4.5, 0, Math.PI * 2)
-            ctx.fill()
+      // === PHASE 2 — Outer endpoints activate 1.10–1.40 ===
+      const outerActP  = eo3(ph(t, 1.10, 0.30))
+      const outerFadeP = t > 2.8 ? clamp(1 - (t - 2.8) / 0.35) : 1
+      if (outerActP > 0) {
+        TD.forEach(td => {
+          const [ox, oy] = td.outerPt
+          ctx.fillStyle   = C_PCB
+          ctx.globalAlpha = outerActP * 0.50
+          ctx.beginPath(); ctx.arc(ox, oy, 4.5, 0, Math.PI*2); ctx.fill()
+          if (outerFadeP > 0) {
+            const a = outerActP * outerFadeP
+            const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, 12)
+            g.addColorStop(0, 'rgba(50,197,232,' + (0.92 * a) + ')')
+            g.addColorStop(1, 'rgba(50,197,232,0)')
+            ctx.fillStyle   = g; ctx.globalAlpha = a
+            ctx.beginPath(); ctx.arc(ox, oy, 12, 0, Math.PI*2); ctx.fill()
+            ctx.fillStyle   = C_CYAN; ctx.globalAlpha = a
+            ctx.beginPath(); ctx.arc(ox, oy, 4.5, 0, Math.PI*2); ctx.fill()
           }
         })
       }
 
-      // ─────────────────────────────────────────────
-      // PHASE 3: ENERGY TRAVELS ALONG PCB PATHS  1.25 – 2.1s
-      // ─────────────────────────────────────────────
-      const energyP = Math.min(1, Math.max(0, (elapsed - 1.25) / 0.85))
-
-      if (energyP > 0) {
-        const p = easeInOut(energyP)
-        traceData.forEach((td) => {
-          // Draw energy pulse: a short segment (dash) travelling along the path
-          const dashLen = 55 // canvas units
-          const headDist = p * td.total
-          const tailDist = Math.max(0, headDist - dashLen)
-
+      // === PHASE 3 — Energy pulse outer to inner 1.40–2.30 ===
+      const eFwdP = eio3(ph(t, 1.40, 0.90))
+      if (eFwdP > 0 && eFwdP < 1.0001) {
+        const DASH = 0.22
+        TD.forEach(td => {
+          const headT = eFwdP
+          const tailT = Math.max(0, headT - DASH)
+          const hPt   = posAt(td, headT)
+          const tPt   = posAt(td, tailT)
           ctx.save()
-          ctx.lineCap = 'round'
-          ctx.lineWidth = 3
-          ctx.shadowColor = C_CYAN
-          ctx.shadowBlur = 8
-
-          // Walk the trace and draw only the segment from tailDist to headDist
-          let acc = 0
-          let drawing = false
-          let pathStarted = false
-
-          ctx.beginPath()
-          for (const seg of td.segments) {
-            const segEnd = acc + seg.len
-            if (segEnd < tailDist) { acc += seg.len; continue }
-            if (acc > headDist) break
-
-            const drawFrom = Math.max(acc, tailDist)
-            const drawTo   = Math.min(segEnd, headDist)
-            const fFrom    = (drawFrom - acc) / seg.len
-            const fTo      = (drawTo - acc) / seg.len
-
-            const px0 = seg.x0 + (seg.x1 - seg.x0) * fFrom
-            const py0 = seg.y0 + (seg.y1 - seg.y0) * fFrom
-            const px1 = seg.x0 + (seg.x1 - seg.x0) * fTo
-            const py1 = seg.y0 + (seg.y1 - seg.y0) * fTo
-
-            if (!pathStarted) {
-              ctx.moveTo(px0, py0)
-              pathStarted = true
-            }
-            ctx.lineTo(px1, py1)
-            acc += seg.len
-          }
-
-          // Gradient stroke: fade in at tail, bright in middle, fade at head
-          const headPos = tracePosAt(td, Math.min(1, headDist / td.total))
-          const tailPos = tracePosAt(td, Math.min(1, tailDist / td.total))
-          const grd = ctx.createLinearGradient(tailPos[0], tailPos[1], headPos[0], headPos[1])
-          grd.addColorStop(0, 'rgba(50,197,232,0)')
-          grd.addColorStop(0.4, 'rgba(50,197,232,0.9)')
-          grd.addColorStop(1, 'rgba(255,255,255,1)')
-          ctx.strokeStyle = grd
-          ctx.globalAlpha = 1
-          ctx.stroke()
+          ctx.lineCap   = 'round'
+          ctx.lineWidth = 3.2
+          ctx.shadowColor = C_CYAN; ctx.shadowBlur = 10
+          const g = ctx.createLinearGradient(tPt[0], tPt[1], hPt[0], hPt[1])
+          g.addColorStop(0,    'rgba(50,197,232,0)')
+          g.addColorStop(0.35, 'rgba(50,197,232,0.92)')
+          g.addColorStop(1,    'rgba(255,255,255,1)')
+          ctx.strokeStyle = g; ctx.globalAlpha = 1
+          strokeSeg(ctx, td, tailT, headT)
           ctx.restore()
         })
       }
 
-      // ─────────────────────────────────────────────
-      // PHASE 4: INNER ENDPOINTS CHARGE  2.1 – 2.4s
-      // ─────────────────────────────────────────────
-      const innerP = Math.min(1, Math.max(0, (elapsed - 2.1) / 0.3))
-
+      // === PHASE 4 — Inner endpoints charge 2.30–2.60 ===
+      const innerP     = eo3(ph(t, 2.30, 0.30))
+      const innerFadeP = t > 3.30 ? clamp(1 - (t - 3.30) / 0.40) : 1
       if (innerP > 0) {
-        // Inner glow fades out after convergence completes (~3.0s)
-        const innerFade = elapsed > 3.0 ? Math.max(0, 1 - (elapsed - 3.0) / 0.5) : 1
-        const p = easeOut(innerP)
-        traceData.forEach((td) => {
-          const [ix, iy] = td.pts[td.pts.length - 1]
-          // Always show a dim dot
-          ctx.fillStyle = C_PCB
-          ctx.globalAlpha = 0.45
-          ctx.beginPath()
-          ctx.arc(ix, iy, 4, 0, Math.PI * 2)
-          ctx.fill()
-          // Glow only during active phase
-          if (innerFade > 0) {
-            const grad = ctx.createRadialGradient(ix, iy, 0, ix, iy, 12)
-            grad.addColorStop(0, `rgba(50,197,232,${0.95 * innerFade})`)
-            grad.addColorStop(1, 'rgba(50,197,232,0)')
-            ctx.fillStyle = grad
-            ctx.globalAlpha = innerFade * p
-            ctx.beginPath()
-            ctx.arc(ix, iy, 12, 0, Math.PI * 2)
-            ctx.fill()
-            ctx.fillStyle = C_WHITE
-            ctx.globalAlpha = innerFade * p
-            ctx.beginPath()
-            ctx.arc(ix, iy, 4, 0, Math.PI * 2)
-            ctx.fill()
+        TD.forEach(td => {
+          const [ix, iy] = td.innerPt
+          ctx.fillStyle = C_PCB; ctx.globalAlpha = 0.45
+          ctx.beginPath(); ctx.arc(ix, iy, 4, 0, Math.PI*2); ctx.fill()
+          if (innerFadeP > 0) {
+            const a = innerP * innerFadeP
+            const g = ctx.createRadialGradient(ix, iy, 0, ix, iy, 14)
+            g.addColorStop(0, 'rgba(50,197,232,' + (0.95 * a) + ')')
+            g.addColorStop(1, 'rgba(50,197,232,0)')
+            ctx.fillStyle = g; ctx.globalAlpha = a
+            ctx.beginPath(); ctx.arc(ix, iy, 14, 0, Math.PI*2); ctx.fill()
+            ctx.fillStyle = '#ffffff'; ctx.globalAlpha = a
+            ctx.beginPath(); ctx.arc(ix, iy, 4, 0, Math.PI*2); ctx.fill()
           }
         })
       }
 
-      // ─────────────────────────────────────────────
-      // PHASE 5: CONVERGENCE — PARTICLES FROM INNER PADS TO CENTER  2.4 – 2.9s
-      // ─────────────────────────────────────────────
-      const convP = Math.min(1, Math.max(0, (elapsed - 2.4) / 0.5))
-
+      // === PHASE 5 — Convergence particles 2.60–3.10 ===
+      const convP = ei2(ph(t, 2.60, 0.50))
       if (convP > 0) {
-        const p = easeIn(convP)
-        const CX = 300, CY = 300
-        traceData.forEach((td) => {
-          const [ix, iy] = td.pts[td.pts.length - 1]
-          // Particle moves from inner pad to center
-          const px = ix + (CX - ix) * p
-          const py = iy + (CY - iy) * p
-          // Fade in then out as it approaches center
-          const alpha = p < 0.85 ? Math.min(1, p * 3) : (1 - p) / 0.15
-
+        TD.forEach(td => {
+          const [ix, iy] = td.innerPt
+          const px = ix + (CX - ix) * convP
+          const py = iy + (CY - iy) * convP
+          const alpha = convP < 0.80 ? Math.min(1, convP * 4) : clamp((1 - convP) / 0.20)
           ctx.save()
-          ctx.shadowColor = C_CYAN
-          ctx.shadowBlur = 12
-          ctx.fillStyle = C_WHITE
-          ctx.globalAlpha = Math.max(0, alpha)
-          ctx.beginPath()
-          ctx.arc(px, py, 3.5, 0, Math.PI * 2)
-          ctx.fill()
+          ctx.shadowColor = C_CYAN; ctx.shadowBlur = 14
+          ctx.fillStyle   = '#ffffff'; ctx.globalAlpha = Math.max(0, alpha)
+          ctx.beginPath(); ctx.arc(px, py, 3.8, 0, Math.PI*2); ctx.fill()
           ctx.restore()
         })
       }
 
-      // ─────────────────────────────────────────────
-      // PHASE 6: CENTRAL ENERGY CORE  2.9 – 3.2s
-      // ─────────────────────────────────────────────
-      const coreP = Math.min(1, Math.max(0, (elapsed - 2.9) / 0.3))
-      // Core fades out as emblem forms
-      const coreFadeOut = elapsed > 3.5 ? Math.max(0, 1 - (elapsed - 3.5) / 0.4) : 1
-
-      if (coreP > 0 && coreFadeOut > 0) {
-        const p = easeOut(coreP)
-        const CX = 300, CY = 300
-        const coreR = 22 * p
-        const alpha = p * coreFadeOut
-
+      // === PHASE 6 — Central energy core 3.10–3.45 ===
+      const coreInP  = eo4(ph(t, 3.10, 0.35))
+      const coreFade = t > 3.55 ? clamp(1 - (t - 3.55) / 0.35) : 1
+      if (coreInP > 0 && coreFade > 0) {
+        const a = coreInP * coreFade
+        const r = 26 * coreInP
         ctx.save()
-        const grad = ctx.createRadialGradient(CX, CY, 0, CX, CY, coreR)
-        grad.addColorStop(0, 'rgba(255,255,255,1)')
-        grad.addColorStop(0.3, 'rgba(50,197,232,0.9)')
-        grad.addColorStop(1, 'rgba(50,197,232,0)')
-        ctx.fillStyle = grad
-        ctx.globalAlpha = alpha
-        ctx.beginPath()
-        ctx.arc(CX, CY, coreR, 0, Math.PI * 2)
-        ctx.fill()
-        // Inner white dot
-        ctx.fillStyle = C_WHITE
-        ctx.globalAlpha = alpha
-        ctx.shadowColor = C_CYAN
-        ctx.shadowBlur = 16
-        ctx.beginPath()
-        ctx.arc(CX, CY, 5 * p, 0, Math.PI * 2)
-        ctx.fill()
+        const gB = ctx.createRadialGradient(CX, CY, 0, CX, CY, r * 2.2)
+        gB.addColorStop(0,   'rgba(50,197,232,' + (0.45 * a) + ')')
+        gB.addColorStop(0.5, 'rgba(50,197,232,' + (0.18 * a) + ')')
+        gB.addColorStop(1,   'rgba(50,197,232,0)')
+        ctx.fillStyle = gB; ctx.globalAlpha = 1
+        ctx.beginPath(); ctx.arc(CX, CY, r * 2.2, 0, Math.PI*2); ctx.fill()
+        const gC = ctx.createRadialGradient(CX, CY, 0, CX, CY, r)
+        gC.addColorStop(0,   'rgba(255,255,255,' + a + ')')
+        gC.addColorStop(0.4, 'rgba(50,197,232,' + (0.9*a) + ')')
+        gC.addColorStop(1,   'rgba(50,197,232,0)')
+        ctx.fillStyle = gC; ctx.globalAlpha = 1
+        ctx.beginPath(); ctx.arc(CX, CY, r, 0, Math.PI*2); ctx.fill()
         ctx.restore()
       }
 
-      // ─────────────────────────────────────────────
-      // PHASE 7: EXESS EMBLEM FORMS  3.2 – 3.9s
-      // ─────────────────────────────────────────────
-      const emblemP = Math.min(1, Math.max(0, (elapsed - 3.2) / 0.7))
+      // === PHASE 7 — Emblem forms 3.45–4.25 ===
+      const emblemP = eo3(ph(t, 3.45, 0.80))
+      if (emblemP > 0) drawEmblem(ctx, emblemP)
 
-      if (emblemP > 0) {
-        drawEmblemStrokes(ctx, emblemP)
+      // === PHASE 8 — Wordmark forms 4.25–4.80 ===
+      const wmP = Math.max(0, (t - 4.25) / 0.11)
+      if (wmP > 0) drawWordmark(ctx, wmP)
+
+      // === PHASE 9 — Energy retracts inner to outer 4.80–5.55 ===
+      const retP = eio3(ph(t, 4.80, 0.75))
+      if (retP > 0) {
+        const DASH = 0.22
+        TD.forEach(td => {
+          const headT = 1 - retP
+          const tailT = Math.min(1, headT + DASH)
+          const hPt   = posAt(td, headT)
+          const tPt   = posAt(td, tailT)
+          ctx.save()
+          ctx.lineCap   = 'round'
+          ctx.lineWidth = 3.2
+          ctx.shadowColor = C_CYAN; ctx.shadowBlur = 10
+          const g = ctx.createLinearGradient(tPt[0], tPt[1], hPt[0], hPt[1])
+          g.addColorStop(0,   'rgba(50,197,232,0)')
+          g.addColorStop(0.6, 'rgba(50,197,232,0.85)')
+          g.addColorStop(1,   'rgba(255,255,255,0.95)')
+          ctx.strokeStyle = g; ctx.globalAlpha = 1
+          strokeSeg(ctx, td, headT, tailT)
+          ctx.restore()
+        })
+        // Re-illuminate outer endpoints as pulse arrives back
+        if (retP > 0.75) {
+          const ogP = eo3(clamp((retP - 0.75) / 0.25))
+          TD.forEach(td => {
+            const [ox, oy] = td.outerPt
+            const g = ctx.createRadialGradient(ox, oy, 0, ox, oy, 12)
+            g.addColorStop(0, 'rgba(50,197,232,' + (0.80 * ogP) + ')')
+            g.addColorStop(1, 'rgba(50,197,232,0)')
+            ctx.fillStyle = g; ctx.globalAlpha = ogP
+            ctx.beginPath(); ctx.arc(ox, oy, 12, 0, Math.PI*2); ctx.fill()
+            ctx.fillStyle = C_CYAN; ctx.globalAlpha = ogP
+            ctx.beginPath(); ctx.arc(ox, oy, 4.5, 0, Math.PI*2); ctx.fill()
+          })
+        }
       }
 
-      // ─────────────────────────────────────────────
-      // PHASE 8: WORDMARK FORMS  3.9 – 4.55s
-      // ─────────────────────────────────────────────
-      const wmStart = 3.9, wmPerLetter = 0.13
-      const wmLetterProgress = Math.max(0, (elapsed - wmStart) / wmPerLetter)
-
-      if (wmLetterProgress > 0) {
-        drawWordmark(ctx, wmLetterProgress)
+      // === PHASE 10 — Final stable state 5.55+ ===
+      if (t >= 5.55) {
+        const sP = eo3(clamp((t - 5.55) / 0.45))
+        TD.forEach(td => {
+          const [ox, oy] = td.outerPt
+          ctx.fillStyle = C_PCB; ctx.globalAlpha = 0.40 * sP
+          ctx.beginPath(); ctx.arc(ox, oy, 4.5, 0, Math.PI*2); ctx.fill()
+          const [ix, iy] = td.innerPt
+          ctx.fillStyle = C_PCB; ctx.globalAlpha = 0.28 * sP
+          ctx.beginPath(); ctx.arc(ix, iy, 3.5, 0, Math.PI*2); ctx.fill()
+        })
       }
 
       ctx.restore()
 
-      // Loop until done or animation is complete
-      const TOTAL = 5.2
-      if (elapsed < TOTAL && !doneRef.current) {
+      if (t < 6.20 && !doneRef.current) {
         rafRef.current = requestAnimationFrame(draw)
       } else if (!doneRef.current) {
-        // Draw one final frame at full completion then finish
-        rafRef.current = requestAnimationFrame(() => {
-          finish()
-        })
+        requestAnimationFrame(finish)
       }
     }
 
     rafRef.current = requestAnimationFrame(draw)
-
-    // Safety timeout
-    const safetyTimer = setTimeout(finish, 6000)
+    const safety   = setTimeout(finish, 8000)
 
     return () => {
       cancelAnimationFrame(rafRef.current)
-      clearTimeout(safetyTimer)
+      clearTimeout(safety)
       window.removeEventListener('resize', resize)
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div
       ref={containerRef}
       onClick={finish}
       style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 100,
-        background: '#FFFFFF',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        userSelect: 'none',
-        overflow: 'hidden',
+        position: 'fixed', inset: 0, zIndex: 100,
+        background: '#FFFFFF', cursor: 'pointer',
+        userSelect: 'none', overflow: 'hidden',
       }}
     >
       <canvas
         ref={canvasRef}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          display: 'block',
-        }}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
       />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '1.5rem',
-          right: '2rem',
-          fontSize: '11px',
-          fontFamily: 'monospace',
-          color: '#94a3b8',
-          textTransform: 'uppercase',
-          letterSpacing: '0.15em',
-          pointerEvents: 'none',
-          opacity: 0.5,
-        }}
-      >
+      <div style={{
+        position: 'absolute', bottom: '1.25rem', right: '1.75rem',
+        fontSize: '10px', fontFamily: '"Space Grotesk", monospace',
+        color: '#94a3b8', textTransform: 'uppercase',
+        letterSpacing: '0.18em', pointerEvents: 'none', opacity: 0.55,
+      }}>
         Click to skip →
       </div>
     </div>
