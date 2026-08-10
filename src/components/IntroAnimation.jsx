@@ -2,22 +2,20 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Final Master PCB Energy Reveal & Permanent Technological Frame
+ * IntroAnimation — Rebuilt Single-Timeline PCB Energy Reveal & Permanent Technological Frame
  *
- * CENTRAL DESIGN GOAL: "THE PCB CIRCUIT POWERS THE EXESS LOGO."
- * The PCB circuit is NOT a temporary animation that disappears.
- * It is the permanent technological frame of the ExESS Hero identity.
+ * CORE METAPHOR: "THE PCB CIRCUIT POWERS THE EXESS LOGO."
  *
- * MASTER STORYLINE & TIMING (~4.6s TOTAL):
- * 1. PCB Circuit Formation (0.0s – 1.0s): Clean 90° PCB traces draw smoothly around center.
- * 2. Stabilization Pause (1.0s – 1.2s): PCB network settles; outer endpoints stand ready.
- * 3. All Outer Endpoints Activate (1.2s – 1.4s): Outer starting pads glow bright cyan simultaneously.
- * 4. Energy Travels Through PCB Traces (1.4s – 2.1s): Energy pulses travel strictly ALONG actual PCB paths.
- * 5. Energy Reaches Inner Endpoints (2.1s – 2.4s): Inner terminal pads illuminate as power collection nodes.
- * 6. Central Convergence & Core (2.4s – 2.8s): Core dot at (300, 220) accumulates power (NO RADIAL SPOKES).
- * 7. Emblem Globe Forms (2.8s – 3.5s): Central energy core powers emblem & cyan orbit reveal.
- * 8. Wordmark Forms L → R (3.5s – 4.1s): ExESS wordmark reveals progressively (E → x → E → S → S).
- * 9. Final Stable State (4.1s – 4.7s): Energy settles; PCB circuit REMAINS PERMANENTLY VISIBLE framing logo.
+ * ONE COORDINATED STAGE TIMELINE (~4.9s TOTAL):
+ * Stage 1: PCB Circuit Formation (0.0s – 1.0s): Clean 90° PCB traces draw into position.
+ * Stage 2: Outer Endpoints Activate (1.0s – 1.3s): All outer starting pads glow bright cyan.
+ * Stage 3: Energy Travels Along PCB Paths (1.3s – 2.1s): Bright cyan pulses travel ALONG actual SVG PCB paths.
+ * Stage 4: Inner Endpoints Brighten (2.1s – 2.4s): Inner socket pads flare cyan upon energy arrival.
+ * Stage 5: Particles Converge to Center (2.4s – 2.8s): Energy sparks move from inner pads to center (300, 220) (NO RADIAL LINES!).
+ * Stage 6: Central Energy Core Forms (2.8s – 3.1s): Central core dot at (300, 220) intensifies with soft cyan bloom.
+ * Stage 7: Emblem Globe Forms (3.1s – 3.8s): Core energy powers emblem globe & cyan orbit reveal.
+ * Stage 8: Wordmark Forms L → R (3.8s – 4.4s): ExESS wordmark reveals progressively (E → x → E → S → S).
+ * Stage 9: Final Permanent State (4.4s – 5.0s): Energy settles; PCB circuit REMAINS PERMANENTLY VISIBLE framing logo.
  */
 
 const EmblemSVG = ({ svgRef }) => (
@@ -75,17 +73,18 @@ const EmblemSVG = ({ svgRef }) => (
 )
 
 const IntroAnimation = ({ onComplete }) => {
-  const containerRef     = useRef(null)
-  const pcbSvgRef        = useRef(null)
-  const outerPadsRef     = useRef(null)
-  const pulseGroupRef    = useRef(null)
-  const socketPadsRef    = useRef(null)
-  const centerCoreRef    = useRef(null)
-  const logoGroupRef     = useRef(null)
-  const emblemWrapperRef = useRef(null)
-  const emblemSvgRef     = useRef(null)
-  const lettersRef       = useRef([])
-  const hasFinishedRef   = useRef(false)
+  const containerRef       = useRef(null)
+  const pcbSvgRef          = useRef(null)
+  const outerPadsRef       = useRef(null)
+  const pulseGroupRef      = useRef(null)
+  const socketPadsRef      = useRef(null)
+  const convParticlesRef   = useRef(null)
+  const centerCoreRef      = useRef(null)
+  const logoGroupRef       = useRef(null)
+  const emblemWrapperRef   = useRef(null)
+  const emblemSvgRef       = useRef(null)
+  const lettersRef         = useRef([])
+  const hasFinishedRef     = useRef(false)
 
   const finishAnimation = () => {
     if (hasFinishedRef.current) return
@@ -137,7 +136,7 @@ const IntroAnimation = ({ onComplete }) => {
       nodeFills.forEach(el => gsap.set(el, { opacity: 0 }))
     }
 
-    // Setup Outer PCB Traces & Signal Pulses (PCB Geometry Remains Fixed Throughout)
+    // Setup Outer PCB Traces & Signal Pulses (PCB Geometry Remains Fixed & Stationary Throughout)
     let traceLens = []
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
@@ -148,11 +147,12 @@ const IntroAnimation = ({ onComplete }) => {
       })
     }
 
+    // High-visibility energy pulse overlay (60px pulse dash with bright cyan stroke)
     if (pulseGroupRef.current) {
       const pulses = pulseGroupRef.current.querySelectorAll('.pulse-beam')
       pulses.forEach((el, idx) => {
         const len = traceLens[idx] || 400
-        gsap.set(el, { strokeDasharray: `45 ${len}`, strokeDashoffset: len, opacity: 0 })
+        gsap.set(el, { strokeDasharray: `60 ${len}`, strokeDashoffset: len, opacity: 0 })
       })
     }
 
@@ -167,6 +167,12 @@ const IntroAnimation = ({ onComplete }) => {
       pads.forEach(p => gsap.set(p, { scale: 0.8, fill: '#1E6B93', opacity: 0.35 }))
     }
 
+    // Setup Converging Energy Particles (moving dots from inner pads to center)
+    if (convParticlesRef.current) {
+      const particles = convParticlesRef.current.querySelectorAll('.conv-p')
+      particles.forEach(p => gsap.set(p, { opacity: 0, scale: 0 }))
+    }
+
     // Setup Wordmark Letters
     letters.forEach(letterEl => {
       if (letterEl) {
@@ -174,56 +180,74 @@ const IntroAnimation = ({ onComplete }) => {
       }
     })
 
-    // ── MASTER ONE-COORDINATED TIMELINE (~4.7s TOTAL) ─────────
+    // ── MASTER SINGLE-TIMELINE STAGE SEQUENCE (~4.9s TOTAL) ─────────
     const tl = gsap.timeline({
       onComplete: finishAnimation,
     })
 
-    // STEP 1: PCB CIRCUIT FORMATION (0.0s – 1.0s)
+    // STAGE 1: PCB CIRCUIT FORMATION (0.0s – 1.0s)
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
       tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 0.95, stagger: 0.03, ease: 'power2.inOut' }, 0.05)
     }
 
-    // STEP 2: STABILIZATION PAUSE (1.0s – 1.2s)
-    tl.to({}, { duration: 0.20 }, 1.00)
-
-    // STEP 3: ALL PCB STARTING ENDPOINTS ACTIVATE SIMULTANEOUSLY (1.2s – 1.4s)
+    // STAGE 2: ALL OUTER PCB ENDPOINTS ACTIVATE SIMULTANEOUSLY (1.0s – 1.3s)
     if (outerPadsRef.current) {
       const pads = outerPadsRef.current.querySelectorAll('.outer-pad')
-      tl.to(pads, { fill: '#32C5E8', opacity: 1, scale: 1.35, duration: 0.25, ease: 'power1.out' }, 1.20)
+      tl.to(pads, { fill: '#32C5E8', opacity: 1, scale: 1.4, duration: 0.25, ease: 'power1.out' }, 1.05)
     }
 
-    // STEP 4: ENERGY TRAVELS THROUGH PCB TRACES ONLY (1.4s – 2.1s)
+    // STAGE 3: ENERGY TRAVELS ALONG ACTUAL PCB TRACES (1.3s – 2.1s)
     if (pulseGroupRef.current) {
       const pulses = pulseGroupRef.current.querySelectorAll('.pulse-beam')
+      // Make pulses INSTANTLY 100% visible at 1.30s as they travel along SVG paths!
+      tl.to(pulses, { opacity: 1, duration: 0.06 }, 1.30)
       pulses.forEach((el) => {
-        tl.to(el, { strokeDashoffset: 0, opacity: 1, duration: 0.70, ease: 'power2.inOut' }, 1.40)
+        tl.to(el, { strokeDashoffset: 0, duration: 0.75, ease: 'power2.inOut' }, 1.30)
       })
     }
 
-    // STEP 5: ENERGY REACHES INNER ENDPOINTS (2.1s – 2.4s)
+    // STAGE 4: ENERGY REACHES INNER ENDPOINTS & ILLUMINATES COLLECTION NODES (2.1s – 2.4s)
     if (socketPadsRef.current) {
       const pads = socketPadsRef.current.querySelectorAll('.socket-pad')
-      tl.to(pads, { fill: '#32C5E8', opacity: 1, scale: 1.4, duration: 0.30, ease: 'power1.out' }, 2.10)
+      tl.to(pads, { fill: '#32C5E8', opacity: 1, scale: 1.5, duration: 0.30, ease: 'power1.out' }, 2.05)
     }
 
     if (pulseGroupRef.current) {
       const pulses = pulseGroupRef.current.querySelectorAll('.pulse-beam')
-      tl.to(pulses, { opacity: 0, duration: 0.25 }, 2.20)
+      tl.to(pulses, { opacity: 0, duration: 0.20 }, 2.15)
     }
 
-    // STEP 6: CENTRAL CONVERGENCE & CORE AT (300, 220) (2.4s – 2.8s) — NO RADIAL LINES!
-    tl.to(centerCoreRef.current, { opacity: 1, scale: 1.5, duration: 0.40, ease: 'power2.out' }, 2.40)
+    // STAGE 5: PARTICLES CONVERGE FROM INNER PADS TO CENTER (300, 220) (2.4s – 2.8s)
+    // (Moving glowing dots gather energy at center — NO RADIAL LINES DRAWN!)
+    if (convParticlesRef.current) {
+      const particles = convParticlesRef.current.querySelectorAll('.conv-p')
+      particles.forEach((p) => {
+        const targetX = 300
+        const targetY = 220
+        const startX = parseFloat(p.getAttribute('cx'))
+        const startY = parseFloat(p.getAttribute('cy'))
 
-    // STEP 7: EXESS EMBLEM FORMS FROM CENTRAL ENERGY CORE (2.8s – 3.5s)
-    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.12 }, 2.80)
+        tl.fromTo(p,
+          { cx: startX, cy: startY, opacity: 0, scale: 0.5 },
+          { cx: targetX, cy: targetY, opacity: 1, scale: 1.2, duration: 0.40, ease: 'power2.in' },
+          2.40
+        )
+        tl.to(p, { opacity: 0, scale: 0.2, duration: 0.10 }, 2.78)
+      })
+    }
+
+    // STAGE 6: CENTRAL ENERGY CORE FORMS & INTENSIFIES AT (300, 220) (2.8s – 3.1s)
+    tl.to(centerCoreRef.current, { opacity: 1, scale: 1.6, duration: 0.35, ease: 'power2.out' }, 2.75)
+
+    // STAGE 7: EXESS EMBLEM FORMS FROM CENTRAL ENERGY CORE (3.1s – 3.8s)
+    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.12 }, 3.10)
 
     tl.to(emblemWrapperRef.current, {
       filter: 'drop-shadow(0 0 16px rgba(50,197,232,0.85))',
       duration: 0.30,
       ease: 'power1.out',
-    }, 2.80)
+    }, 3.10)
 
     if (emblemEl) {
       const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
@@ -236,7 +260,7 @@ const IntroAnimation = ({ onComplete }) => {
         duration: 0.50,
         stagger: 0.04,
         ease: 'power2.out',
-      }, 2.82)
+      }, 3.12)
 
       tl.to(nodePaths, {
         strokeDashoffset: 0,
@@ -244,54 +268,54 @@ const IntroAnimation = ({ onComplete }) => {
         duration: 0.30,
         stagger: 0.02,
         ease: 'power2.out',
-      }, 3.05)
+      }, 3.35)
 
-      tl.to(nodeFills, { opacity: 1, duration: 0.20, stagger: 0.01 }, 3.25)
+      tl.to(nodeFills, { opacity: 1, duration: 0.20, stagger: 0.01 }, 3.55)
     }
 
-    // STEP 8: WORDMARK FORMS PROGRESSIVELY L → R (E → x → E → S → S) (3.5s – 4.1s)
+    // STAGE 8: WORDMARK FORMS PROGRESSIVELY L → R (E → x → E → S → S) (3.8s – 4.4s)
     letters.forEach((letterEl, index) => {
       if (letterEl) {
         tl.to(letterEl, {
           opacity: 1,
           duration: 0.12,
           ease: 'power1.out',
-        }, 3.50 + index * 0.11)
+        }, 3.80 + index * 0.11)
       }
     })
 
     // Central core gently absorbs into emblem as logo completes
-    tl.to(centerCoreRef.current, { opacity: 0, scale: 0.2, duration: 0.35 }, 2.95)
+    tl.to(centerCoreRef.current, { opacity: 0, scale: 0.2, duration: 0.35 }, 3.25)
 
-    // STEP 9: FINAL STABLE STATE — PCB TRACES REMAIN PERMANENTLY VISIBLE IN FIXED POSITION (4.1s – 4.7s)
+    // STAGE 9: FINAL STABLE STATE — PCB TRACES REMAIN PERMANENTLY VISIBLE IN FIXED POSITION (4.4s – 5.0s)
     tl.to(emblemWrapperRef.current, {
       filter: 'drop-shadow(0 0 6px rgba(50,197,232,0.15))',
       duration: 0.40,
       ease: 'power2.out',
-    }, 4.10)
+    }, 4.40)
 
     if (socketPadsRef.current) {
       const pads = socketPadsRef.current.querySelectorAll('.socket-pad')
-      tl.to(pads, { fill: '#1E6B93', opacity: 0.55, scale: 1.0, duration: 0.40 }, 4.10)
+      tl.to(pads, { fill: '#1E6B93', opacity: 0.55, scale: 1.0, duration: 0.40 }, 4.40)
     }
 
     if (outerPadsRef.current) {
       const pads = outerPadsRef.current.querySelectorAll('.outer-pad')
-      tl.to(pads, { fill: '#1E6B93', opacity: 0.55, scale: 1.0, duration: 0.40 }, 4.10)
+      tl.to(pads, { fill: '#1E6B93', opacity: 0.55, scale: 1.0, duration: 0.40 }, 4.40)
     }
 
     // Keep PCB traces at full visible stroke framing the logo in final composition
     if (pcbSvgRef.current) {
       const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      tl.to(traces, { opacity: 0.85, duration: 0.40 }, 4.10)
+      tl.to(traces, { opacity: 0.85, duration: 0.40 }, 4.40)
     }
 
     // Hold final stable composition for user recognition before preloader exit
-    tl.to({}, { duration: 0.60 }, 4.10)
+    tl.to({}, { duration: 0.60 }, 4.40)
 
     const safetyTimer = setTimeout(() => {
       finishAnimation()
-    }, 5400)
+    }, 5600)
 
     return () => {
       clearTimeout(safetyTimer)
@@ -308,7 +332,7 @@ const IntroAnimation = ({ onComplete }) => {
       onClick={finishAnimation}
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden select-none cursor-pointer bg-white"
     >
-      {/* ── PCB MOTHERBOARD TRACES SVG (REMAINS PERMANENTLY VISIBLE IN FINAL COMPOSITION) ── */}
+      {/* ── STAGE 1: PERMANENT STATIC PCB MOTHERBOARD TRACES SVG (GEOMETRY FIXED & STATIONARY) ── */}
       <svg
         ref={pcbSvgRef}
         aria-hidden="true"
@@ -340,7 +364,7 @@ const IntroAnimation = ({ onComplete }) => {
         <path className="pcb-trace" d="M 470 440 V 470 H 425" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
       </svg>
 
-      {/* ── OUTER STARTING ENDPOINTS (GLOW CYAN SIMULTANEOUSLY IN STEP 3) ── */}
+      {/* ── STAGE 2: OUTER STARTING ENDPOINTS (GLOW CYAN SIMULTANEOUSLY IN STAGE 2) ── */}
       <svg
         ref={outerPadsRef}
         aria-hidden="true"
@@ -350,17 +374,17 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <circle className="outer-pad" cx="40" cy="40" r="4" />
-        <circle className="outer-pad" cx="560" cy="40" r="4" />
-        <circle className="outer-pad" cx="20" cy="260" r="4" />
-        <circle className="outer-pad" cx="20" cy="340" r="4" />
-        <circle className="outer-pad" cx="580" cy="260" r="4" />
-        <circle className="outer-pad" cx="580" cy="340" r="4" />
-        <circle className="outer-pad" cx="40" cy="560" r="4" />
-        <circle className="outer-pad" cx="560" cy="560" r="4" />
+        <circle className="outer-pad" cx="40" cy="40" r="4.5" />
+        <circle className="outer-pad" cx="560" cy="40" r="4.5" />
+        <circle className="outer-pad" cx="20" cy="260" r="4.5" />
+        <circle className="outer-pad" cx="20" cy="340" r="4.5" />
+        <circle className="outer-pad" cx="580" cy="260" r="4.5" />
+        <circle className="outer-pad" cx="580" cy="340" r="4.5" />
+        <circle className="outer-pad" cx="40" cy="560" r="4.5" />
+        <circle className="outer-pad" cx="560" cy="560" r="4.5" />
       </svg>
 
-      {/* ── SYNCHRONIZED ENERGY PULSE BEAMS TRAVELLING ONLY ALONG EXISTING PCB TRACES (STEP 4) ── */}
+      {/* ── STAGE 3: SYNCHRONIZED ENERGY PULSE BEAMS (TRAVELLING ALONG SAME PCB PATHS) ── */}
       <svg
         ref={pulseGroupRef}
         aria-hidden="true"
@@ -370,17 +394,17 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path className="pulse-beam" d="M 40 40 H 180 V 120 H 175" stroke="#32C5E8" strokeWidth="2.4" strokeLinecap="round" />
-        <path className="pulse-beam" d="M 560 40 H 420 V 120 H 425" stroke="#32C5E8" strokeWidth="2.4" strokeLinecap="round" />
-        <path className="pulse-beam" d="M 20 260 H 130 V 270 H 175" stroke="#32C5E8" strokeWidth="2.4" strokeLinecap="round" />
-        <path className="pulse-beam" d="M 20 340 H 130 V 330 H 175" stroke="#32C5E8" strokeWidth="2.4" strokeLinecap="round" />
-        <path className="pulse-beam" d="M 580 260 H 470 V 270 H 425" stroke="#32C5E8" strokeWidth="2.4" strokeLinecap="round" />
-        <path className="pulse-beam" d="M 580 340 H 470 V 320 H 425" stroke="#32C5E8" strokeWidth="2.4" strokeLinecap="round" />
-        <path className="pulse-beam" d="M 40 560 H 180 V 480 H 175" stroke="#32C5E8" strokeWidth="2.4" strokeLinecap="round" />
-        <path className="pulse-beam" d="M 560 560 H 420 V 480 H 425" stroke="#32C5E8" strokeWidth="2.4" strokeLinecap="round" />
+        <path className="pulse-beam" d="M 40 40 H 180 V 120 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 560 40 H 420 V 120 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 20 260 H 130 V 270 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 20 340 H 130 V 330 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 580 260 H 470 V 270 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 580 340 H 470 V 320 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 40 560 H 180 V 480 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <path className="pulse-beam" d="M 560 560 H 420 V 480 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
       </svg>
 
-      {/* ── TERMINAL SOCKET PADS GROUP (STEP 5: INNER ENDPOINTS LIGHT UP) ── */}
+      {/* ── STAGE 4: TERMINAL SOCKET PADS GROUP (INNER ENDPOINTS ILLUMINATE) ── */}
       <svg
         ref={socketPadsRef}
         aria-hidden="true"
@@ -390,17 +414,37 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <circle className="socket-pad" cx="175" cy="120" r="3.5" />
-        <circle className="socket-pad" cx="425" cy="120" r="3.5" />
-        <circle className="socket-pad" cx="175" cy="270" r="3.5" />
-        <circle className="socket-pad" cx="175" cy="330" r="3.5" />
-        <circle className="socket-pad" cx="425" cy="270" r="3.5" />
-        <circle className="socket-pad" cx="425" cy="330" r="3.5" />
-        <circle className="socket-pad" cx="175" cy="480" r="3.5" />
-        <circle className="socket-pad" cx="425" cy="480" r="3.5" />
+        <circle className="socket-pad" cx="175" cy="120" r="4" />
+        <circle className="socket-pad" cx="425" cy="120" r="4" />
+        <circle className="socket-pad" cx="175" cy="270" r="4" />
+        <circle className="socket-pad" cx="175" cy="330" r="4" />
+        <circle className="socket-pad" cx="425" cy="270" r="4" />
+        <circle className="socket-pad" cx="425" cy="330" r="4" />
+        <circle className="socket-pad" cx="175" cy="480" r="4" />
+        <circle className="socket-pad" cx="425" cy="480" r="4" />
       </svg>
 
-      {/* ── ONE REFINED CENTRAL ENERGY CORE AT (300, 220) (STEP 6) ── */}
+      {/* ── STAGE 5: CONVERGING ENERGY PARTICLES (MOVING SPARKS FROM INNER PADS TO CENTER) ── */}
+      <svg
+        ref={convParticlesRef}
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{ width: SVG_SIZE, height: SVG_SIZE }}
+        viewBox="0 0 600 600"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle className="conv-p" cx="175" cy="120" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <circle className="conv-p" cx="425" cy="120" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <circle className="conv-p" cx="175" cy="270" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <circle className="conv-p" cx="175" cy="330" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <circle className="conv-p" cx="425" cy="270" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <circle className="conv-p" cx="425" cy="330" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <circle className="conv-p" cx="175" cy="480" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+        <circle className="conv-p" cx="425" cy="480" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
+      </svg>
+
+      {/* ── STAGE 6: CENTRAL ENERGY CORE AT (300, 220) ── */}
       <svg
         aria-hidden="true"
         className="absolute pointer-events-none"
@@ -410,8 +454,8 @@ const IntroAnimation = ({ onComplete }) => {
         xmlns="http://www.w3.org/2000/svg"
       >
         <g ref={centerCoreRef} style={{ transformOrigin: '300px 220px' }}>
-          <circle cx="300" cy="220" r="16" fill="url(#coreGlow)" />
-          <circle cx="300" cy="220" r="4.5" fill="#FFFFFF" />
+          <circle cx="300" cy="220" r="18" fill="url(#coreGlow)" />
+          <circle cx="300" cy="220" r="5" fill="#FFFFFF" />
         </g>
 
         <defs>
@@ -422,7 +466,7 @@ const IntroAnimation = ({ onComplete }) => {
         </defs>
       </svg>
 
-      {/* ── CENTRAL ExESS IDENTITY CORE (STEP 7 & 8) ── */}
+      {/* ── STAGE 7 & 8: CENTRAL ExESS IDENTITY CORE ── */}
       <div
         ref={logoGroupRef}
         className="relative z-10 flex flex-col items-center justify-center text-center p-4"
