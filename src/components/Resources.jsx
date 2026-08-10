@@ -7,6 +7,7 @@ import { resourcesData } from '../data/resourcesData'
 
 const Resources = () => {
   const [showAllModal, setShowAllModal] = useState(false)
+  const [hoveredIdx, setHoveredIdx] = useState(null)
 
   // Curated 4 resources on homepage
   const curatedResources = resourcesData.slice(0, 4)
@@ -30,63 +31,99 @@ const Resources = () => {
   return (
     <section id="resources" className="relative section-gap overflow-hidden bg-transparent">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
-        {/* ── 1. Unified Section Header Rhythm ─────────────────────────── */}
+        
+        {/* ── 1. Section Header ───────────────────────────────────────── */}
         <PowerOnHeader
-          badge="LEARNING VAULT & RESOURCES"
-          headline={<>Knowledge for <span className="text-light-sweep-dark">Hardware</span> Engineers</>}
+          badge="LEARNING VAULT & TECHNICAL ARCHIVE"
+          headline={<>Indexed <span className="text-light-sweep-dark">Engineering Assets</span></>}
           description="Curated technical documentation, PCB layout guides, synthesizable RTL templates, and engineering assets."
           align="left"
         />
 
-        {/* ── 2. Strict 4-Column Desktop Resource Grid ─────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch mb-12">
-          {curatedResources.map((res) => (
-            <div
-              key={res.id}
-              className="group p-6 flex flex-col justify-between bg-white border border-border/70 rounded-3xl hover:border-primary/30 hover:shadow-soft-lg transition-all duration-300 h-full"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-11 h-11 rounded-2xl bg-primary/[0.08] text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                    <res.icon className="w-5 h-5" />
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-slate-100 text-slate-600 uppercase tracking-wider">
-                    {res.format}
+        {/* ── 2. TECHNICAL ARCHIVE INDEX LIST (Horizontal Rows) ───────── */}
+        <div className="space-y-4 mb-12">
+          {curatedResources.map((res, idx) => {
+            const isHovered = hoveredIdx === idx
+            return (
+              <motion.div
+                key={res.id}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                onMouseEnter={() => setHoveredIdx(idx)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                className={`group relative p-5 sm:p-7 rounded-2xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer ${
+                  isHovered
+                    ? 'bg-white border-primary/50 shadow-soft-lg scale-[1.01]'
+                    : 'bg-white/80 border-border/70 hover:border-border'
+                }`}
+              >
+                {/* PCB Node Indicator on Left Edge */}
+                <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r-full transition-colors duration-300 ${
+                  isHovered ? 'bg-primary' : 'bg-transparent'
+                }`} />
+
+                <div className="flex items-start sm:items-center gap-4 sm:gap-6">
+                  {/* Index Number */}
+                  <span className={`text-sm font-mono font-bold transition-colors ${
+                    isHovered ? 'text-primary' : 'text-gray-400'
+                  }`}>
+                    0{idx + 1}
                   </span>
+
+                  {/* Resource Info */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider ${
+                        isHovered ? 'bg-primary text-white' : 'bg-slate-100 text-slate-600'
+                      }`}>
+                        {res.format}
+                      </span>
+                      <span className="text-[10px] font-brand uppercase tracking-wider text-gray-400">
+                        {res.category}
+                      </span>
+                    </div>
+
+                    <h3 className={`text-base sm:text-lg font-bold font-brand transition-colors ${
+                      isHovered ? 'text-primary' : 'text-heading'
+                    }`}>
+                      {res.title}
+                    </h3>
+                    <p className="font-inter text-xs text-gray-500 line-clamp-1 max-w-2xl">
+                      {res.description}
+                    </p>
+                  </div>
                 </div>
 
-                <span className="text-[10px] font-brand uppercase tracking-[0.16em] text-primary mb-1 block font-semibold">
-                  {res.category}
-                </span>
-                <h3 className="text-base font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors">
-                  {res.title}
-                </h3>
-                <p className="font-inter text-xs text-body leading-relaxed mb-6 line-clamp-3">
-                  {res.description}
-                </p>
-              </div>
+                {/* Right Metadata & Download Button */}
+                <div className="flex items-center justify-between sm:justify-end gap-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-border/40">
+                  <span className="text-xs font-mono text-gray-400">
+                    {res.fileSize} &bull; {res.downloads} downloads
+                  </span>
 
-              <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                <span className="text-[11px] font-mono text-slate-400">
-                  {res.fileSize}
-                </span>
-                <a
-                  href={res.url}
-                  className="inline-flex items-center gap-1.5 text-[10px] font-brand uppercase tracking-wider text-primary hover:text-secondary transition-colors font-semibold"
-                >
-                  Asset <Download className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </div>
-          ))}
+                  <a
+                    href={res.url}
+                    className={`px-4 py-2 rounded-xl text-xs font-brand uppercase tracking-wider font-semibold inline-flex items-center gap-2 transition-all ${
+                      isHovered
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    Asset <Download className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
 
         {/* ── 3. Standalone Centered CTA ──────────────────────────────── */}
-        <div className="flex justify-center mt-12">
+        <div className="flex justify-center mt-10">
           <PcbLightButton onClick={() => setShowAllModal(true)}>
-            VIEW ALL RESOURCES
+            ACCESS COMPLETE ARCHIVE
           </PcbLightButton>
         </div>
+
       </div>
 
       {/* Full Resources Vault Directory Modal */}
@@ -108,7 +145,7 @@ const Resources = () => {
             >
               <div className="sticky top-0 right-0 z-30 flex justify-between items-center bg-white/95 backdrop-blur-md pb-4 border-b border-border/60 -mt-2 mb-6">
                 <div>
-                  <h3 className="font-brand text-xl text-heading font-bold">ExESS LEARNING VAULT &amp; RESOURCES</h3>
+                  <h3 className="font-brand text-xl text-heading font-bold">ExESS LEARNING VAULT &amp; RESOURCES ARCHIVE</h3>
                   <p className="text-xs font-inter text-gray-500">Technical schematics, datasheets, and lecture notes</p>
                 </div>
                 <button

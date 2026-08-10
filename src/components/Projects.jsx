@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Github, ArrowRight, X, Users } from 'lucide-react'
+import { Github, ArrowRight, X, Users, Cpu } from 'lucide-react'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
 import PcbLightButton from './PcbLightButton'
@@ -36,82 +36,111 @@ const Projects = () => {
   return (
     <section id="projects" className="relative section-gap overflow-hidden">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
-        {/* ── 1. Unified Section Header Rhythm ─────────────────────────── */}
+        
+        {/* ── 1. Section Header ───────────────────────────────────────── */}
         <PowerOnHeader
-          badge="INNOVATION & PROJECTS"
-          headline={<>Engineering in <span className="text-light-sweep-dark">Action</span></>}
-          description="Real-world hardware & embedded projects engineered by ExESS members. From circuit prototypes to working systems."
+          badge="PROJECTS & INNOVATION"
+          headline={<>Featured <span className="text-light-sweep-dark">Tech Showcase</span></>}
+          description="Engineering case studies, circuit prototypes, and hardware systems engineered by ExESS members."
           align="left"
         />
 
-        {/* ── 2. Equal-Height Curated Projects Grid (3 Columns) ────────── */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 items-stretch mb-12">
-          {curatedProjects.map((project) => (
-            <div
-              key={project.id}
-              onClick={() => setSelectedProject(project)}
-              className="group cursor-pointer flex flex-col justify-between border-b border-border/50 pb-6 transition-all duration-300 h-full"
-            >
-              <div>
-                <ImagePlaceholder
-                  src={project.image}
-                  alt={project.title}
-                  type="cover"
-                  aspectRatio="aspect-[16/9]"
-                  badge={project.status}
-                />
+        {/* ── 2. Alternating Editorial Tech Showcase Compositions ────── */}
+        <div className="space-y-16 sm:space-y-24 mb-16">
+          {curatedProjects.map((project, idx) => {
+            const isEven = idx % 2 === 0
+            return (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                onClick={() => setSelectedProject(project)}
+                className="group cursor-pointer rounded-3xl bg-white border border-border/80 p-6 sm:p-10 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 relative overflow-hidden"
+              >
+                {/* PCB Accent Trace on Border */}
+                <div className="absolute top-0 left-0 w-24 h-1 bg-gradient-to-r from-primary to-accent opacity-80" />
 
-                <div className="pt-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide font-semibold ${
-                      project.status === 'Completed'
-                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
-                        : 'text-amber-600 bg-amber-50/50'
-                    }`}>
-                      {project.status}
-                    </span>
-                    <span className="text-xs text-body flex items-center gap-1 font-mono">
-                      <Users className="w-3.5 h-3.5 text-primary" /> {project.team}
-                    </span>
+                <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                  
+                  {/* Visual Panel (60% / 7 Cols) */}
+                  <motion.div
+                    initial={{ scale: 0.96 }}
+                    whileInView={{ scale: 1 }}
+                    transition={{ duration: 0.6 }}
+                    className={`lg:col-span-7 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}
+                  >
+                    <div className="rounded-2xl overflow-hidden border border-border/70 shadow-sm relative group-hover:shadow-md transition-shadow">
+                      <ImagePlaceholder
+                        src={project.image}
+                        alt={project.title}
+                        type="cover"
+                        aspectRatio="aspect-[16/10]"
+                        badge={project.status}
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* Information Panel (40% / 5 Cols) */}
+                  <div className={`lg:col-span-5 ${isEven ? 'lg:order-2' : 'lg:order-1'} flex flex-col justify-between`}>
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-xs font-mono font-bold text-primary flex items-center gap-1.5">
+                          <Cpu className="w-3.5 h-3.5" /> CASE_STUDY_0{idx + 1}
+                        </span>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide font-semibold ${
+                          project.status === 'Completed'
+                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
+                            : 'text-amber-600 bg-amber-50/50'
+                        }`}>
+                          {project.status}
+                        </span>
+                      </div>
+
+                      <h3 className="text-xl sm:text-2xl font-bold font-brand text-heading mb-3 group-hover:text-primary transition-colors duration-300">
+                        {project.title}
+                      </h3>
+
+                      <p className="font-inter text-xs sm:text-sm text-body leading-relaxed mb-6">
+                        {project.description}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2 mb-6 font-mono">
+                        {project.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/60"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-border/40 flex items-center justify-between">
+                      <span className="text-xs text-body flex items-center gap-1 font-mono">
+                        <Users className="w-3.5 h-3.5 text-primary" /> {project.team}
+                      </span>
+                      <span className="inline-flex items-center gap-2 text-xs font-brand uppercase tracking-wider text-primary group-hover:text-secondary font-bold">
+                        Read Engineering Case Study <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </div>
                   </div>
 
-                  <h3 className="text-lg font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors duration-300">
-                    {project.title}
-                  </h3>
-
-                  <p className="font-inter text-xs text-body leading-relaxed mb-4 line-clamp-2">
-                    {project.description}
-                  </p>
                 </div>
-              </div>
-
-              <div>
-                {/* Tech Tags positioned at consistent bottom baseline */}
-                <div className="flex flex-wrap gap-1.5 mb-4 font-mono">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-0.5 rounded-lg text-[9px] font-semibold bg-gray-100/80 text-gray-600"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <span className="inline-flex items-center gap-2 text-[10px] font-brand uppercase tracking-wider text-primary group-hover:text-secondary transition-colors font-semibold">
-                  Documentation <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            )
+          })}
         </div>
 
         {/* ── 3. Standalone Centered CTA ──────────────────────────────── */}
-        <div className="flex justify-center mt-12">
+        <div className="flex justify-center">
           <PcbLightButton onClick={() => setShowAllModal(true)}>
-            VIEW ALL PROJECTS
+            VIEW ALL HARDWARE PROJECTS
           </PcbLightButton>
         </div>
+
       </div>
 
       {/* Full Projects Showcase Directory Modal */}

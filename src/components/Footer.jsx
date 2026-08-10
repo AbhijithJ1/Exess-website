@@ -1,5 +1,6 @@
 import { Github, Instagram, Linkedin, Mail } from 'lucide-react'
 import Logo from './Logo'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
 
 const essentialNavLinks = [
   { name: 'Home', href: '#home' },
@@ -11,12 +12,12 @@ const essentialNavLinks = [
 ]
 
 /**
- * FooterEngineeringBackground — Low-contrast PCB background traces
+ * FooterEngineeringBackground — Low-contrast PCB background trace with subtle animated signal
  */
-const FooterEngineeringBackground = () => (
+const FooterEngineeringBackground = ({ isVisible }) => (
   <svg
     aria-hidden="true"
-    className="absolute inset-0 w-full h-full pointer-events-none select-none opacity-30"
+    className="absolute inset-0 w-full h-full pointer-events-none select-none opacity-25 z-0"
     viewBox="0 0 1440 240"
     preserveAspectRatio="xMidYMid slice"
     xmlns="http://www.w3.org/2000/svg"
@@ -29,10 +30,18 @@ const FooterEngineeringBackground = () => (
     />
     <circle cx="400" cy="40" r="2.5" fill="rgba(30,107,147,0.25)" />
     <circle cx="900" cy="120" r="2.5" fill="#32C5E8" />
+
+    {isVisible && (
+      <circle r="3.5" fill="#32C5E8">
+        <animateMotion dur="2.2s" fill="freeze" path="M0 40 H400 V120 H900" />
+      </circle>
+    )}
   </svg>
 )
 
 const Footer = () => {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 })
+
   const handleNavClick = (e, href) => {
     e.preventDefault()
     const element = document.querySelector(href)
@@ -40,22 +49,22 @@ const Footer = () => {
   }
 
   return (
-    <footer className="relative bg-white border-t border-border/80 text-heading overflow-hidden z-10">
+    <footer ref={ref} className="relative bg-white border-t border-border/80 text-heading overflow-hidden z-10">
       {/* Hairline accent gradient border */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
-      <FooterEngineeringBackground />
+      <FooterEngineeringBackground isVisible={isVisible} />
 
-      <div className="section-padding pt-8 sm:pt-10 pb-6 relative z-10">
+      <div className="section-padding max-w-7xl mx-auto pt-8 sm:pt-10 pb-6 relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-border/60">
-          {/* LEFT: Logo & One-line Description */}
+          {/* LEFT: Logo & Subtitle */}
           <div className="flex items-center gap-3 text-center md:text-left">
             <Logo size={32} color="#1E6B93" />
             <div>
-              <span className="text-base font-brand tracking-tight text-heading">
+              <span className="text-base font-brand tracking-tight text-heading font-bold">
                 Ex<span className="text-primary">ESS</span>
               </span>
-              <span className="block text-[9px] font-brand text-gray-500 uppercase tracking-[0.18em]">
+              <span className="block text-[9px] font-brand text-gray-500 uppercase tracking-[0.18em] font-semibold">
                 Official Electronics Students Society &bull; CEC
               </span>
             </div>

@@ -9,6 +9,9 @@ import { galleryItems } from '../data/galleryData'
 // Duplicate gallery list for continuous seamless infinite looping
 const galleryMarqueeList = [...galleryItems, ...galleryItems]
 
+// Variable width patterns for moving visual filmstrip feel
+const widthClasses = ['w-72 sm:w-80', 'w-80 sm:w-96', 'w-72 sm:w-[420px]', 'w-80 sm:w-88']
+
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null)
   const [showAllModal, setShowAllModal] = useState(false)
@@ -36,58 +39,70 @@ const Gallery = () => {
   return (
     <section id="gallery" className="relative section-gap overflow-hidden">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
-        {/* ── 1. Unified Section Header Rhythm ─────────────────────────── */}
+        
+        {/* ── 1. Section Header ───────────────────────────────────────── */}
         <PowerOnHeader
           badge="VISUAL SHOWCASE"
-          headline={<>Life at <span className="text-light-sweep-dark">ExESS</span></>}
-          description="A glimpse into our fests, workshops, lab sessions, and community events."
+          headline={<>Moving <span className="text-light-sweep-dark">Visual Field</span></>}
+          description="A filmstrip archive of our campus fests, hardware workshops, lab sessions, and community events."
           align="left"
         />
 
-        {/* ── 2. Premier Infinite Horizontal Image Carousel ───────────── */}
-        <div className="relative w-full overflow-hidden my-6 py-4 group">
-          <div className="flex gap-5 w-max animate-marquee group-hover:[animation-play-state:paused] will-change-transform">
-            {galleryMarqueeList.map((item, idx) => (
-              <div
-                key={`${item.id}-${idx}`}
-                onClick={() => setSelectedImage(item)}
-                className="w-72 sm:w-96 h-48 sm:h-60 flex-shrink-0 relative rounded-3xl overflow-hidden cursor-pointer border border-border/60 shadow-soft hover:shadow-soft-lg transition-all duration-300 group/card"
-              >
-                <ImagePlaceholder
-                  src={item.image}
-                  alt={item.title}
-                  type="gallery"
-                  aspectRatio="w-full h-full"
-                  badge={item.category}
-                  overlayContent={
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover/card:opacity-100 transition-opacity duration-300 p-4 sm:p-5 flex flex-col justify-end">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[9px] font-brand uppercase tracking-wider text-accent block font-semibold">
-                            {item.category}
-                          </span>
-                          <h4 className="text-xs sm:text-sm font-bold font-brand text-white mt-0.5">
-                            {item.title}
-                          </h4>
-                        </div>
-                        <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center group-hover/card:scale-110 transition-transform duration-300">
-                          <ZoomIn className="w-4 h-4 text-white" />
+        {/* ── 2. MOVING VISUAL FIELD (Variable-Width Filmstrip Marquee) ── */}
+        <div className="relative w-full overflow-hidden my-6 py-6 group">
+          <div className="flex items-center gap-6 w-max animate-marquee group-hover:[animation-play-state:paused] will-change-transform">
+            {galleryMarqueeList.map((item, idx) => {
+              const widthCls = widthClasses[idx % widthClasses.length]
+              const isOffset = idx % 2 === 1
+
+              return (
+                <div
+                  key={`${item.id}-${idx}`}
+                  onClick={() => setSelectedImage(item)}
+                  className={`${widthCls} h-52 sm:h-64 flex-shrink-0 relative rounded-3xl overflow-hidden cursor-pointer border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/50 transition-all duration-500 group/card ${
+                    isOffset ? 'translate-y-2' : '-translate-y-2'
+                  }`}
+                >
+                  <ImagePlaceholder
+                    src={item.image}
+                    alt={item.title}
+                    type="gallery"
+                    aspectRatio="w-full h-full"
+                    badge={item.category}
+                    overlayContent={
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-85 group-hover/card:opacity-100 transition-opacity duration-300 p-5 flex flex-col justify-end">
+                        {/* PCB Active Cyan Node Indicator */}
+                        <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_#32C5E8] opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
+
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[9px] font-brand uppercase tracking-wider text-accent block font-semibold mb-0.5">
+                              {item.category}
+                            </span>
+                            <h4 className="text-xs sm:text-sm font-bold font-brand text-white">
+                              {item.title}
+                            </h4>
+                          </div>
+                          <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center group-hover/card:scale-110 transition-transform duration-300">
+                            <ZoomIn className="w-4 h-4 text-white" />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  }
-                />
-              </div>
-            ))}
+                    }
+                  />
+                </div>
+              )
+            })}
           </div>
         </div>
 
         {/* ── 3. Standalone Centered CTA ──────────────────────────────── */}
-        <div className="flex justify-center mt-10">
+        <div className="flex justify-center mt-8">
           <PcbLightButton onClick={() => setShowAllModal(true)}>
-            VIEW ALL MOMENTS
+            EXPLORE FULL MOMENTS ARCHIVE
           </PcbLightButton>
         </div>
+
       </div>
 
       {/* Full Moments Gallery Showcase Directory Modal */}
@@ -109,8 +124,8 @@ const Gallery = () => {
             >
               <div className="sticky top-0 right-0 z-30 flex justify-between items-center bg-white/95 backdrop-blur-md pb-4 border-b border-border/60 -mt-2 mb-6">
                 <div>
-                  <h3 className="font-brand text-xl text-heading font-bold">ExESS MOMENTS &amp; GALLERY</h3>
-                  <p className="text-xs font-inter text-gray-500">Complete visual archive of student activities and fests</p>
+                  <h3 className="font-brand text-xl text-heading font-bold">ExESS MOMENTS ARCHIVE</h3>
+                  <p className="text-xs font-inter text-gray-500">Complete visual directory of student activities, competitions and campus fests</p>
                 </div>
                 <button
                   onClick={() => setShowAllModal(false)}

@@ -2,17 +2,16 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Mail, Phone, Send, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
-import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
 import PcbLightButton from './PcbLightButton'
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1, y: 0,
     transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
@@ -20,7 +19,7 @@ const itemVariants = {
 }
 
 const Contact = () => {
-  const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation()
+  const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation({ threshold: 0.15 })
   const [formState, setFormState] = useState({ name: '', email: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
 
@@ -33,12 +32,23 @@ const Contact = () => {
   return (
     <section id="contact" className="relative section-gap overflow-hidden">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
-        <PowerOnHeader
-          badge="CONTACT & CONNECT"
-          headline={<>LET&apos;S <span className="text-light-sweep-dark">CONNECT</span></>}
-          description="Reach out to ExESS for technical workshops, hardware research partnerships, or society membership inquiries."
-          align="left"
-        />
+        
+        {/* PCB Connecting Signal SVG Line linking Map to Form */}
+        <svg
+          aria-hidden="true"
+          className="absolute top-1/3 left-1/3 w-1/3 h-48 pointer-events-none select-none z-0 hidden lg:block opacity-30"
+          viewBox="0 0 400 150"
+          fill="none"
+        >
+          <path
+            d="M 10 20 H 200 V 130 H 390"
+            stroke="#32C5E8"
+            strokeWidth="2"
+            strokeDasharray="6 6"
+          />
+          <circle cx="10" cy="20" r="4" fill="#32C5E8" />
+          <circle cx="390" cy="130" r="4" fill="#1E6B93" />
+        </svg>
 
         <motion.div
           ref={contentRef}
@@ -47,17 +57,26 @@ const Contact = () => {
           variants={containerVariants}
           className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start"
         >
-          {/* Left Column (45% / 5 Cols): Structured Info Hierarchy */}
+          {/* Left Column (5 Cols): Connection Statement & Campus Map Interface */}
           <div className="lg:col-span-5 space-y-8">
-            {/* Group 1: Introduction text */}
             <motion.div variants={itemVariants}>
+              <span className="section-label font-brand inline-flex items-center mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <span className="section-label-text font-brand uppercase tracking-[0.22em] text-[10px] font-bold text-primary">
+                  CONNECTION INTERFACE
+                </span>
+              </span>
+
+              <h2 className="font-brand text-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.14] mb-4">
+                LET&apos;S <span className="text-primary">CONNECT</span>
+              </h2>
+
               <p className="font-inter text-sm sm:text-base text-gray-600 leading-relaxed">
-                Whether you&apos;re a student looking to join, an industry partner interested in research,
-                or an alumnus offering technical mentorship &mdash; submit your query below.
+                Whether you&apos;re a student looking to join, an industry partner interested in research, or an alumnus offering technical mentorship &mdash; submit your query below.
               </p>
             </motion.div>
 
-            {/* Group 2: Contact Details List */}
+            {/* Direct Contact Channels */}
             <motion.div variants={itemVariants} className="space-y-4 pt-2 border-t border-border/50">
               <span className="text-[10px] font-brand uppercase tracking-[0.18em] text-primary font-bold block mb-3">
                 DIRECT CONTACT CHANNELS
@@ -81,7 +100,7 @@ const Contact = () => {
               ))}
             </motion.div>
 
-            {/* Group 3: Location & Google Maps Embed Module */}
+            {/* Integrated Campus Location Map */}
             <motion.div variants={itemVariants} className="pt-2 border-t border-border/50">
               <span className="text-[10px] font-brand uppercase tracking-[0.18em] text-primary font-bold block mb-3">
                 CAMPUS LOCATION
@@ -132,9 +151,9 @@ const Contact = () => {
             </motion.div>
           </div>
 
-          {/* Right Column (55% / 7 Cols): Actionable Contact Form */}
+          {/* Right Column (7 Cols): Sequential Contact Form */}
           <motion.div variants={itemVariants} className="lg:col-span-7">
-            <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-10 border border-border/80 shadow-soft">
+            <form onSubmit={handleSubmit} className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-border/80 shadow-soft-lg space-y-5">
               {submitted ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -142,12 +161,12 @@ const Contact = () => {
                   className="text-center py-12 sm:py-16"
                 >
                   <CheckCircle className="w-14 h-14 text-emerald-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-brand text-heading mb-2 font-bold">Message Sent!</h3>
+                  <h3 className="text-xl font-brand text-heading mb-2 font-bold">Message Transmitted!</h3>
                   <p className="font-inter text-sm text-gray-600">Thank you for reaching out to ExESS. We will respond promptly.</p>
                 </motion.div>
               ) : (
                 <>
-                  <div className="grid sm:grid-cols-2 gap-5 mb-5">
+                  <motion.div variants={itemVariants} className="grid sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Name</label>
                       <input
@@ -168,9 +187,9 @@ const Contact = () => {
                         placeholder="your@email.com"
                       />
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="mb-5">
+                  <motion.div variants={itemVariants}>
                     <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Subject</label>
                     <select className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter text-body">
                       <option>General Inquiry</option>
@@ -178,9 +197,9 @@ const Contact = () => {
                       <option>Sponsorship / Research</option>
                       <option>Workshop Collaboration</option>
                     </select>
-                  </div>
+                  </motion.div>
 
-                  <div className="mb-7 sm:mb-8">
+                  <motion.div variants={itemVariants}>
                     <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Message</label>
                     <textarea
                       required rows={5}
@@ -189,11 +208,13 @@ const Contact = () => {
                       className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter resize-none"
                       placeholder="Share your inquiry or project details..."
                     />
-                  </div>
+                  </motion.div>
 
-                  <PcbLightButton type="submit" icon={Send} className="w-full py-4">
-                    SEND MESSAGE
-                  </PcbLightButton>
+                  <motion.div variants={itemVariants} className="pt-2">
+                    <PcbLightButton type="submit" icon={Send} className="w-full py-4">
+                      TRANSMIT MESSAGE
+                    </PcbLightButton>
+                  </motion.div>
                 </>
               )}
             </form>
