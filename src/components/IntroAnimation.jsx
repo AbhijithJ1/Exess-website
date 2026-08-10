@@ -276,29 +276,29 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Socket Outer Framing Brackets */}
-        <path className="pcb-trace" d="M 40 40 H 200 V 140 H 240" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <path className="pcb-trace" d="M 560 40 H 400 V 140 H 360" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        {/* Symmetrical Outer PCB Framing Traces (Strict Logo Safe Zone x:175..425) */}
+        <path className="pcb-trace" d="M 40 40 H 180 V 120 H 175" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <path className="pcb-trace" d="M 560 40 H 420 V 120 H 425" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
 
-        {/* Authentic Inward-Routing Middle PCB Signal Traces (NO BOX BRACKETS) */}
-        <path className="pcb-trace" d="M 20 260 H 140 V 280 H 180" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <path className="pcb-trace" d="M 20 340 H 140 V 320 H 180" stroke="rgba(50,197,232,0.65)" strokeWidth="1.8" strokeLinecap="square" />
+        {/* Symmetrical Inward-Routing Middle PCB Signal Traces */}
+        <path className="pcb-trace" d="M 20 260 H 130 V 270 H 175" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <path className="pcb-trace" d="M 20 340 H 130 V 330 H 175" stroke="rgba(50,197,232,0.65)" strokeWidth="1.8" strokeLinecap="square" />
 
-        <path className="pcb-trace" d="M 580 260 H 460 V 280 H 420" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <path className="pcb-trace" d="M 580 340 H 460 V 320 H 420" stroke="rgba(50,197,232,0.65)" strokeWidth="1.8" strokeLinecap="square" />
+        <path className="pcb-trace" d="M 580 260 H 470 V 270 H 425" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <path className="pcb-trace" d="M 580 340 H 470 V 320 H 425" stroke="rgba(50,197,232,0.65)" strokeWidth="1.8" strokeLinecap="square" />
 
-        {/* Bottom Framing Brackets */}
-        <path className="pcb-trace" d="M 40 560 H 200 V 460 H 240" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <path className="pcb-trace" d="M 560 560 H 400 V 460 H 360" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        {/* Symmetrical Bottom Framing Traces */}
+        <path className="pcb-trace" d="M 40 560 H 180 V 480 H 175" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <path className="pcb-trace" d="M 560 560 H 420 V 480 H 425" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
 
         {/* Framing Corner Accents */}
-        <path className="pcb-trace" d="M 140 180 V 140 H 180" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
-        <path className="pcb-trace" d="M 460 180 V 140 H 420" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
-        <path className="pcb-trace" d="M 140 420 V 460 H 180" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
-        <path className="pcb-trace" d="M 460 420 V 460 H 420" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
+        <path className="pcb-trace" d="M 130 160 V 130 H 175" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
+        <path className="pcb-trace" d="M 470 160 V 130 H 425" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
+        <path className="pcb-trace" d="M 130 440 V 470 H 175" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
+        <path className="pcb-trace" d="M 470 440 V 470 H 425" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
       </svg>
 
-      {/* ── TERMINAL SOCKET PADS GROUP ── */}
+      {/* ── TERMINAL SOCKET PADS GROUP (BALANCED BILATERAL LAYOUT) ── */}
       <svg
         ref={socketPadsRef}
         aria-hidden="true"
@@ -308,14 +308,14 @@ const IntroAnimation = ({ onComplete }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <circle className="socket-pad" cx="240" cy="140" r="3.5" />
-        <circle className="socket-pad" cx="360" cy="140" r="3.5" />
-        <circle className="socket-pad" cx="180" cy="280" r="3.5" />
-        <circle className="socket-pad" cx="180" cy="320" r="3.5" />
-        <circle className="socket-pad" cx="420" cy="280" r="3.5" />
-        <circle className="socket-pad" cx="420" cy="320" r="3.5" />
-        <circle className="socket-pad" cx="240" cy="460" r="3.5" />
-        <circle className="socket-pad" cx="360" cy="460" r="3.5" />
+        <circle className="socket-pad" cx="175" cy="120" r="3.5" />
+        <circle className="socket-pad" cx="425" cy="120" r="3.5" />
+        <circle className="socket-pad" cx="175" cy="270" r="3.5" />
+        <circle className="socket-pad" cx="175" cy="330" r="3.5" />
+        <circle className="socket-pad" cx="425" cy="270" r="3.5" />
+        <circle className="socket-pad" cx="425" cy="330" r="3.5" />
+        <circle className="socket-pad" cx="175" cy="480" r="3.5" />
+        <circle className="socket-pad" cx="425" cy="480" r="3.5" />
       </svg>
 
       {/* ── ENERGY PARTICLE — ORIGINATES FROM OPEN GAP BETWEEN UPPER PCB TRACES (300, 40) ── */}
