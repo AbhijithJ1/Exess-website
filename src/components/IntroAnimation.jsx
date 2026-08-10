@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 
 /**
- * ExESS Intro Animation — 16-Trace PCB Network (8 Left + 8 Right)
+ * ExESS Intro Animation — 16-Trace Dense PCB Network (8 Left + 8 Right)
  *
- * ONE-WAY INWARD ENERGY FLOW:
+ * TIGHTLY PACKED HIGH-DENSITY PCB GEOMETRY:
+ * Exactly 8 traces Left + 8 traces Right with compressed vertical gaps for a dense, technical PCB cluster feel.
  * 16 Outer Circular Terminals -> 16 PCB Traces -> 16 Inner Nodes -> Central Energy Core -> ExESS Emblem & Wordmark -> Final Stable Logo
  * (NO REVERSE ENERGY FLOW)
  *
@@ -20,45 +21,45 @@ import { useEffect, useRef } from 'react'
  *  5.60 – 6.20  Step 10: FINAL STABLE LOGO — Clean ExESS logo + 16-trace PCB framing
  */
 
-// EXACTLY 16 TRACES (8 Left, 8 Right)
+// EXACTLY 16 TRACES (8 Left, 8 Right) — TIGHT VERTICAL SPACING FOR HIGH DENSITY
 // 600x600 coordinate space. Center = (300, 295)
-// Protected Central Safe Zone: X (200 .. 400), Y (175 .. 455)
+// Protected Central Safe Zone: X (205 .. 395), Y (160 .. 445)
 const TRACES = [
-  // --- LEFT SIDE TRACES (8) ---
-  // L1. Top Corner Outer
-  { pts: [[40, 40], [165, 40], [165, 115], [195, 115]] },
-  // L2. Top Inner
-  { pts: [[65, 85], [135, 85], [135, 145], [180, 145]] },
-  // L3. Upper-Mid
-  { pts: [[25, 160], [115, 160], [115, 185], [170, 185]] },
-  // L4. Mid-Upper Outer
-  { pts: [[20, 225], [125, 225], [125, 235], [165, 235]] },
-  // L5. Mid-Lower Outer
-  { pts: [[20, 290], [115, 290], [115, 280], [165, 280]] },
-  // L6. Lower-Mid
-  { pts: [[25, 350], [125, 350], [125, 335], [175, 335]] },
-  // L7. Bottom Inner
-  { pts: [[35, 415], [140, 415], [140, 390], [185, 390]] },
-  // L8. Bottom Corner Outer
-  { pts: [[50, 540], [190, 540], [190, 465], [205, 465]] },
+  // --- LEFT SIDE TRACES (8) — Dense Vertical Cluster ---
+  // L1. Top Outer Trace
+  { pts: [[40, 70], [165, 70], [165, 130], [195, 130]] },
+  // L2. Upper Trace
+  { pts: [[65, 102], [135, 102], [135, 155], [180, 155]] },
+  // L3. Upper-Mid Trace
+  { pts: [[25, 145], [115, 145], [115, 185], [170, 185]] },
+  // L4. Mid-Upper Trace
+  { pts: [[20, 205], [125, 205], [125, 225], [165, 225]] },
+  // L5. Mid-Lower Trace
+  { pts: [[20, 275], [115, 275], [115, 270], [165, 270]] },
+  // L6. Lower-Mid Trace
+  { pts: [[25, 345], [125, 345], [125, 325], [175, 325]] },
+  // L7. Lower Trace
+  { pts: [[35, 410], [140, 410], [140, 375], [185, 375]] },
+  // L8. Bottom Outer Trace
+  { pts: [[50, 485], [190, 485], [190, 435], [205, 435]] },
 
-  // --- RIGHT SIDE TRACES (8 - Mirrored across CX=300) ---
-  // R1. Top Corner Outer
-  { pts: [[560, 40], [435, 40], [435, 115], [405, 115]] },
-  // R2. Top Inner
-  { pts: [[535, 85], [465, 85], [465, 145], [420, 145]] },
-  // R3. Upper-Mid
-  { pts: [[575, 160], [485, 160], [485, 185], [430, 185]] },
-  // R4. Mid-Upper Outer
-  { pts: [[580, 225], [475, 225], [475, 235], [435, 235]] },
-  // R5. Mid-Lower Outer
-  { pts: [[580, 290], [485, 290], [485, 280], [435, 280]] },
-  // R6. Lower-Mid
-  { pts: [[575, 350], [475, 350], [475, 335], [425, 335]] },
-  // R7. Bottom Inner
-  { pts: [[565, 415], [460, 415], [460, 390], [415, 390]] },
-  // R8. Bottom Corner Outer
-  { pts: [[550, 540], [410, 540], [410, 465], [395, 465]] },
+  // --- RIGHT SIDE TRACES (8) — Mirrored across CX=300 ---
+  // R1. Top Outer Trace
+  { pts: [[560, 70], [435, 70], [435, 130], [405, 130]] },
+  // R2. Upper Trace
+  { pts: [[535, 102], [465, 102], [465, 155], [420, 155]] },
+  // R3. Upper-Mid Trace
+  { pts: [[575, 145], [485, 145], [485, 185], [430, 185]] },
+  // R4. Mid-Upper Trace
+  { pts: [[580, 205], [475, 205], [475, 225], [435, 225]] },
+  // R5. Mid-Lower Trace
+  { pts: [[580, 275], [485, 275], [485, 270], [435, 270]] },
+  // R6. Lower-Mid Trace
+  { pts: [[575, 345], [475, 345], [475, 325], [425, 325]] },
+  // R7. Lower Trace
+  { pts: [[565, 410], [460, 410], [460, 375], [415, 375]] },
+  // R8. Bottom Outer Trace
+  { pts: [[550, 485], [410, 485], [410, 435], [395, 435]] },
 ]
 
 const CX = 300, CY = 295
@@ -524,8 +525,6 @@ const IntroAnimation = ({ onComplete }) => {
       if (wmP > 0) drawWordmark(ctx, wmP)
 
       // === STEP 9: ENERGY SETTLES INTO FINAL LOGO (NO REVERSE OUTWARD PULSE) 4.85–5.60 ===
-      // The central energy absorbs into the logo and settles cleanly.
-      // The 16 PCB traces remain in their clean, low-contrast framing state.
 
       // === STEP 10: Final Stable State 5.60+ ===
       if (t >= 4.85) {
