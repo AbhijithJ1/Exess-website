@@ -280,9 +280,12 @@ const IntroAnimation = ({ onComplete }) => {
         <path className="pcb-trace" d="M 40 40 H 200 V 140 H 240" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
         <path className="pcb-trace" d="M 560 40 H 400 V 140 H 360" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
 
-        {/* Left / Right Vertical Socket Boundaries */}
-        <path className="pcb-trace" d="M 20 240 H 140 V 360 H 20" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <path className="pcb-trace" d="M 580 240 H 460 V 360 H 580" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        {/* Authentic Inward-Routing Middle PCB Signal Traces (NO BOX BRACKETS) */}
+        <path className="pcb-trace" d="M 20 260 H 140 V 280 H 180" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <path className="pcb-trace" d="M 20 340 H 140 V 320 H 180" stroke="rgba(50,197,232,0.65)" strokeWidth="1.8" strokeLinecap="square" />
+
+        <path className="pcb-trace" d="M 580 260 H 460 V 280 H 420" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
+        <path className="pcb-trace" d="M 580 340 H 460 V 320 H 420" stroke="rgba(50,197,232,0.65)" strokeWidth="1.8" strokeLinecap="square" />
 
         {/* Bottom Framing Brackets */}
         <path className="pcb-trace" d="M 40 560 H 200 V 460 H 240" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
@@ -307,10 +310,10 @@ const IntroAnimation = ({ onComplete }) => {
       >
         <circle className="socket-pad" cx="240" cy="140" r="3.5" />
         <circle className="socket-pad" cx="360" cy="140" r="3.5" />
-        <circle className="socket-pad" cx="140" cy="240" r="3.5" />
-        <circle className="socket-pad" cx="140" cy="360" r="3.5" />
-        <circle className="socket-pad" cx="460" cy="240" r="3.5" />
-        <circle className="socket-pad" cx="460" cy="360" r="3.5" />
+        <circle className="socket-pad" cx="180" cy="280" r="3.5" />
+        <circle className="socket-pad" cx="180" cy="320" r="3.5" />
+        <circle className="socket-pad" cx="420" cy="280" r="3.5" />
+        <circle className="socket-pad" cx="420" cy="320" r="3.5" />
         <circle className="socket-pad" cx="240" cy="460" r="3.5" />
         <circle className="socket-pad" cx="360" cy="460" r="3.5" />
       </svg>
