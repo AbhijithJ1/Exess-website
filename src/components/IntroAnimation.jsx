@@ -1,507 +1,639 @@
 import { useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
 
 /**
- * IntroAnimation — Rebuilt Hero Intro: PCB → Energy Flow → Convergence → Identity
+ * IntroAnimation — Ground-Up Canvas Rebuild
  *
- * ABSOLUTE RULES:
- * 1. NO top / top-left / sky energy particles.
- * 2. All pulse beams start with inline opacity: 0 so no flash occurs on DOM mount.
- * 3. Energy originates simultaneously at outer PCB endpoints.
- * 4. Energy travels strictly ALONG existing 90° SVG PCB paths.
- * 5. Inner PCB endpoints illuminate as energy collection nodes.
- * 6. Energy particles move from inner endpoints to central core (300, 220) (NO radial lines).
- * 7. Central core powers ExESS emblem & wordmark reveal (L -> R).
- * 8. PCB circuit REMAINS PERMANENTLY VISIBLE in exact fixed position as the hero technological frame.
+ * USES A SINGLE HTML CANVAS for the entire animation sequence.
+ * This completely eliminates:
+ *   - React DOM mount flashes (no SVG elements ever visible at time-zero)
+ *   - GSAP SVG attribute animation compatibility bugs (cx/cy not animatable without AttrPlugin)
+ *   - Independent Framer Motion / CSS animations interfering
+ *   - Stale HMR cache issues
+ *
+ * SEQUENCE:
+ *   Phase 1: PCB traces draw from outer endpoints inward                    (0.0 – 1.0s)
+ *   Phase 2: Outer endpoint pads light up simultaneously                    (1.0 – 1.25s)
+ *   Phase 3: Energy pulse travels along ACTUAL PCB paths (dash animation)   (1.25 – 2.1s)
+ *   Phase 4: Inner endpoint pads charge and glow                            (2.1 – 2.4s)
+ *   Phase 5: Particles move from inner pads to central core                 (2.4 – 2.9s)
+ *   Phase 6: Central energy core forms                                      (2.9 – 3.2s)
+ *   Phase 7: ExESS emblem strokes draw from center outward                  (3.2 – 3.9s)
+ *   Phase 8: ExESS wordmark letters reveal L→R                             (3.9 – 4.5s)
+ *   Phase 9: Final stable state — PCB REMAINS PERMANENTLY VISIBLE           (4.5 – 5.0s)
  */
 
-const EmblemSVG = ({ svgRef }) => (
-  <svg
-    ref={svgRef}
-    viewBox="0 0 200 210"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="w-full h-full overflow-visible"
-  >
-    {/* Globe outer circle */}
-    <circle className="emblem-path" cx="100" cy="85" r="50" stroke="#1E6B93" strokeWidth="3" />
+// ──────────────────────────────────────────────────────────────
+// PCB GEOMETRY — 8 traces, each defined as a series of [x, y] waypoints
+// All coordinates in a 600×600 SVG viewBox.
+// Outer endpoints are the START of each trace.
+// Inner endpoints are the END of each trace (nearest to center).
+// CENTER = (300, 300) — where the logo sits
+// ──────────────────────────────────────────────────────────────
+const TRACES = [
+  // Top-left
+  { pts: [[40, 40], [180, 40], [180, 130], [175, 130]] },
+  // Top-right
+  { pts: [[560, 40], [420, 40], [420, 130], [425, 130]] },
+  // Middle-left upper
+  { pts: [[20, 220], [130, 220], [130, 235], [175, 235]] },
+  // Middle-left lower
+  { pts: [[20, 370], [130, 370], [130, 355], [175, 355]] },
+  // Middle-right upper
+  { pts: [[580, 220], [470, 220], [470, 235], [425, 235]] },
+  // Middle-right lower
+  { pts: [[580, 370], [470, 370], [470, 355], [425, 355]] },
+  // Bottom-left
+  { pts: [[40, 560], [180, 560], [180, 470], [175, 470]] },
+  // Bottom-right
+  { pts: [[560, 560], [420, 560], [420, 470], [425, 470]] },
+]
 
-    {/* Latitude ellipses */}
-    <ellipse className="emblem-path" cx="100" cy="85" rx="50" ry="15" stroke="#1E6B93" strokeWidth="1.5" opacity="0.7" />
-    <ellipse className="emblem-path" cx="100" cy="85" rx="50" ry="30" stroke="#1E6B93" strokeWidth="1.5" opacity="0.7" />
-    <ellipse className="emblem-path" cx="100" cy="85" rx="50" ry="43" stroke="#1E6B93" strokeWidth="1.5" opacity="0.7" />
+// Pre-compute segment lengths and total length for each trace
+function computeTraceData(trace) {
+  const { pts } = trace
+  const segments = []
+  let total = 0
+  for (let i = 0; i < pts.length - 1; i++) {
+    const dx = pts[i + 1][0] - pts[i][0]
+    const dy = pts[i + 1][1] - pts[i][1]
+    const len = Math.sqrt(dx * dx + dy * dy)
+    segments.push({ x0: pts[i][0], y0: pts[i][1], x1: pts[i + 1][0], y1: pts[i + 1][1], len })
+    total += len
+  }
+  return { pts, segments, total }
+}
 
-    {/* Longitude lines */}
-    <line className="emblem-path" x1="100" y1="35" x2="100" y2="135" stroke="#1E6B93" strokeWidth="1.5" opacity="0.7" />
-    <line className="emblem-path" x1="70"  y1="48" x2="70"  y2="122" stroke="#1E6B93" strokeWidth="1.5" opacity="0.7" />
-    <line className="emblem-path" x1="130" y1="48" x2="130" y2="122" stroke="#1E6B93" strokeWidth="1.5" opacity="0.7" />
-    <line className="emblem-path" x1="50"  y1="68" x2="50"  y2="102" stroke="#1E6B93" strokeWidth="1"   opacity="0.5" />
-    <line className="emblem-path" x1="150" y1="68" x2="150" y2="102" stroke="#1E6B93" strokeWidth="1"   opacity="0.5" />
+// Get the (x, y) position at progress t (0–1) along a trace
+function tracePosAt(traceData, t) {
+  const dist = t * traceData.total
+  let acc = 0
+  for (const seg of traceData.segments) {
+    if (acc + seg.len >= dist) {
+      const f = (dist - acc) / seg.len
+      return [seg.x0 + (seg.x1 - seg.x0) * f, seg.y0 + (seg.y1 - seg.y0) * f]
+    }
+    acc += seg.len
+  }
+  const last = traceData.pts[traceData.pts.length - 1]
+  return [last[0], last[1]]
+}
 
-    {/* Cyan Orbit ellipse */}
-    <ellipse
-      className="emblem-path emblem-orbit"
-      cx="100" cy="85" rx="64" ry="19"
-      stroke="#32C5E8" strokeWidth="2.8"
-      transform="rotate(-12 100 85)"
-    />
+// Easing functions
+const easeInOut = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
+const easeOut   = (t) => 1 - Math.pow(1 - t, 3)
+const easeIn    = (t) => t * t * t
 
-    {/* PCB circuit traces below globe (connected nodes) */}
-    <path className="node-path" d="M75 135 L70 155 L55 155 L55 175"   stroke="#1E6B93" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path className="node-path" d="M90 135 L90 160 L75 160 L75 185"   stroke="#1E6B93" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path className="node-path" d="M110 135 L110 155 L125 155 L125 175" stroke="#1E6B93" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path className="node-path" d="M125 135 L130 160 L145 160 L145 185" stroke="#1E6B93" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path className="node-path" d="M100 135 L100 165"                  stroke="#1E6B93" strokeWidth="2.5" strokeLinecap="round" />
+// Colors
+const C_PCB   = '#1E6B93'
+const C_CYAN  = '#32C5E8'
+const C_WHITE = '#FFFFFF'
 
-    {/* Terminal pads */}
-    <rect className="node-path node-pad" x="48"  y="173" width="14" height="14" rx="2.5" stroke="#1E6B93" strokeWidth="2" fill="none" />
-    <rect className="node-path node-pad" x="68"  y="183" width="14" height="14" rx="2.5" stroke="#1E6B93" strokeWidth="2" fill="none" />
-    <rect className="node-path node-pad" x="92"  y="168" width="16" height="16" rx="2.5" stroke="#1E6B93" strokeWidth="2" fill="none" />
-    <rect className="node-path node-pad" x="118" y="183" width="14" height="14" rx="2.5" stroke="#1E6B93" strokeWidth="2" fill="none" />
-    <rect className="node-path node-pad" x="138" y="173" width="14" height="14" rx="2.5" stroke="#1E6B93" strokeWidth="2" fill="none" />
+// ExESS emblem strokes to draw (in 600×600 canvas coordinates)
+// Globe center at (300, 270), radius 58
+const GLB_CX = 300, GLB_CY = 270, GLB_R = 58
 
-    {/* Pad fills */}
-    <rect className="node-fill" x="53"  y="178" width="4" height="4" rx="1" fill="#1E6B93" opacity="0" />
-    <rect className="node-fill" x="73"  y="188" width="4" height="4" rx="1" fill="#1E6B93" opacity="0" />
-    <rect className="node-fill" x="98"  y="174" width="4" height="4" rx="1" fill="#1E6B93" opacity="0" />
-    <rect className="node-fill" x="123" y="188" width="4" height="4" rx="1" fill="#1E6B93" opacity="0" />
-    <rect className="node-fill" x="143" y="178" width="4" height="4" rx="1" fill="#1E6B93" opacity="0" />
-  </svg>
-)
+function drawEmblemStrokes(ctx, progress, scale = 1) {
+  // progress: 0..1 — reveals emblem from center outward
+  ctx.save()
+  ctx.translate(GLB_CX, GLB_CY)
+  ctx.scale(scale, scale)
+  ctx.translate(-GLB_CX, -GLB_CY)
 
+  const p = easeOut(Math.min(progress, 1))
+  ctx.globalAlpha = p
+  ctx.lineCap = 'round'
+
+  // Outer circle
+  ctx.beginPath()
+  ctx.arc(GLB_CX, GLB_CY, GLB_R, -Math.PI / 2 - Math.PI * p, -Math.PI / 2 + Math.PI * p)
+  ctx.strokeStyle = C_PCB
+  ctx.lineWidth = 3.5
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.arc(GLB_CX, GLB_CY, GLB_R, Math.PI / 2 - Math.PI * p, Math.PI / 2 + Math.PI * p)
+  ctx.strokeStyle = C_PCB
+  ctx.lineWidth = 3.5
+  ctx.stroke()
+
+  // Latitude ellipses — 3 of them
+  for (const ry of [14, 28, 40]) {
+    ctx.beginPath()
+    ctx.save()
+    ctx.translate(GLB_CX, GLB_CY)
+    ctx.scale(1, ry / GLB_R)
+    ctx.arc(0, 0, GLB_R, -Math.PI * p, Math.PI * p)
+    ctx.restore()
+    ctx.strokeStyle = C_PCB
+    ctx.lineWidth = 1.5
+    ctx.globalAlpha = p * 0.7
+    ctx.stroke()
+  }
+  ctx.globalAlpha = p
+
+  // Vertical lines — 3 of them
+  for (const [xOff, h] of [
+    [0, GLB_R], [-30, GLB_R * 0.8], [30, GLB_R * 0.8]
+  ]) {
+    ctx.beginPath()
+    ctx.moveTo(GLB_CX + xOff, GLB_CY - h * p)
+    ctx.lineTo(GLB_CX + xOff, GLB_CY + h * p)
+    ctx.strokeStyle = C_PCB
+    ctx.lineWidth = 1.5
+    ctx.globalAlpha = p * 0.7
+    ctx.stroke()
+  }
+
+  // Cyan orbit ellipse
+  ctx.globalAlpha = p
+  ctx.save()
+  ctx.translate(GLB_CX, GLB_CY)
+  ctx.rotate(-12 * Math.PI / 180)
+  ctx.scale(1, 20 / 68)
+  ctx.beginPath()
+  ctx.arc(0, 0, 68, -Math.PI * p, Math.PI * p)
+  ctx.restore()
+  ctx.strokeStyle = C_CYAN
+  ctx.lineWidth = 3
+  ctx.stroke()
+
+  // PCB legs below globe
+  const legY = GLB_CY + GLB_R + 4
+  const legs = [
+    [GLB_CX - 25, legY, GLB_CX - 30, legY + 20, GLB_CX - 45, legY + 20, GLB_CX - 45, legY + 42],
+    [GLB_CX - 10, legY, GLB_CX - 10, legY + 25, GLB_CX - 25, legY + 25, GLB_CX - 25, legY + 52],
+    [GLB_CX,      legY, GLB_CX,      legY + 32],
+    [GLB_CX + 10, legY, GLB_CX + 10, legY + 22, GLB_CX + 25, legY + 22, GLB_CX + 25, legY + 42],
+    [GLB_CX + 25, legY, GLB_CX + 30, legY + 25, GLB_CX + 45, legY + 25, GLB_CX + 45, legY + 52],
+  ]
+  ctx.globalAlpha = p * 0.85
+  ctx.strokeStyle = C_PCB
+  ctx.lineWidth = 2.5
+  for (const leg of legs) {
+    ctx.beginPath()
+    // Animate each leg segment partially
+    const drawLen = leg.length / 2
+    for (let i = 0; i < drawLen - 1; i++) {
+      const t2 = Math.min(p * drawLen - i, 1)
+      if (t2 <= 0) break
+      const x0 = leg[i * 2], y0 = leg[i * 2 + 1]
+      const x1 = leg[(i + 1) * 2], y1 = leg[(i + 1) * 2 + 1]
+      ctx.moveTo(x0, y0)
+      ctx.lineTo(x0 + (x1 - x0) * t2, y0 + (y1 - y0) * t2)
+    }
+    ctx.stroke()
+  }
+
+  // Terminal pads at leg ends
+  const pads = [
+    [GLB_CX - 45, legY + 42],
+    [GLB_CX - 25, legY + 52],
+    [GLB_CX,      legY + 32],
+    [GLB_CX + 25, legY + 42],
+    [GLB_CX + 45, legY + 52],
+  ]
+  if (p > 0.7) {
+    const padP = (p - 0.7) / 0.3
+    for (const [px, py] of pads) {
+      ctx.globalAlpha = padP
+      ctx.strokeStyle = C_PCB
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.roundRect(px - 7, py - 7, 14, 14, 2)
+      ctx.stroke()
+      ctx.fillStyle = C_PCB
+      ctx.globalAlpha = padP * 0.5
+      ctx.beginPath()
+      ctx.roundRect(px - 3, py - 3, 6, 6, 1)
+      ctx.fill()
+    }
+  }
+
+  ctx.restore()
+}
+
+// Draw ExESS wordmark letters — drawn in 600×600 coordinate space
+// (called inside the scaled+translated canvas context)
+function drawWordmark(ctx, progress) {
+  // progress is per-letter: 0..5 float
+  const letters = ['E', 'x', 'E', 'S', 'S']
+  // Font size in 600×600 units
+  const fontSize = 68
+  ctx.save()
+  ctx.font = `bold ${fontSize}px "Space Grotesk", system-ui, sans-serif`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+
+  // Center each letter around cx=300
+  const charW = fontSize * 0.62  // approximate glyph advance
+  const totalW = letters.length * charW
+  const startX = 300 - totalW / 2 + charW / 2
+  const y = GLB_CY + GLB_R + 90
+
+  letters.forEach((ch, i) => {
+    const lp = Math.max(0, Math.min(1, progress - i))
+    if (lp <= 0) return
+    const p = easeOut(lp)
+    ctx.globalAlpha = p
+    ctx.fillStyle = '#1E6B93'
+    ctx.fillText(ch, startX + i * charW, y)
+  })
+  ctx.restore()
+}
+
+// ──────────────────────────────────────────────────────────────
+// MAIN COMPONENT
+// ──────────────────────────────────────────────────────────────
 const IntroAnimation = ({ onComplete }) => {
-  const containerRef       = useRef(null)
-  const pcbSvgRef          = useRef(null)
-  const outerPadsRef       = useRef(null)
-  const pulseGroupRef      = useRef(null)
-  const socketPadsRef      = useRef(null)
-  const convParticlesRef   = useRef(null)
-  const centerCoreRef      = useRef(null)
-  const logoGroupRef       = useRef(null)
-  const emblemWrapperRef   = useRef(null)
-  const emblemSvgRef       = useRef(null)
-  const lettersRef         = useRef([])
-  const hasFinishedRef     = useRef(false)
+  const containerRef = useRef(null)
+  const canvasRef    = useRef(null)
+  const rafRef       = useRef(null)
+  const startRef     = useRef(null)
+  const doneRef      = useRef(false)
 
-  const finishAnimation = () => {
-    if (hasFinishedRef.current) return
-    hasFinishedRef.current = true
-    if (containerRef.current) {
-      containerRef.current.style.transition = 'opacity 0.45s ease-out'
-      containerRef.current.style.opacity = '0'
-      setTimeout(() => {
-        if (onComplete) onComplete()
-      }, 440)
+  const finish = () => {
+    if (doneRef.current) return
+    doneRef.current = true
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    const el = containerRef.current
+    if (el) {
+      el.style.transition = 'opacity 0.4s ease-out'
+      el.style.opacity = '0'
+      setTimeout(() => { if (onComplete) onComplete() }, 400)
     } else if (onComplete) {
       onComplete()
     }
   }
 
   useEffect(() => {
-    // Accessibility: Reduced Motion Check
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (prefersReducedMotion) {
-      finishAnimation()
+    // Skip animation for reduced-motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      finish()
       return
     }
 
-    const letters = lettersRef.current
-    gsap.set(containerRef.current, { opacity: 1 })
+    const canvas  = canvasRef.current
+    const container = containerRef.current
+    if (!canvas) return
 
-    // Hide Logo Group & Energy Core Initially
-    gsap.set(logoGroupRef.current, { opacity: 0 })
-    gsap.set(centerCoreRef.current, { opacity: 0, scale: 0 })
-    gsap.set(emblemWrapperRef.current, { filter: 'drop-shadow(0 0 0px transparent)' })
+    const dpr = window.devicePixelRatio || 1
+    let W = container.clientWidth
+    let H = container.clientHeight
 
-    // Setup Emblem paths
-    const emblemEl = emblemSvgRef.current
-    if (emblemEl) {
-      const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
-      const nodePaths   = emblemEl.querySelectorAll('.node-path')
-      const nodeFills   = emblemEl.querySelectorAll('.node-fill')
+    const resize = () => {
+      W = container.clientWidth
+      H = container.clientHeight
+      canvas.width  = W * dpr
+      canvas.height = H * dpr
+      canvas.style.width  = W + 'px'
+      canvas.style.height = H + 'px'
+    }
+    resize()
+    window.addEventListener('resize', resize)
 
-      emblemPaths.forEach(el => {
-        const len = (() => { try { return el.getTotalLength() } catch { return 200 } })()
-        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 })
+    // Pre-compute all trace data
+    const traceData = TRACES.map(computeTraceData)
+
+    // Scale factor: our geometry is in 600×600 coords, canvas is variable size
+    const getScale = () => {
+      const s = Math.min(W, H) / 600 * 0.92
+      return s
+    }
+    const getOffset = () => {
+      const s = getScale()
+      return { ox: (W - 600 * s) / 2, oy: (H - 600 * s) / 2 }
+    }
+
+    // ── DRAW FRAME ────────────────────────────────────────────
+    const draw = (ts) => {
+      if (!startRef.current) startRef.current = ts
+      const elapsed = (ts - startRef.current) / 1000 // seconds
+
+      const ctx = canvas.getContext('2d')
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      ctx.save()
+      ctx.scale(dpr, dpr)
+
+      const s  = getScale()
+      const { ox, oy } = getOffset()
+
+      // Transform into 600×600 coordinate space
+      ctx.translate(ox, oy)
+      ctx.scale(s, s)
+
+      // ─────────────────────────────────────────────
+      // PHASE 1: PCB TRACE FORMATION  0.0 – 1.0s
+      // ─────────────────────────────────────────────
+      const pcbP = Math.min(1, elapsed / 1.0)
+
+      traceData.forEach((td) => {
+        const p = easeInOut(pcbP)
+        // Draw trace up to progress p
+        let remaining = p * td.total
+
+        ctx.beginPath()
+        ctx.lineCap = 'square'
+        ctx.strokeStyle = C_PCB
+        ctx.lineWidth = 1.8
+        ctx.globalAlpha = 0.85
+
+        let started = false
+        for (const seg of td.segments) {
+          if (remaining <= 0) break
+          const draw = Math.min(remaining, seg.len)
+          const f = draw / seg.len
+          if (!started) {
+            ctx.moveTo(seg.x0, seg.y0)
+            started = true
+          }
+          ctx.lineTo(seg.x0 + (seg.x1 - seg.x0) * f, seg.y0 + (seg.y1 - seg.y0) * f)
+          remaining -= draw
+        }
+        ctx.stroke()
       })
 
-      nodePaths.forEach(el => {
-        const len = (() => { try { return el.getTotalLength() } catch { return 150 } })()
-        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len, opacity: 0 })
-      })
+      // ─────────────────────────────────────────────
+      // PHASE 2: OUTER ENDPOINTS ACTIVATE  1.0 – 1.25s
+      // ─────────────────────────────────────────────
+      const outerP = Math.min(1, Math.max(0, (elapsed - 1.0) / 0.25))
 
-      nodeFills.forEach(el => gsap.set(el, { opacity: 0 }))
-    }
-
-    // Setup Outer PCB Traces & Signal Pulses (PCB Geometry Remains Fixed & Stationary Throughout)
-    let traceLens = []
-    if (pcbSvgRef.current) {
-      const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      traces.forEach((el) => {
-        const len = (() => { try { return el.getTotalLength() } catch { return 400 } })()
-        traceLens.push(len)
-        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len, opacity: 0.85 })
-      })
-    }
-
-    // Energy pulse overlays (hidden with opacity: 0 initially)
-    if (pulseGroupRef.current) {
-      const pulses = pulseGroupRef.current.querySelectorAll('.pulse-beam')
-      pulses.forEach((el, idx) => {
-        const len = traceLens[idx] || 400
-        gsap.set(el, { strokeDasharray: `60 ${len}`, strokeDashoffset: len, opacity: 0 })
-      })
-    }
-
-    // Setup Outer Starting Pads & Inner Socket Pads
-    if (outerPadsRef.current) {
-      const pads = outerPadsRef.current.querySelectorAll('.outer-pad')
-      pads.forEach(p => gsap.set(p, { scale: 0.8, fill: '#1E6B93', opacity: 0.35 }))
-    }
-
-    if (socketPadsRef.current) {
-      const pads = socketPadsRef.current.querySelectorAll('.socket-pad')
-      pads.forEach(p => gsap.set(p, { scale: 0.8, fill: '#1E6B93', opacity: 0.35 }))
-    }
-
-    // Setup Converging Energy Particles (moving dots from inner pads to center)
-    if (convParticlesRef.current) {
-      const particles = convParticlesRef.current.querySelectorAll('.conv-p')
-      particles.forEach(p => gsap.set(p, { opacity: 0, scale: 0 }))
-    }
-
-    // Setup Wordmark Letters
-    letters.forEach(letterEl => {
-      if (letterEl) {
-        gsap.set(letterEl, { opacity: 0, filter: 'blur(0px)' })
+      if (outerP > 0) {
+        // Glow fades out after energy has moved through (~3.5s)
+        const outerFade = elapsed > 3.5 ? Math.max(0, 1 - (elapsed - 3.5) / 0.5) : 1
+        const p = easeOut(outerP)
+        traceData.forEach((td) => {
+          const [ox2, oy2] = td.pts[0]
+          ctx.globalAlpha = p * 0.45  // always show dim dot
+          ctx.fillStyle = C_PCB
+          ctx.beginPath()
+          ctx.arc(ox2, oy2, 4.5, 0, Math.PI * 2)
+          ctx.fill()
+          // Glow ring only during active phase
+          if (outerFade > 0) {
+            const grad = ctx.createRadialGradient(ox2, oy2, 0, ox2, oy2, 10)
+            grad.addColorStop(0, `rgba(50,197,232,${0.9 * outerFade})`)
+            grad.addColorStop(1, 'rgba(50,197,232,0)')
+            ctx.fillStyle = grad
+            ctx.globalAlpha = outerFade
+            ctx.beginPath()
+            ctx.arc(ox2, oy2, 10, 0, Math.PI * 2)
+            ctx.fill()
+            ctx.fillStyle = C_CYAN
+            ctx.globalAlpha = outerFade
+            ctx.beginPath()
+            ctx.arc(ox2, oy2, 4.5, 0, Math.PI * 2)
+            ctx.fill()
+          }
+        })
       }
-    })
 
-    // ── MASTER SINGLE-TIMELINE STAGE SEQUENCE (~4.9s TOTAL) ─────────
-    const tl = gsap.timeline({
-      onComplete: finishAnimation,
-    })
+      // ─────────────────────────────────────────────
+      // PHASE 3: ENERGY TRAVELS ALONG PCB PATHS  1.25 – 2.1s
+      // ─────────────────────────────────────────────
+      const energyP = Math.min(1, Math.max(0, (elapsed - 1.25) / 0.85))
 
-    // STAGE 1: PCB CIRCUIT FORMATION (0.0s – 1.0s)
-    if (pcbSvgRef.current) {
-      const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      tl.to(traces, { strokeDashoffset: 0, opacity: 1, duration: 0.95, stagger: 0.03, ease: 'power2.inOut' }, 0.05)
-    }
+      if (energyP > 0) {
+        const p = easeInOut(energyP)
+        traceData.forEach((td) => {
+          // Draw energy pulse: a short segment (dash) travelling along the path
+          const dashLen = 55 // canvas units
+          const headDist = p * td.total
+          const tailDist = Math.max(0, headDist - dashLen)
 
-    // STAGE 2: ALL OUTER PCB ENDPOINTS ACTIVATE SIMULTANEOUSLY (1.0s – 1.3s)
-    if (outerPadsRef.current) {
-      const pads = outerPadsRef.current.querySelectorAll('.outer-pad')
-      tl.to(pads, { fill: '#32C5E8', opacity: 1, scale: 1.4, duration: 0.25, ease: 'power1.out' }, 1.05)
-    }
+          ctx.save()
+          ctx.lineCap = 'round'
+          ctx.lineWidth = 3
+          ctx.shadowColor = C_CYAN
+          ctx.shadowBlur = 8
 
-    // STAGE 3: ENERGY TRAVELS ALONG ACTUAL PCB TRACES (1.3s – 2.1s)
-    if (pulseGroupRef.current) {
-      const pulses = pulseGroupRef.current.querySelectorAll('.pulse-beam')
-      // Make pulses 100% visible at 1.30s ONLY as they begin moving along SVG paths!
-      tl.to(pulses, { opacity: 1, duration: 0.06 }, 1.30)
-      pulses.forEach((el) => {
-        tl.to(el, { strokeDashoffset: 0, duration: 0.75, ease: 'power2.inOut' }, 1.30)
-      })
-    }
+          // Walk the trace and draw only the segment from tailDist to headDist
+          let acc = 0
+          let drawing = false
+          let pathStarted = false
 
-    // STAGE 4: ENERGY REACHES INNER ENDPOINTS & ILLUMINATES COLLECTION NODES (2.1s – 2.4s)
-    if (socketPadsRef.current) {
-      const pads = socketPadsRef.current.querySelectorAll('.socket-pad')
-      tl.to(pads, { fill: '#32C5E8', opacity: 1, scale: 1.5, duration: 0.30, ease: 'power1.out' }, 2.05)
-    }
+          ctx.beginPath()
+          for (const seg of td.segments) {
+            const segEnd = acc + seg.len
+            if (segEnd < tailDist) { acc += seg.len; continue }
+            if (acc > headDist) break
 
-    if (pulseGroupRef.current) {
-      const pulses = pulseGroupRef.current.querySelectorAll('.pulse-beam')
-      tl.to(pulses, { opacity: 0, duration: 0.20 }, 2.15)
-    }
+            const drawFrom = Math.max(acc, tailDist)
+            const drawTo   = Math.min(segEnd, headDist)
+            const fFrom    = (drawFrom - acc) / seg.len
+            const fTo      = (drawTo - acc) / seg.len
 
-    // STAGE 5: PARTICLES CONVERGE FROM INNER PADS TO CENTER (300, 220) (2.4s – 2.8s)
-    // (Moving glowing dots gather energy at center — NO RADIAL LINES DRAWN!)
-    if (convParticlesRef.current) {
-      const particles = convParticlesRef.current.querySelectorAll('.conv-p')
-      particles.forEach((p) => {
-        const targetX = 300
-        const targetY = 220
-        const startX = parseFloat(p.getAttribute('cx'))
-        const startY = parseFloat(p.getAttribute('cy'))
+            const px0 = seg.x0 + (seg.x1 - seg.x0) * fFrom
+            const py0 = seg.y0 + (seg.y1 - seg.y0) * fFrom
+            const px1 = seg.x0 + (seg.x1 - seg.x0) * fTo
+            const py1 = seg.y0 + (seg.y1 - seg.y0) * fTo
 
-        tl.fromTo(p,
-          { cx: startX, cy: startY, opacity: 0, scale: 0.5 },
-          { cx: targetX, cy: targetY, opacity: 1, scale: 1.2, duration: 0.40, ease: 'power2.in' },
-          2.40
-        )
-        tl.to(p, { opacity: 0, scale: 0.2, duration: 0.10 }, 2.78)
-      })
-    }
+            if (!pathStarted) {
+              ctx.moveTo(px0, py0)
+              pathStarted = true
+            }
+            ctx.lineTo(px1, py1)
+            acc += seg.len
+          }
 
-    // STAGE 6: CENTRAL ENERGY CORE FORMS & INTENSIFIES AT (300, 220) (2.8s – 3.1s)
-    tl.to(centerCoreRef.current, { opacity: 1, scale: 1.6, duration: 0.35, ease: 'power2.out' }, 2.75)
-
-    // STAGE 7: EXESS EMBLEM FORMS FROM CENTRAL ENERGY CORE (3.1s – 3.8s)
-    tl.to(logoGroupRef.current, { opacity: 1, duration: 0.12 }, 3.10)
-
-    tl.to(emblemWrapperRef.current, {
-      filter: 'drop-shadow(0 0 16px rgba(50,197,232,0.85))',
-      duration: 0.30,
-      ease: 'power1.out',
-    }, 3.10)
-
-    if (emblemEl) {
-      const emblemPaths = emblemEl.querySelectorAll('.emblem-path')
-      const nodePaths   = emblemEl.querySelectorAll('.node-path')
-      const nodeFills   = emblemEl.querySelectorAll('.node-fill')
-
-      tl.to(emblemPaths, {
-        strokeDashoffset: 0,
-        opacity: 1,
-        duration: 0.50,
-        stagger: 0.04,
-        ease: 'power2.out',
-      }, 3.12)
-
-      tl.to(nodePaths, {
-        strokeDashoffset: 0,
-        opacity: 1,
-        duration: 0.30,
-        stagger: 0.02,
-        ease: 'power2.out',
-      }, 3.35)
-
-      tl.to(nodeFills, { opacity: 1, duration: 0.20, stagger: 0.01 }, 3.55)
-    }
-
-    // STAGE 8: WORDMARK FORMS PROGRESSIVELY L → R (E → x → E → S → S) (3.8s – 4.4s)
-    letters.forEach((letterEl, index) => {
-      if (letterEl) {
-        tl.to(letterEl, {
-          opacity: 1,
-          duration: 0.12,
-          ease: 'power1.out',
-        }, 3.80 + index * 0.11)
+          // Gradient stroke: fade in at tail, bright in middle, fade at head
+          const headPos = tracePosAt(td, Math.min(1, headDist / td.total))
+          const tailPos = tracePosAt(td, Math.min(1, tailDist / td.total))
+          const grd = ctx.createLinearGradient(tailPos[0], tailPos[1], headPos[0], headPos[1])
+          grd.addColorStop(0, 'rgba(50,197,232,0)')
+          grd.addColorStop(0.4, 'rgba(50,197,232,0.9)')
+          grd.addColorStop(1, 'rgba(255,255,255,1)')
+          ctx.strokeStyle = grd
+          ctx.globalAlpha = 1
+          ctx.stroke()
+          ctx.restore()
+        })
       }
-    })
 
-    // Central core gently absorbs into emblem as logo completes
-    tl.to(centerCoreRef.current, { opacity: 0, scale: 0.2, duration: 0.35 }, 3.25)
+      // ─────────────────────────────────────────────
+      // PHASE 4: INNER ENDPOINTS CHARGE  2.1 – 2.4s
+      // ─────────────────────────────────────────────
+      const innerP = Math.min(1, Math.max(0, (elapsed - 2.1) / 0.3))
 
-    // STAGE 9: FINAL STABLE STATE — PCB TRACES REMAIN PERMANENTLY VISIBLE IN FIXED POSITION (4.4s – 5.0s)
-    tl.to(emblemWrapperRef.current, {
-      filter: 'drop-shadow(0 0 6px rgba(50,197,232,0.15))',
-      duration: 0.40,
-      ease: 'power2.out',
-    }, 4.40)
+      if (innerP > 0) {
+        // Inner glow fades out after convergence completes (~3.0s)
+        const innerFade = elapsed > 3.0 ? Math.max(0, 1 - (elapsed - 3.0) / 0.5) : 1
+        const p = easeOut(innerP)
+        traceData.forEach((td) => {
+          const [ix, iy] = td.pts[td.pts.length - 1]
+          // Always show a dim dot
+          ctx.fillStyle = C_PCB
+          ctx.globalAlpha = 0.45
+          ctx.beginPath()
+          ctx.arc(ix, iy, 4, 0, Math.PI * 2)
+          ctx.fill()
+          // Glow only during active phase
+          if (innerFade > 0) {
+            const grad = ctx.createRadialGradient(ix, iy, 0, ix, iy, 12)
+            grad.addColorStop(0, `rgba(50,197,232,${0.95 * innerFade})`)
+            grad.addColorStop(1, 'rgba(50,197,232,0)')
+            ctx.fillStyle = grad
+            ctx.globalAlpha = innerFade * p
+            ctx.beginPath()
+            ctx.arc(ix, iy, 12, 0, Math.PI * 2)
+            ctx.fill()
+            ctx.fillStyle = C_WHITE
+            ctx.globalAlpha = innerFade * p
+            ctx.beginPath()
+            ctx.arc(ix, iy, 4, 0, Math.PI * 2)
+            ctx.fill()
+          }
+        })
+      }
 
-    if (socketPadsRef.current) {
-      const pads = socketPadsRef.current.querySelectorAll('.socket-pad')
-      tl.to(pads, { fill: '#1E6B93', opacity: 0.55, scale: 1.0, duration: 0.40 }, 4.40)
+      // ─────────────────────────────────────────────
+      // PHASE 5: CONVERGENCE — PARTICLES FROM INNER PADS TO CENTER  2.4 – 2.9s
+      // ─────────────────────────────────────────────
+      const convP = Math.min(1, Math.max(0, (elapsed - 2.4) / 0.5))
+
+      if (convP > 0) {
+        const p = easeIn(convP)
+        const CX = 300, CY = 300
+        traceData.forEach((td) => {
+          const [ix, iy] = td.pts[td.pts.length - 1]
+          // Particle moves from inner pad to center
+          const px = ix + (CX - ix) * p
+          const py = iy + (CY - iy) * p
+          // Fade in then out as it approaches center
+          const alpha = p < 0.85 ? Math.min(1, p * 3) : (1 - p) / 0.15
+
+          ctx.save()
+          ctx.shadowColor = C_CYAN
+          ctx.shadowBlur = 12
+          ctx.fillStyle = C_WHITE
+          ctx.globalAlpha = Math.max(0, alpha)
+          ctx.beginPath()
+          ctx.arc(px, py, 3.5, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.restore()
+        })
+      }
+
+      // ─────────────────────────────────────────────
+      // PHASE 6: CENTRAL ENERGY CORE  2.9 – 3.2s
+      // ─────────────────────────────────────────────
+      const coreP = Math.min(1, Math.max(0, (elapsed - 2.9) / 0.3))
+      // Core fades out as emblem forms
+      const coreFadeOut = elapsed > 3.5 ? Math.max(0, 1 - (elapsed - 3.5) / 0.4) : 1
+
+      if (coreP > 0 && coreFadeOut > 0) {
+        const p = easeOut(coreP)
+        const CX = 300, CY = 300
+        const coreR = 22 * p
+        const alpha = p * coreFadeOut
+
+        ctx.save()
+        const grad = ctx.createRadialGradient(CX, CY, 0, CX, CY, coreR)
+        grad.addColorStop(0, 'rgba(255,255,255,1)')
+        grad.addColorStop(0.3, 'rgba(50,197,232,0.9)')
+        grad.addColorStop(1, 'rgba(50,197,232,0)')
+        ctx.fillStyle = grad
+        ctx.globalAlpha = alpha
+        ctx.beginPath()
+        ctx.arc(CX, CY, coreR, 0, Math.PI * 2)
+        ctx.fill()
+        // Inner white dot
+        ctx.fillStyle = C_WHITE
+        ctx.globalAlpha = alpha
+        ctx.shadowColor = C_CYAN
+        ctx.shadowBlur = 16
+        ctx.beginPath()
+        ctx.arc(CX, CY, 5 * p, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.restore()
+      }
+
+      // ─────────────────────────────────────────────
+      // PHASE 7: EXESS EMBLEM FORMS  3.2 – 3.9s
+      // ─────────────────────────────────────────────
+      const emblemP = Math.min(1, Math.max(0, (elapsed - 3.2) / 0.7))
+
+      if (emblemP > 0) {
+        drawEmblemStrokes(ctx, emblemP)
+      }
+
+      // ─────────────────────────────────────────────
+      // PHASE 8: WORDMARK FORMS  3.9 – 4.55s
+      // ─────────────────────────────────────────────
+      const wmStart = 3.9, wmPerLetter = 0.13
+      const wmLetterProgress = Math.max(0, (elapsed - wmStart) / wmPerLetter)
+
+      if (wmLetterProgress > 0) {
+        drawWordmark(ctx, wmLetterProgress)
+      }
+
+      ctx.restore()
+
+      // Loop until done or animation is complete
+      const TOTAL = 5.2
+      if (elapsed < TOTAL && !doneRef.current) {
+        rafRef.current = requestAnimationFrame(draw)
+      } else if (!doneRef.current) {
+        // Draw one final frame at full completion then finish
+        rafRef.current = requestAnimationFrame(() => {
+          finish()
+        })
+      }
     }
 
-    if (outerPadsRef.current) {
-      const pads = outerPadsRef.current.querySelectorAll('.outer-pad')
-      tl.to(pads, { fill: '#1E6B93', opacity: 0.55, scale: 1.0, duration: 0.40 }, 4.40)
-    }
+    rafRef.current = requestAnimationFrame(draw)
 
-    // Keep PCB traces at full visible stroke framing the logo in final composition
-    if (pcbSvgRef.current) {
-      const traces = pcbSvgRef.current.querySelectorAll('.pcb-trace')
-      tl.to(traces, { opacity: 0.85, duration: 0.40 }, 4.40)
-    }
-
-    // Hold final stable composition for user recognition before preloader exit
-    tl.to({}, { duration: 0.60 }, 4.40)
-
-    const safetyTimer = setTimeout(() => {
-      finishAnimation()
-    }, 5600)
+    // Safety timeout
+    const safetyTimer = setTimeout(finish, 6000)
 
     return () => {
+      cancelAnimationFrame(rafRef.current)
       clearTimeout(safetyTimer)
-      tl.kill()
+      window.removeEventListener('resize', resize)
     }
   }, [])
-
-  const SVG_SIZE = 'min(92vw, 620px)'
-  const exessLetters = ['E', 'x', 'E', 'S', 'S']
 
   return (
     <div
       ref={containerRef}
-      onClick={finishAnimation}
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden select-none cursor-pointer bg-white"
+      onClick={finish}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 100,
+        background: '#FFFFFF',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        userSelect: 'none',
+        overflow: 'hidden',
+      }}
     >
-      {/* ── STAGE 1: PERMANENT STATIC PCB MOTHERBOARD TRACES SVG (GEOMETRY FIXED & STATIONARY) ── */}
-      <svg
-        ref={pcbSvgRef}
-        aria-hidden="true"
-        className="absolute pointer-events-none"
-        style={{ width: SVG_SIZE, height: SVG_SIZE }}
-        viewBox="0 0 600 600"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Symmetrical Outer PCB Framing Traces */}
-        <path className="pcb-trace" d="M 40 40 H 180 V 120 H 175" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <path className="pcb-trace" d="M 560 40 H 420 V 120 H 425" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-
-        {/* Symmetrical Inward-Routing Middle PCB Signal Traces */}
-        <path className="pcb-trace" d="M 20 260 H 130 V 270 H 175" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <path className="pcb-trace" d="M 20 340 H 130 V 330 H 175" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-
-        <path className="pcb-trace" d="M 580 260 H 470 V 270 H 425" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <path className="pcb-trace" d="M 580 340 H 470 V 320 H 425" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-
-        {/* Symmetrical Bottom Framing Traces */}
-        <path className="pcb-trace" d="M 40 560 H 180 V 480 H 175" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-        <path className="pcb-trace" d="M 560 560 H 420 V 480 H 425" stroke="#1E6B93" strokeWidth="1.8" strokeLinecap="square" />
-
-        {/* Framing Corner Accents */}
-        <path className="pcb-trace" d="M 130 160 V 130 H 175" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
-        <path className="pcb-trace" d="M 470 160 V 130 H 425" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
-        <path className="pcb-trace" d="M 130 440 V 470 H 175" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
-        <path className="pcb-trace" d="M 470 440 V 470 H 425" stroke="rgba(30,107,147,0.4)" strokeWidth="1.5" />
-      </svg>
-
-      {/* ── STAGE 2: OUTER STARTING ENDPOINTS (GLOW CYAN SIMULTANEOUSLY IN STAGE 2) ── */}
-      <svg
-        ref={outerPadsRef}
-        aria-hidden="true"
-        className="absolute pointer-events-none"
-        style={{ width: SVG_SIZE, height: SVG_SIZE }}
-        viewBox="0 0 600 600"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle className="outer-pad" cx="40" cy="40" r="4.5" />
-        <circle className="outer-pad" cx="560" cy="40" r="4.5" />
-        <circle className="outer-pad" cx="20" cy="260" r="4.5" />
-        <circle className="outer-pad" cx="20" cy="340" r="4.5" />
-        <circle className="outer-pad" cx="580" cy="260" r="4.5" />
-        <circle className="outer-pad" cx="580" cy="340" r="4.5" />
-        <circle className="outer-pad" cx="40" cy="560" r="4.5" />
-        <circle className="outer-pad" cx="560" cy="560" r="4.5" />
-      </svg>
-
-      {/* ── STAGE 3: SYNCHRONIZED ENERGY PULSE BEAMS (OPACITY 0 INLINE TO PREVENT DOM FLASH) ── */}
-      <svg
-        ref={pulseGroupRef}
-        aria-hidden="true"
-        className="absolute pointer-events-none"
-        style={{ width: SVG_SIZE, height: SVG_SIZE }}
-        viewBox="0 0 600 600"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path className="pulse-beam" d="M 40 40 H 180 V 120 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 560 40 H 420 V 120 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 20 260 H 130 V 270 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 20 340 H 130 V 330 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 580 260 H 470 V 270 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 580 340 H 470 V 320 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 40 560 H 180 V 480 H 175" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <path className="pulse-beam" d="M 560 560 H 420 V 480 H 425" stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" opacity="0" style={{ opacity: 0, filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-      </svg>
-
-      {/* ── STAGE 4: TERMINAL SOCKET PADS GROUP (INNER ENDPOINTS ILLUMINATE) ── */}
-      <svg
-        ref={socketPadsRef}
-        aria-hidden="true"
-        className="absolute pointer-events-none"
-        style={{ width: SVG_SIZE, height: SVG_SIZE }}
-        viewBox="0 0 600 600"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle className="socket-pad" cx="175" cy="120" r="4" />
-        <circle className="socket-pad" cx="425" cy="120" r="4" />
-        <circle className="socket-pad" cx="175" cy="270" r="4" />
-        <circle className="socket-pad" cx="175" cy="330" r="4" />
-        <circle className="socket-pad" cx="425" cy="270" r="4" />
-        <circle className="socket-pad" cx="425" cy="330" r="4" />
-        <circle className="socket-pad" cx="175" cy="480" r="4" />
-        <circle className="socket-pad" cx="425" cy="480" r="4" />
-      </svg>
-
-      {/* ── STAGE 5: CONVERGING ENERGY PARTICLES (MOVING SPARKS FROM INNER PADS TO CENTER) ── */}
-      <svg
-        ref={convParticlesRef}
-        aria-hidden="true"
-        className="absolute pointer-events-none"
-        style={{ width: SVG_SIZE, height: SVG_SIZE }}
-        viewBox="0 0 600 600"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle className="conv-p" cx="175" cy="120" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <circle className="conv-p" cx="425" cy="120" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <circle className="conv-p" cx="175" cy="270" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <circle className="conv-p" cx="175" cy="330" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <circle className="conv-p" cx="425" cy="270" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <circle className="conv-p" cx="425" cy="330" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <circle className="conv-p" cx="175" cy="480" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-        <circle className="conv-p" cx="425" cy="480" r="3.5" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 4px #32C5E8)' }} />
-      </svg>
-
-      {/* ── STAGE 6: CENTRAL ENERGY CORE AT (300, 220) ── */}
-      <svg
-        aria-hidden="true"
-        className="absolute pointer-events-none"
-        style={{ width: SVG_SIZE, height: SVG_SIZE }}
-        viewBox="0 0 600 600"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g ref={centerCoreRef} style={{ transformOrigin: '300px 220px' }}>
-          <circle cx="300" cy="220" r="18" fill="url(#coreGlow)" />
-          <circle cx="300" cy="220" r="5" fill="#FFFFFF" />
-        </g>
-
-        <defs>
-          <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#32C5E8" stopOpacity="1" />
-            <stop offset="100%" stopColor="#1E6B93" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-      </svg>
-
-      {/* ── STAGE 7 & 8: CENTRAL ExESS IDENTITY CORE ── */}
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          display: 'block',
+        }}
+      />
       <div
-        ref={logoGroupRef}
-        className="relative z-10 flex flex-col items-center justify-center text-center p-4"
-        style={{ transformOrigin: 'center center' }}
+        style={{
+          position: 'absolute',
+          bottom: '1.5rem',
+          right: '2rem',
+          fontSize: '11px',
+          fontFamily: 'monospace',
+          color: '#94a3b8',
+          textTransform: 'uppercase',
+          letterSpacing: '0.15em',
+          pointerEvents: 'none',
+          opacity: 0.5,
+        }}
       >
-        {/* Emblem Assembly */}
-        <div
-          ref={emblemWrapperRef}
-          style={{ width: 'clamp(110px, 16vw, 135px)', height: 'clamp(120px, 18vw, 150px)' }}
-        >
-          <EmblemSVG svgRef={emblemSvgRef} />
-        </div>
-
-        {/* Wordmark Assembly — Progressive L→R Letter Reveal */}
-        <div className="mt-3.5 flex items-center justify-center gap-0.5">
-          <h1
-            className="font-brand font-bold text-light-sweep-dark tracking-tight flex"
-            style={{
-              fontSize: 'clamp(2.4rem, 6vw, 3.8rem)',
-              lineHeight: '0.95',
-              letterSpacing: '-0.04em',
-            }}
-          >
-            {exessLetters.map((char, index) => (
-              <span
-                key={index}
-                ref={(el) => (lettersRef.current[index] = el)}
-                className="inline-block"
-              >
-                {char}
-              </span>
-            ))}
-          </h1>
-        </div>
-      </div>
-
-      <div className="absolute bottom-6 right-8 text-[11px] font-mono text-slate-400 uppercase tracking-widest pointer-events-none opacity-50">
-        Click to skip &rarr;
+        Click to skip →
       </div>
     </div>
   )
