@@ -18,10 +18,10 @@ const legalLinks = [
 ]
 
 const SOCIAL_LINKS = [
-  { icon: <FaInstagram className="w-6 h-6 sm:w-7 sm:h-7" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
-  { icon: <FaLinkedinIn className="w-6 h-6 sm:w-7 sm:h-7" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
-  { icon: <FaGithub className="w-6 h-6 sm:w-7 sm:h-7" />, href: '#', label: 'GitHub' },
-  { icon: <FaEnvelope className="w-6 h-6 sm:w-7 sm:h-7" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
+  { icon: <FaInstagram className="w-6 h-6 sm:w-7 sm:h-7 text-[#E4405F]" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
+  { icon: <FaLinkedinIn className="w-6 h-6 sm:w-7 sm:h-7 text-[#0A66C2]" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
+  { icon: <FaGithub className="w-6 h-6 sm:w-7 sm:h-7 text-[#181717]" />, href: '#', label: 'GitHub' },
+  { icon: <FaEnvelope className="w-6 h-6 sm:w-7 sm:h-7 text-[#EA4335]" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
 ]
 
 /**
@@ -40,9 +40,7 @@ const Footer = () => {
           <div className="md:col-span-7 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 bg-slate-50 rounded-xl border border-border/60 p-1.5 flex items-center justify-center">
-                  <Logo />
-                </div>
+                <Logo className="w-8 h-8 sm:w-9 sm:h-9" />
                 <span className="font-brand font-bold text-lg text-heading tracking-tight">ExESS</span>
               </div>
               <p className="font-inter text-body text-xs sm:text-sm leading-relaxed max-w-lg mb-5 text-gray-500">
@@ -50,7 +48,7 @@ const Footer = () => {
               </p>
             </div>
 
-            {/* Social Icons — Clean bare FaIcons without container boxes */}
+            {/* Social Icons — Clean bare FaIcons with original brand colors */}
             <div className="flex items-center gap-5 sm:gap-6">
               {SOCIAL_LINKS.map((social) => (
                 <a
@@ -58,7 +56,7 @@ const Footer = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-primary transition-all duration-300 transform hover:scale-110 p-0.5"
+                  className="transition-all duration-300 transform hover:scale-110 p-0.5"
                   aria-label={social.label}
                 >
                   {social.icon}

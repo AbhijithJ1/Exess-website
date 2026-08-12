@@ -1,5 +1,7 @@
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { FaLinkedin } from 'react-icons/fa6'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ImagePlaceholder from './ImagePlaceholder'
 import {
   facultyCoordinator,
@@ -62,7 +64,7 @@ const TeamMemberCard = ({ person, badge = null }) => {
           className="text-slate-400 hover:text-[#0A66C2] transition-colors p-1 flex-shrink-0"
           aria-label={`Connect with ${person.name} on LinkedIn`}
         >
-          <FaLinkedin className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition-transform" />
+          <FaLinkedin className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition-transform text-[#0A66C2]" />
         </a>
       </div>
     </div>
@@ -71,6 +73,15 @@ const TeamMemberCard = ({ person, badge = null }) => {
 
 
 const Team = () => {
+  const scrollRef = useRef(null)
+
+  const handleScroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = direction === 'left' ? -320 : 320
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    }
+  }
+
   return (
     <section id="team" className="relative section-gap overflow-hidden bg-slate-50/50">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
@@ -97,7 +108,7 @@ const Team = () => {
         </div>
 
         {/* ── 2. EXECUTIVE TEAM GRID (FACULTY + CORE LEADERS) ─────────────── */}
-        <div className="relative max-w-5xl mx-auto mb-20">
+        <div className="relative max-w-5xl mx-auto mb-16">
           {/* Faculty Coordinator — Centered Top */}
           <div className="flex justify-center mb-10">
             <TimelineAnimation delay={0.4} className="w-full max-w-xs">
@@ -118,26 +129,47 @@ const Team = () => {
           </div>
         </div>
 
-        {/* ── 3. EXTENDED COMMITTEE — SINGLE ROW MARQUEE ─────────────────── */}
-        <div className="relative pt-16 border-t border-border/40">
-          <TimelineAnimation delay={0.2} className="text-center mb-10">
+        {/* ── 3. EXTENDED COMMITTEE — AUTOMATIC MARQUEE WITH BOTTOM RIGHT ARROWS ─ */}
+        <div className="relative pt-12 border-t border-border/40">
+          <TimelineAnimation delay={0.2} className="mb-6">
             <h3 className="font-brand text-2xl sm:text-3xl font-bold text-heading uppercase tracking-tight">
               COMMITTEE &amp; OFFICE BEARERS
             </h3>
-            <p className="text-xs font-inter text-gray-500 mt-2">
+            <p className="text-xs font-inter text-gray-500 mt-1">
               The operational nodes maintaining ExESS systems across all domains
             </p>
           </TimelineAnimation>
 
-          {/* Single row: all members combined, duplicated once for seamless loop */}
-          <div className="relative overflow-hidden w-full py-4">
+          {/* Automatic Infinite Scrolling Marquee Container */}
+          <div
+            ref={scrollRef}
+            className="relative overflow-x-auto no-scrollbar w-full py-4 scroll-smooth"
+          >
             <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused] w-max">
               {[...officeBearers, ...committeeMembers, ...officeBearers, ...committeeMembers].map((person, idx) => (
-                <div key={`ext-${person.id}-${idx}`} className="w-52 sm:w-64 lg:w-72 flex-shrink-0">
-                  <TeamMemberCard person={person} badge={officeBearers.includes(person) ? 'OFFICE_BEARER' : 'COMMITTEE'} />
+                <div key={`ext-${person.id}-${idx}`} className="w-56 sm:w-64 lg:w-72 flex-shrink-0">
+                  <TeamMemberCard person={person} />
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Bottom Right Scroll Navigation Arrows */}
+          <div className="flex items-center justify-end gap-2 mt-4">
+            <button
+              onClick={() => handleScroll('left')}
+              className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
+              aria-label="Scroll Committee Left"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => handleScroll('right')}
+              className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
+              aria-label="Scroll Committee Right"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
