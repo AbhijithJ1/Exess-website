@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Instagram, Linkedin, Github, Mail } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
+import { FaInstagram, FaLinkedinIn, FaGithub, FaEnvelope } from 'react-icons/fa6'
 import Logo from './Logo'
 
 const essentialNavLinks = [
@@ -17,20 +18,14 @@ const legalLinks = [
 ]
 
 const SOCIAL_LINKS = [
-  { icon: <Instagram className="w-4 h-4" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
-  { icon: <Linkedin className="w-4 h-4" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
-  { icon: <Github className="w-4 h-4" />, href: '#', label: 'GitHub' },
-  { icon: <Mail className="w-4 h-4" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
+  { icon: <FaInstagram className="w-6 h-6 sm:w-7 sm:h-7" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
+  { icon: <FaLinkedinIn className="w-6 h-6 sm:w-7 sm:h-7" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
+  { icon: <FaGithub className="w-6 h-6 sm:w-7 sm:h-7" />, href: '#', label: 'GitHub' },
+  { icon: <FaEnvelope className="w-6 h-6 sm:w-7 sm:h-7" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
 ]
 
 /**
  * Footer — Clean White ExESS Architecture
- *
- * White background (#ffffff)
- * Removed Headquarters / Address section (already in Contact Us)
- * Removed "Navigation" header label
- * Tagline: "SHAPING THE FUTURE OF ELECTRONICS & HARDWARE"
- * Massive EXESS headline with primary cyan-blue hover & ArrowUpRight CTA
  */
 const Footer = () => {
   return (
@@ -55,20 +50,18 @@ const Footer = () => {
               </p>
             </div>
 
-            {/* Social Icons Buttons */}
-            <div className="flex gap-2.5">
+            {/* Social Icons — Clean bare FaIcons without container boxes */}
+            <div className="flex items-center gap-5 sm:gap-6">
               {SOCIAL_LINKS.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-xl bg-slate-50 border border-border/60 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all group"
+                  className="text-gray-500 hover:text-primary transition-all duration-300 transform hover:scale-110 p-0.5"
                   aria-label={social.label}
                 >
-                  <span className="group-hover:scale-110 transition-transform">
-                    {social.icon}
-                  </span>
+                  {social.icon}
                 </a>
               ))}
             </div>

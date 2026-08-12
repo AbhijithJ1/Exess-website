@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Linkedin } from 'lucide-react'
+import { FaLinkedin } from 'react-icons/fa6'
 import ImagePlaceholder from './ImagePlaceholder'
 import {
   facultyCoordinator,
@@ -50,7 +50,7 @@ const TeamMemberCard = ({ person, badge = null }) => {
         )}
       </div>
 
-      {/* Name, Role & LinkedIn Connect Button */}
+      {/* Name, Role & LinkedIn Connect Link — Bare FaIcon without container box */}
       <div className="flex items-end justify-between gap-3 pt-2 mt-auto">
         <div className="overflow-hidden">
           <h4 className="font-brand font-bold text-heading text-base sm:text-lg group-hover:text-primary transition-colors leading-snug truncate">
@@ -64,10 +64,10 @@ const TeamMemberCard = ({ person, badge = null }) => {
           href={linkedinUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-[#0A66C2] hover:text-white hover:shadow-md transition-all border border-border/60 flex-shrink-0 group/link"
+          className="text-slate-400 hover:text-[#0A66C2] transition-colors p-1 flex-shrink-0"
           aria-label={`Connect with ${person.name} on LinkedIn`}
         >
-          <Linkedin className="w-4 h-4 group-hover/link:scale-110 transition-transform" />
+          <FaLinkedin className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition-transform" />
         </a>
       </div>
     </div>

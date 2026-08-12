@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Mail, Send, CheckCircle, ChevronDown, Check } from 'lucide-react'
+import { FaLocationDot, FaEnvelope } from 'react-icons/fa6'
 import PcbLightButton from './PcbLightButton'
 
 const SUBJECT_OPTIONS = [
@@ -288,9 +289,9 @@ const Contact = () => {
             </p>
 
             <div className="space-y-6">
-              <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-border/60 shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
-                <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-primary border border-border/80 group-hover:bg-primary group-hover:text-white transition-colors">
-                  <MapPin className="w-5 h-5" />
+              <div className="flex items-start gap-5 p-5 rounded-2xl bg-white border border-border/60 shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
+                <div className="text-primary flex-shrink-0 pt-0.5">
+                  <FaLocationDot className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div>
                   <h4 className="font-brand text-sm font-bold text-heading mb-1">Address</h4>
@@ -301,9 +302,9 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-border/60 shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
-                <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-primary border border-border/80 group-hover:bg-primary group-hover:text-white transition-colors">
-                  <Mail className="w-5 h-5" />
+              <div className="flex items-start gap-5 p-5 rounded-2xl bg-white border border-border/60 shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
+                <div className="text-primary flex-shrink-0 pt-0.5">
+                  <FaEnvelope className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div>
                   <h4 className="font-brand text-sm font-bold text-heading mb-1">Email</h4>
