@@ -7,6 +7,7 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 
   body {
@@ -15,6 +16,11 @@
     color: #6B7280;
     overflow-x: hidden;
     line-height: 1.7;
+  }
+
+  /* Prevent any element from causing horizontal overflow */
+  img, svg, video, iframe {
+    max-width: 100%;
   }
 
   ::selection {

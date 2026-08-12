@@ -254,7 +254,7 @@ const Hero = () => {
                   initial={{ y: '-100%', opacity: 0, filter: 'blur(10px)' }}
                   animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-brand text-xs sm:text-sm uppercase tracking-[0.24em]"
+                  className="font-brand text-[10px] sm:text-xs uppercase tracking-[0.16em] sm:tracking-[0.24em]"
                   style={{ color: '#1E6B93' }}
                 >
                   Official Electronics Students Society

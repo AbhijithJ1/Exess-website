@@ -125,7 +125,7 @@ const Events = () => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="section-padding max-w-7xl mx-auto relative z-10 min-h-[85vh]">
+      <div className="section-padding max-w-7xl mx-auto relative z-10 min-h-[80vh] sm:min-h-[85vh]">
 
         {/* ── 1. SEQUENTIAL CHARACTER ACTIVATION TYPOGRAPHY ───────────────── */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 sm:gap-8 mb-10 border-b border-border/60 pb-8">

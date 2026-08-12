@@ -127,7 +127,7 @@ const Testimonials = () => {
             </div>
 
             <div
-              className="bg-white/80 border border-border/80 p-8 sm:p-12 rounded-3xl shadow-soft-lg backdrop-blur-sm relative"
+              className="bg-white/80 border border-border/80 p-5 sm:p-8 lg:p-12 rounded-3xl shadow-soft-lg backdrop-blur-sm relative"
             >
 
               <AnimatePresence mode="wait" custom={direction}>
@@ -140,11 +140,11 @@ const Testimonials = () => {
                   transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                   style={{ transformOrigin: 'center center' }}
                 >
-                  <blockquote className="font-inter text-lg sm:text-2xl md:text-3xl text-heading leading-relaxed font-medium italic mb-8">
+                  <blockquote className="font-inter text-base sm:text-xl md:text-2xl lg:text-3xl text-heading leading-relaxed font-medium italic mb-8">
                     &ldquo;{current.quote}&rdquo;
                   </blockquote>
 
-                  <div className="flex items-center justify-between pt-6 border-t border-border/60">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-border/60">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-full overflow-hidden border border-border/80 bg-slate-100 flex-shrink-0">
                         <ImagePlaceholder
@@ -163,7 +163,7 @@ const Testimonials = () => {
                     </div>
 
                     {/* Progress dots + controls */}
-                    <div className="flex flex-col items-end gap-3">
+                    <div className="flex sm:flex-col items-center sm:items-end gap-3">
                       {/* Dot indicators */}
                       <div className="flex gap-1.5">
                         {testimonialsData.map((_, i) => (

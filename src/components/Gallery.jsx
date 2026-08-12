@@ -35,12 +35,15 @@ const Gallery = () => {
   const imageCount = galleryItems.length
   const angleStep = 360 / imageCount
 
-  // Radius calculation (responsive: 460px desktop, 260px mobile)
+  // Radius calculation (responsive: 460px desktop, 220px mobile)
   const [radius, setRadius] = useState(460)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
-      setRadius(window.innerWidth < 768 ? 260 : 460)
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+      setRadius(mobile ? 200 : window.innerWidth < 1024 ? 340 : 460)
     }
     handleResize()
     window.addEventListener('resize', handleResize)
@@ -179,12 +182,12 @@ const Gallery = () => {
         </div>
 
         {/* ── 2. 3D DRAGGABLE ENERGY WHEEL ────────────────────────────────── */}
-        <div className="relative my-12 h-[420px] sm:h-[540px] flex items-center justify-center select-none">
+        <div className="relative my-6 sm:my-12 h-[300px] sm:h-[420px] lg:h-[540px] flex items-center justify-center select-none">
 
           {/* Perspective Outer Container */}
           <div
             className="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
-            style={{ perspective: '1200px' }}
+            style={{ perspective: isMobile ? '700px' : '1200px' }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -193,7 +196,7 @@ const Gallery = () => {
             {/* 3D Ring Wrapper */}
             <div
               ref={ringRef}
-              className="relative w-72 sm:w-96 h-64 sm:h-80 transition-transform duration-75 ease-out"
+              className="relative w-52 sm:w-72 lg:w-96 h-44 sm:h-64 lg:h-80 transition-transform duration-75 ease-out"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: `rotateY(${rotation}deg)`,

@@ -113,17 +113,17 @@ const Contact = () => {
             <span className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-2">
               ESTABLISH CONNECTION
             </span>
-            <h2 className="font-brand text-heading text-5xl sm:text-7xl font-bold tracking-tight leading-[1.0] text-light-sweep-dark">
+            <h2 className="font-brand font-bold tracking-tight leading-[1.0] text-light-sweep-dark" style={{ fontSize: 'clamp(2.5rem, 10vw, 4.5rem)' }}>
               CONTACT
             </h2>
           </motion.div>
 
-          {/* Routing Signals (SVG) connecting CONTACT to the Hub */}
+          {/* Routing Signals (SVG) connecting CONTACT to the Hub — hidden on mobile */}
           <motion.div 
             initial="hidden"
             whileInView="visible"
             viewport={{ once: false, margin: "-10%" }}
-            className="w-full h-32 relative flex justify-center"
+            className="hidden sm:block w-full h-32 relative flex justify-center"
           >
             <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1000 100">
               {/* Left Route */}
@@ -175,7 +175,7 @@ const Contact = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, margin: "-10%" }}
           transition={{ duration: 0.8, delay: 1.8, ease: "easeOut" }}
-          className="grid lg:grid-cols-2 gap-12 lg:gap-20 mt-10"
+          className="grid lg:grid-cols-2 gap-8 lg:gap-20 mt-6 sm:mt-10"
         >
           {/* Information & Channels */}
           <div>
@@ -216,7 +216,7 @@ const Contact = () => {
 
           {/* Contact Form matching reference card design */}
           <div className="relative">
-            <form onSubmit={handleSubmit} className="relative p-8 sm:p-10 rounded-3xl border border-border/60 bg-white shadow-soft-lg">
+            <form onSubmit={handleSubmit} className="relative p-6 sm:p-8 lg:p-10 rounded-3xl border border-border/60 bg-white shadow-soft-lg">
 
               <div className="space-y-6">
 

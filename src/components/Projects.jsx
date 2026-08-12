@@ -21,7 +21,7 @@ const ASYMMETRIC_PROJECT_LAYOUT = [
   // Item 0: Hero Project Card (8 columns wide)
   { colSpan: 'md:col-span-8', aspect: 'aspect-[16/10]', initial: { y: 40, opacity: 0, scale: 0.94 }, delay: 0.1 },
   // Item 1: Tall Side Project Card (4 columns wide)
-  { colSpan: 'md:col-span-4', aspect: 'aspect-[4/5]', initial: { x: 40, opacity: 0, scale: 0.95 }, delay: 0.25 },
+  { colSpan: 'md:col-span-4', aspect: 'aspect-[16/10] md:aspect-[4/5]', initial: { x: 40, opacity: 0, scale: 0.95 }, delay: 0.25 },
   // Item 2: Medium Landscape Project Card (6 columns wide)
   { colSpan: 'md:col-span-6', aspect: 'aspect-[16/10]', initial: { x: -40, opacity: 0, scale: 0.95 }, delay: 0.35 },
   // Item 3: Medium Landscape Project Card (6 columns wide)
@@ -121,8 +121,8 @@ const Projects = () => {
           </motion.div>
         </div>
 
-        {/* ── 2. ASYMMETRIC EDITORIAL CASE STUDY GRID ────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-6 mb-16 items-start">
+        {/* ── 2. ASYMMETRIC EDITORIAL CASE STUDY GRID ─────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 mb-16 items-start">
           {featuredProjects.map((project, idx) => {
             const layout = ASYMMETRIC_PROJECT_LAYOUT[idx % ASYMMETRIC_PROJECT_LAYOUT.length]
 

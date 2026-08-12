@@ -138,7 +138,7 @@ const Team = () => {
           <div className="relative overflow-hidden w-full py-4">
             <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused] w-max">
               {[...officeBearers, ...committeeMembers, ...officeBearers, ...committeeMembers].map((person, idx) => (
-                <div key={`ext-${person.id}-${idx}`} className="w-64 sm:w-72 flex-shrink-0">
+                <div key={`ext-${person.id}-${idx}`} className="w-52 sm:w-64 lg:w-72 flex-shrink-0">
                   <TeamMemberCard person={person} badge={officeBearers.includes(person) ? 'OFFICE_BEARER' : 'COMMITTEE'} />
                 </div>
               ))}

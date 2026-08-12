@@ -106,13 +106,14 @@ const Footer = () => {
 
           <a
             href="#contact"
-            className="group flex items-end justify-between gap-6 cursor-pointer"
+            className="group flex items-end justify-between gap-3 sm:gap-6 cursor-pointer overflow-hidden"
           >
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false }}
-              className="font-brand text-6xl sm:text-8xl lg:text-[10rem] font-extrabold tracking-tight text-heading group-hover:text-primary transition-colors duration-300 leading-none"
+              className="font-brand font-extrabold tracking-tight text-heading group-hover:text-primary transition-colors duration-300 leading-none"
+              style={{ fontSize: 'clamp(3rem, 12vw, 10rem)' }}
             >
               ExESS
             </motion.h2>
@@ -121,9 +122,9 @@ const Footer = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: false }}
-              className="mb-2 sm:mb-4 text-heading group-hover:text-primary group-hover:translate-x-3 group-hover:-translate-y-3 transition-all duration-300 flex-shrink-0"
+              className="mb-1 sm:mb-4 text-heading group-hover:text-primary group-hover:translate-x-3 group-hover:-translate-y-3 transition-all duration-300 flex-shrink-0"
             >
-              <ArrowUpRight className="w-16 h-16 sm:w-24 sm:h-24 lg:w-32 lg:h-32 stroke-[1.5]" />
+              <ArrowUpRight className="w-10 h-10 sm:w-24 sm:h-24 lg:w-32 lg:h-32 stroke-[1.5]" />
             </motion.div>
           </a>
         </div>

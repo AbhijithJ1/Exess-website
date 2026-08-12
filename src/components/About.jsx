@@ -178,7 +178,7 @@ const About = () => {
       {/* Pinned Container Wrapper */}
       <div
         ref={pinContainerRef}
-        className="w-full min-h-screen flex items-center justify-center py-12 relative overflow-hidden"
+        className="w-full min-h-[100svh] flex items-center justify-center py-8 sm:py-12 relative overflow-hidden"
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full relative z-10">
 
@@ -270,7 +270,8 @@ const About = () => {
             {/* MISSION PANEL */}
             <div
               ref={missionPanelRef}
-              className="relative p-6 sm:p-8 rounded-3xl border border-border/80 border-l-4 border-l-primary bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
+              className="relative p-6 sm:p-8 rounded-3xl border border-border/80 bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
+              style={{ borderLeft: '4px solid #1E6B93' }}
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -296,7 +297,8 @@ const About = () => {
             {/* VISION PANEL */}
             <div
               ref={visionPanelRef}
-              className="relative p-6 sm:p-8 rounded-3xl border border-border/80 border-r-4 border-r-cyan-500 bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
+              className="relative p-6 sm:p-8 rounded-3xl border border-border/80 bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
+              style={{ borderRight: '4px solid #06b6d4' }}
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
