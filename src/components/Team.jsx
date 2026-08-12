@@ -43,11 +43,6 @@ const TeamMemberCard = ({ person, badge = null }) => {
           initials={person.initials}
           className="group-hover:scale-105 transition-transform duration-500 rounded-none"
         />
-        {badge && (
-          <span className="absolute top-3 right-3 bg-white/90 backdrop-blur text-[9px] font-brand uppercase tracking-wider font-bold px-2.5 py-1 rounded-none text-primary shadow-sm border border-border/60">
-            {badge}
-          </span>
-        )}
       </div>
 
       {/* Name, Role & LinkedIn Connect Link — Bare FaIcon without container box */}

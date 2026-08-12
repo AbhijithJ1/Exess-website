@@ -59,7 +59,7 @@
   }
 
   .section-gap {
-    @apply py-20 sm:py-28 lg:py-36;
+    @apply py-8 sm:py-12 lg:py-16;
   }
 
   .text-gradient {

@@ -223,8 +223,8 @@ const Gallery = () => {
                     }}
                     className={`absolute inset-0 rounded-none overflow-hidden border transition-all duration-500 cursor-pointer ${
                       isFront
-                        ? 'border-cyan-400 border-t-2 border-t-cyan-400 shadow-[0_0_30px_rgba(50,197,232,0.4)] z-30 opacity-100 scale-105'
-                        : 'border-slate-300/60 shadow-md opacity-45 hover:opacity-80 scale-90'
+                        ? 'border-primary border-t-2 border-t-primary shadow-xl z-30 opacity-100 scale-105'
+                        : 'border-slate-300/60 shadow-md opacity-50 hover:opacity-80 scale-90'
                     }`}
                     style={{
                       transformStyle: 'preserve-3d',
@@ -242,21 +242,16 @@ const Gallery = () => {
                         className="w-full h-full object-cover rounded-none"
                       />
 
-                      {/* Front Card Glowing PCB Node Frame Accent */}
-                      {isFront && (
-                        <div className="absolute inset-0 border-2 border-cyan-400/80 rounded-none pointer-events-none z-20 shadow-[inset_0_0_20px_rgba(50,197,232,0.3)] animate-pulse" />
-                      )}
-
                       {/* Card Overlay Info */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent flex flex-col justify-end p-5 text-white z-10">
-                        <span className="text-[10px] font-brand uppercase tracking-widest text-cyan-300 font-semibold mb-1">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 text-white z-10">
+                        <span className="text-[10px] font-brand uppercase tracking-widest text-primary font-semibold mb-1">
                           {item.category} &bull; {item.date}
                         </span>
                         <h4 className="font-brand text-base sm:text-lg font-bold truncate">
                           {item.title}
                         </h4>
                         {isFront && (
-                          <div className="flex items-center gap-1.5 mt-2 text-[10px] font-mono text-cyan-400 font-semibold">
+                          <div className="flex items-center gap-1.5 mt-2 text-[10px] font-mono text-primary font-semibold">
                             <Maximize2 className="w-3 h-3" /> CLICK TO EXPAND
                           </div>
                         )}
@@ -267,9 +262,6 @@ const Gallery = () => {
               })}
             </div>
           </div>
-
-          {/* Central Ambient Radial Glow */}
-          <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-cyan-400/10 blur-[90px] pointer-events-none z-0" />
         </div>
 
         {/* ── 3. WHEEL CONTROLS & PAGINATION ─────────────────────────────── */}

@@ -39,12 +39,12 @@ const Projects = () => {
       <div className="section-padding max-w-7xl mx-auto relative z-10">
 
         {/* ── 1. ENGINEERING CONSTRUCTION ASSEMBLY TYPOGRAPHY ────────────── */}
-        <div className="mb-14 border-b border-border/60 pb-8 relative">
+        <div className="mb-6 border-b border-border/60 pb-6 relative">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false, margin: '-10%' }}
-            className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-2"
+            className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-1"
           >
             PROJECTS &amp; INNOVATION
           </motion.span>
@@ -53,92 +53,47 @@ const Projects = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: false, margin: '-10%' }}
-            className="origin-left relative min-h-[80px] sm:min-h-[120px] lg:min-h-[160px]"
+            className="origin-left relative"
           >
-            {/* Overlay CAD Construction Lines */}
-            <svg className="absolute -top-4 -left-4 right-0 bottom-0 w-full h-full pointer-events-none z-10 overflow-visible">
-              <motion.rect
-                x="0" y="0" width="98%" height="90%" rx="12" fill="none"
-                stroke="#32C5E8" strokeWidth="1.5" strokeDasharray="8 8"
-                variants={{
-                  hidden: { pathLength: 0, opacity: 0 },
-                  visible: {
-                    pathLength: 1,
-                    opacity: [0, 0.8, 0],
-                    transition: { duration: 1.5, ease: 'easeInOut' }
-                  }
-                }}
-              />
-              <motion.line
-                x1="0" y1="50%" x2="100%" y2="50%"
-                stroke="#32C5E8" strokeWidth="1" strokeDasharray="4 4"
-                variants={{
-                  hidden: { pathLength: 0, opacity: 0 },
-                  visible: {
-                    pathLength: 1,
-                    opacity: [0, 0.6, 0],
-                    transition: { duration: 1.2, delay: 0.2, ease: 'easeInOut' }
-                  }
-                }}
-              />
-            </svg>
-
-            {/* Wireframe to Solid Text Transition */}
-            <div className="relative">
-              {/* Wireframe text */}
-              <motion.h2
-                className="absolute top-0 left-0 font-brand text-heading font-bold tracking-tight leading-[1.0]"
-                style={{ fontSize: 'clamp(1.5rem, 7vw, 5.5rem)', WebkitTextStroke: '1px #32C5E8', WebkitTextFillColor: 'transparent' }}
-                variants={{
-                  hidden: { opacity: 0, scale: 1.05 },
-                  visible: { opacity: [0, 1, 0], scale: 1, transition: { duration: 1.0, ease: 'easeOut' } }
-                }}
-              >
-                PROJECTS
-              </motion.h2>
-
-              {/* Solid text */}
-              <motion.h2
-                className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
-                style={{ fontSize: 'clamp(1.5rem, 7vw, 5.5rem)' }}
-                variants={{
-                  hidden: { opacity: 0, scale: 1.05, filter: 'blur(4px)' },
-                  visible: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.8, delay: 0.8, ease: 'easeOut' } }
-                }}
-              >
-                PROJECTS
-              </motion.h2>
-            </div>
+            {/* Solid text */}
+            <motion.h2
+              className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
+              style={{ fontSize: 'clamp(1.5rem, 6vw, 4.5rem)' }}
+              variants={{
+                hidden: { opacity: 0, scale: 1.02, filter: 'blur(4px)' },
+                visible: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.6, delay: 0.2, ease: 'easeOut' } }
+              }}
+            >
+              PROJECTS
+            </motion.h2>
 
             <motion.p
               variants={{
                 hidden: { opacity: 0, y: 10 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 1.2 } }
+                visible: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 0.4 } }
               }}
-              className="font-inter text-body text-sm sm:text-base text-gray-600 mt-2 max-w-xl"
+              className="font-inter text-body text-xs sm:text-sm text-gray-600 mt-1 max-w-xl"
             >
               Hardware case studies, circuit prototypes, and embedded systems engineered by ExESS members.
             </motion.p>
           </motion.div>
         </div>
 
-        {/* ── 2. ASYMMETRIC EDITORIAL CASE STUDY GRID ─────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 mb-16 items-start">
-          {featuredProjects.map((project, idx) => {
-            const layout = ASYMMETRIC_PROJECT_LAYOUT[idx % ASYMMETRIC_PROJECT_LAYOUT.length]
-
+        {/* ── 2. COMPACT MULTI-COLUMN SIDE-BY-SIDE CARD GRID ─────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 items-stretch">
+          {projectsData.slice(0, 6).map((project, idx) => {
             return (
               <motion.div
                 key={project.id}
-                initial={layout.initial}
-                whileInView={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, margin: '-5%' }}
-                transition={{ duration: 0.8, delay: layout.delay, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
                 onClick={() => setSelectedProject(project)}
-                className={`${layout.colSpan} relative group cursor-pointer rounded-none border border-border/80 border-t-2 border-t-primary bg-white shadow-soft hover:shadow-soft-xl hover:border-primary/50 transition-all duration-500 flex flex-col justify-between`}
+                className="relative group cursor-pointer rounded-none border border-border/80 border-t-2 border-t-primary bg-white shadow-soft hover:shadow-soft-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Photo / Image Container */}
-                <div className={`relative w-full ${layout.aspect} overflow-hidden border-b border-border/60 bg-slate-900`}>
+                <div className="relative w-full aspect-video overflow-hidden border-b border-border/60 bg-slate-900 flex-shrink-0">
                   <ImagePlaceholder
                     src={project.image}
                     alt={project.title}
@@ -148,8 +103,8 @@ const Projects = () => {
                   />
 
                   {/* Status Badge */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className={`px-3 py-1 rounded-none text-[9px] font-brand tracking-wider font-semibold backdrop-blur-md shadow-sm ${
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className={`px-2.5 py-0.5 rounded-none text-[9px] font-brand tracking-wider font-semibold backdrop-blur-md shadow-sm ${
                       project.status === 'Completed'
                         ? 'bg-emerald-500/90 text-white border border-emerald-400/40'
                         : 'bg-amber-500/90 text-white border border-amber-400/40'
@@ -159,23 +114,23 @@ const Projects = () => {
                   </div>
 
                   {/* Top Right Zoom Icon */}
-                  <div className="absolute top-4 right-4 w-9 h-9 rounded-none bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 group-hover:scale-110">
-                    <Maximize2 className="w-4 h-4" />
+                  <div className="absolute top-3 right-3 w-8 h-8 rounded-none bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 group-hover:scale-110">
+                    <Maximize2 className="w-3.5 h-3.5" />
                   </div>
                 </div>
 
                 {/* Information Card Body */}
-                <div className="p-6 sm:p-8 flex flex-col justify-between flex-grow">
+                <div className="p-5 sm:p-6 flex flex-col justify-between flex-grow">
                   <div>
-                    <span className="text-xs font-mono font-bold text-primary flex items-center gap-1.5 mb-2">
-                      <Cpu className="w-3.5 h-3.5" /> SYSTEM_INSPECTION_0{idx + 1}
+                    <span className="text-[11px] font-mono font-bold text-primary flex items-center gap-1.5 mb-1.5">
+                      <Cpu className="w-3.5 h-3.5" /> SYSTEM_0{idx + 1}
                     </span>
 
-                    <h3 className="text-xl sm:text-2xl font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors leading-tight">
+                    <h3 className="text-lg sm:text-xl font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors leading-tight">
                       {project.title}
                     </h3>
 
-                    <p className="font-inter text-xs sm:text-sm text-body leading-relaxed mb-4 line-clamp-2">
+                    <p className="font-inter text-xs text-body leading-relaxed mb-3 line-clamp-2">
                       {project.description}
                     </p>
 
@@ -183,7 +138,7 @@ const Projects = () => {
                       {project.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="px-2.5 py-0.5 rounded-none text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/60"
+                          className="px-2 py-0.5 rounded-none text-[9px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/60"
                         >
                           {tag}
                         </span>
@@ -191,7 +146,7 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-border/40 flex items-center justify-between mt-auto">
+                  <div className="pt-3 border-t border-border/40 flex items-center justify-between mt-auto">
                     <span className="text-xs text-body flex items-center gap-1 font-mono">
                       <Users className="w-3.5 h-3.5 text-primary" /> {project.team}
                     </span>
@@ -207,10 +162,10 @@ const Projects = () => {
 
         {/* CTA Button */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.3 }}
           className="flex justify-center"
         >
           <PcbLightButton onClick={() => setShowAllModal(true)}>

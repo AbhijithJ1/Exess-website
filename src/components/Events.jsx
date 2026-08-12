@@ -128,13 +128,13 @@ const Events = () => {
       <div className="section-padding max-w-7xl mx-auto relative z-10 min-h-[80vh] sm:min-h-[85vh]">
 
         {/* ── 1. SEQUENTIAL CHARACTER ACTIVATION TYPOGRAPHY ───────────────── */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 sm:gap-8 mb-10 border-b border-border/60 pb-8">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6 border-b border-border/60 pb-6">
           <div className="origin-left">
             <motion.span 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: '-10%' }}
-              className="text-[10px] font-brand uppercase tracking-[0.22em] text-primary font-bold block mb-2"
+              className="text-[10px] font-brand uppercase tracking-[0.22em] text-primary font-bold block mb-1"
             >
               EVENTS &amp; HACKATHONS
             </motion.span>
@@ -145,14 +145,14 @@ const Events = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: false, margin: '-10%' }}
-              className="flex items-center gap-0.5 sm:gap-1 my-2 py-2"
+              className="flex items-center gap-0.5 sm:gap-1 my-1 py-1"
             >
               {EVENTS_CHARS.map((char, i) => (
                 <motion.span
                   key={i}
                   variants={charVariants}
                   className="font-brand font-bold tracking-tight leading-none inline-block"
-                  style={{ fontSize: 'clamp(1.8rem, 8vw, 6rem)' }}
+                  style={{ fontSize: 'clamp(1.5rem, 6vw, 4.5rem)' }}
                 >
                   {char}
                 </motion.span>
@@ -163,8 +163,8 @@ const Events = () => {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, margin: '-10%' }}
-              transition={{ delay: 0.8, duration: 0.5 }}
-              className="font-inter text-body text-sm sm:text-base text-gray-600 mt-2 max-w-xl"
+              transition={{ delay: 0.5, duration: 0.4 }}
+              className="font-inter text-body text-xs sm:text-sm text-gray-600 mt-1 max-w-xl"
             >
               Explore our technical lineup, national hackathons, and hardware bootcamps.
             </motion.p>
@@ -175,14 +175,14 @@ const Events = () => {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: false, margin: '-10%' }}
-            transition={{ delay: 1.0, duration: 0.5 }}
-            className="flex gap-2 p-1.5 rounded-2xl bg-white border border-border/80 shadow-soft w-fit flex-shrink-0 self-start lg:self-end"
+            transition={{ delay: 0.6, duration: 0.4 }}
+            className="flex gap-1.5 p-1 rounded-none bg-white border border-border/80 shadow-soft w-fit flex-shrink-0 self-start lg:self-end"
           >
             {['all', 'upcoming', 'past'].map((f) => (
               <button
                 key={f}
                 onClick={() => handleFilterChange(f)}
-                className={`px-4 py-2 rounded-xl text-[10px] uppercase font-brand tracking-wider font-semibold transition-all duration-300 whitespace-nowrap cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-none text-[10px] uppercase font-brand tracking-wider font-semibold transition-all duration-300 whitespace-nowrap cursor-pointer ${
                   filter === f
                     ? 'bg-primary text-white shadow-sm font-bold'
                     : 'text-gray-600 hover:text-heading hover:bg-slate-50'
@@ -194,196 +194,75 @@ const Events = () => {
           </motion.div>
         </div>
 
-        {/* ── 2. TIMELINE NAV BAR (DESKTOP & MOBILE RESPONSIVE) ──────────── */}
-        <div className="relative mb-8 px-4 overflow-x-auto no-scrollbar py-4">
-          <div className="relative min-w-[500px]">
-            {/* Background Track Line */}
-            <div className="absolute top-4 left-6 right-6 h-1 bg-slate-200 rounded-full z-0" />
-
-            {/* Travelling Active Cyan Signal Beam Line */}
-            <div
-              className="absolute top-4 left-6 h-1 bg-primary rounded-full z-0 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_12px_#32C5E8]"
-              style={{
-                width: filteredEvents.length > 1
-                  ? `calc(${validActiveIdx / (filteredEvents.length - 1)} * (100% - 48px))`
-                  : '0px'
-              }}
-            />
-
-            {/* Timeline Nodes */}
-            <div className="relative z-10 flex items-center justify-between">
-              {filteredEvents.map((ev, idx) => {
-                const isActive = validActiveIdx === idx
-                return (
-                  <button
-                    key={ev.id}
-                    onClick={() => handleSelectNode(idx)}
-                    className="group flex flex-col items-center gap-2 cursor-pointer focus:outline-none"
-                  >
-                    <span className={`w-9 h-9 rounded-none border-2 flex items-center justify-center text-xs font-mono font-bold transition-all duration-500 ${
-                      isActive
-                        ? 'bg-primary text-white border-primary shadow-[0_0_20px_#32C5E8] scale-110'
-                        : 'bg-white text-gray-500 border-slate-300 group-hover:border-primary/50 group-hover:text-primary'
-                    }`}>
-                      0{idx + 1}
-                    </span>
-                    <span className={`text-[10px] font-brand uppercase tracking-wider transition-colors duration-300 ${
-                      isActive ? 'text-primary font-bold' : 'text-gray-400 group-hover:text-gray-600'
-                    }`}>
-                      {ev.category}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* ── 3. ACTIVE EVENT CARD STAGE (DESKTOP) ────────────────────────── */}
-        <div className="hidden lg:block mb-12">
-          {activeEvent && (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeEvent.id}
-                initial={{ opacity: 0, y: 16, filter: 'blur(8px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -16, filter: 'blur(8px)' }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                className="relative rounded-none border-t-2 border-t-primary bg-white border border-border/80 p-8 sm:p-10 shadow-soft-lg grid grid-cols-12 gap-10 items-center min-h-[420px]"
-              >
-                {/* Metadata */}
-                <div className="col-span-5 flex flex-col justify-between h-full">
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-xs font-mono font-bold text-primary">
-                        EVENT 0{validActiveIdx + 1} / 0{filteredEvents.length}
-                      </span>
-                      <span className={`px-2.5 py-0.5 rounded-none text-[9px] font-brand tracking-wide font-semibold ${
-                        activeEvent.status === 'upcoming'
-                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
-                          : 'text-gray-400 bg-slate-100'
-                      }`}>
-                        {activeEvent.status === 'upcoming' ? 'Upcoming' : 'Completed'}
-                      </span>
-                    </div>
-
-                    <h3 className="text-2xl sm:text-3xl font-bold font-brand text-heading mb-3 tracking-tight leading-tight">
-                      {activeEvent.title}
-                    </h3>
-
-                    <p className="font-inter text-sm text-body leading-relaxed mb-6">
-                      {activeEvent.description}
-                    </p>
-
-                    <div className="space-y-2 mb-6 p-4 rounded-none bg-slate-50 border border-border/60 font-inter border-l-2 border-l-primary">
-                      <div className="flex items-center gap-2.5 text-xs text-heading">
-                        <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
-                        <span className="font-semibold">{activeEvent.date}</span>
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs text-heading">
-                        <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
-                        <span className="font-semibold">{activeEvent.location}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-border/40 flex items-center justify-between">
-                    <button
-                      onClick={() => setSelectedEvent(activeEvent)}
-                      className="inline-flex items-center gap-2 text-xs font-brand uppercase tracking-wider text-primary hover:text-secondary font-bold cursor-pointer"
-                    >
-                      View Details <ArrowRight className="w-4 h-4" />
-                    </button>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleSelectNode((validActiveIdx - 1 + filteredEvents.length) % filteredEvents.length)}
-                        className="w-9 h-9 rounded-none bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
-                        aria-label="Previous Event"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleSelectNode((validActiveIdx + 1) % filteredEvents.length)}
-                        className="w-9 h-9 rounded-none bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
-                        aria-label="Next Event"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Event Image */}
-                <div className="col-span-7 h-full">
-                  <div className="rounded-none overflow-hidden border border-border/70 shadow-sm h-full min-h-[340px] relative bg-slate-900">
-                    <ImagePlaceholder
-                      src={activeEvent.image}
-                      alt={activeEvent.title}
-                      type="cover"
-                      aspectRatio="w-full h-full"
-                      badge={activeEvent.category}
-                      className="rounded-none"
-                    />
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          )}
-        </div>
-
-        {/* ── 4. MOBILE ACTIVE EVENT STAGE (SYNCED WITH TIMELINE) ─────────── */}
-        <div className="block lg:hidden mb-12">
-          {activeEvent && (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeEvent.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                onClick={() => setSelectedEvent(activeEvent)}
-                className="relative pl-6 border-l-2 border-primary space-y-4 cursor-pointer group bg-white p-6 rounded-none border border-border/70 shadow-soft"
-              >
-                <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary border-2 border-white shadow-[0_0_12px_#32C5E8]" />
-
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono text-primary font-bold">
-                    EVENT 0{validActiveIdx + 1} / 0{filteredEvents.length}
-                  </span>
-                  <span className="text-[9px] font-brand uppercase tracking-wider text-gray-500 font-semibold">
-                    {activeEvent.category}
-                  </span>
-                </div>
-
-                <div className="rounded-2xl overflow-hidden border border-border/60 bg-slate-900">
+        {/* ── 2. COMPACT MULTI-COLUMN SIDE-BY-SIDE EVENT CARDS ───────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 items-stretch">
+          {filteredEvents.map((event, idx) => (
+            <motion.div
+              key={event.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: '-5%' }}
+              transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              onClick={() => setSelectedEvent(event)}
+              className="relative group cursor-pointer rounded-none border border-border/80 border-t-2 border-t-primary bg-white p-5 sm:p-6 shadow-soft hover:shadow-soft-lg hover:border-primary/50 transition-all duration-300 flex flex-col justify-between"
+            >
+              <div>
+                {/* Event Photo Cover */}
+                <div className="relative w-full aspect-video overflow-hidden border border-border/60 bg-slate-900 mb-4 flex-shrink-0">
                   <ImagePlaceholder
-                    src={activeEvent.image}
-                    alt={activeEvent.title}
+                    src={event.image}
+                    alt={event.title}
                     type="cover"
-                    aspectRatio="aspect-[16/9]"
-                    badge={activeEvent.status === 'upcoming' ? 'UPCOMING' : 'COMPLETED'}
+                    aspectRatio="w-full h-full"
+                    className="group-hover:scale-105 transition-transform duration-700 rounded-none"
                   />
-                </div>
-
-                <div>
-                  <h4 className="font-brand text-xl text-heading font-bold group-hover:text-primary transition-colors mb-2">
-                    {activeEvent.title}
-                  </h4>
-                  <p className="font-inter text-xs text-gray-600 leading-relaxed mb-4">{activeEvent.description}</p>
-                  
-                  <div className="space-y-1.5 pt-3 border-t border-border/40 font-inter text-xs text-gray-500">
-                    <div className="flex items-center gap-2 font-medium">
-                      <Calendar className="w-3.5 h-3.5 text-primary" /> {activeEvent.date}
-                    </div>
-                    <div className="flex items-center gap-2 font-medium">
-                      <MapPin className="w-3.5 h-3.5 text-primary" /> {activeEvent.location}
-                    </div>
+                  <div className="absolute top-2.5 right-2.5 z-10">
+                    <span className={`px-2 py-0.5 rounded-none text-[9px] font-brand tracking-wide font-semibold ${
+                      event.status === 'upcoming'
+                        ? 'bg-emerald-500 text-white border border-emerald-400/40'
+                        : 'bg-slate-700/90 text-white border border-slate-600/40'
+                    }`}>
+                      {event.status === 'upcoming' ? 'Upcoming' : 'Completed'}
+                    </span>
                   </div>
                 </div>
-              </motion.div>
-            </AnimatePresence>
-          )}
+
+                {/* Metadata & Title */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-brand uppercase tracking-wider font-bold text-primary">
+                    {event.category}
+                  </span>
+                </div>
+
+                <h3 className="text-lg sm:text-xl font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors leading-tight">
+                  {event.title}
+                </h3>
+
+                <p className="font-inter text-xs text-body leading-relaxed mb-4 line-clamp-2">
+                  {event.description}
+                </p>
+
+                {/* Date & Location Box */}
+                <div className="space-y-1.5 mb-4 p-3 rounded-none bg-slate-50 border border-border/60 font-inter border-l-2 border-l-primary text-xs text-heading">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                    <span className="font-semibold">{event.date}</span>
+                  </div>
+                  <div className="flex items-center gap-2 truncate">
+                    <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                    <span className="font-semibold truncate">{event.location}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="pt-3 border-t border-border/40 flex items-center justify-between mt-auto">
+                <span className="inline-flex items-center gap-1.5 text-xs font-brand uppercase tracking-wider text-primary group-hover:text-cyan-600 font-bold">
+                  View Details <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
         {/* Explore All Modal Button */}

@@ -43,7 +43,7 @@ const About = () => {
     if (reducedMedia.matches) return
 
     const isMobile = window.innerWidth < 768
-    const scrollDistance = isMobile ? '+=150%' : '+=220%'
+    const scrollDistance = isMobile ? '+=60%' : '+=90%'
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
