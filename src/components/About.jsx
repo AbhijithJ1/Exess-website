@@ -226,7 +226,7 @@ const About = () => {
 
           {/* ── STAGE 4: IMAGE AS A BREATH (HERO BEAT) ───────────────────── */}
           <div ref={imageStageRef} className="max-w-4xl mx-auto mb-16 relative">
-            <div className="relative rounded-3xl overflow-hidden border border-border/80 shadow-soft bg-white p-3 group">
+            <div className="relative rounded-none overflow-hidden border border-border/80 border-t-2 border-t-primary shadow-soft bg-white p-3 group">
               
               {/* Technical SVG Corner Frame Overlay */}
               <svg
@@ -252,7 +252,7 @@ const About = () => {
                 type="cover"
                 aspectRatio="aspect-[16/9] sm:aspect-[21/9]"
                 badge="LAB_FACILITIES_CAD"
-                className="rounded-2xl"
+                className="rounded-none"
               />
             </div>
           </div>
@@ -270,7 +270,7 @@ const About = () => {
             {/* MISSION PANEL */}
             <div
               ref={missionPanelRef}
-              className="relative p-6 sm:p-8 rounded-3xl border border-border/80 bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
+              className="relative p-6 sm:p-8 rounded-none border border-border/80 bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
               style={{ borderLeft: '4px solid #1E6B93' }}
             >
               <div>
@@ -297,7 +297,7 @@ const About = () => {
             {/* VISION PANEL */}
             <div
               ref={visionPanelRef}
-              className="relative p-6 sm:p-8 rounded-3xl border border-border/80 bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
+              className="relative p-6 sm:p-8 rounded-none border border-border/80 bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
               style={{ borderRight: '4px solid #06b6d4' }}
             >
               <div>

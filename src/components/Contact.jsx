@@ -34,7 +34,7 @@ const PremiumSelect = ({ selected, onChange }) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading font-inter flex items-center justify-between focus:outline-none focus:border-primary/50 focus:bg-white transition-all cursor-pointer shadow-sm hover:border-slate-300"
+        className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-none px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading font-inter flex items-center justify-between focus:outline-none focus:border-primary/50 focus:bg-white transition-all cursor-pointer shadow-sm hover:border-slate-300"
       >
         <span className="font-medium text-heading">{selected}</span>
         <ChevronDown
@@ -52,7 +52,7 @@ const PremiumSelect = ({ selected, onChange }) => {
             animate={{ opacity: 1, y: 4, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute left-0 right-0 top-full z-40 bg-white border border-border/80 rounded-2xl shadow-xl p-2 space-y-1 font-inter overflow-hidden"
+            className="absolute left-0 right-0 top-full z-40 bg-white border border-border/80 rounded-none shadow-xl p-2 space-y-1 font-inter overflow-hidden"
           >
             {SUBJECT_OPTIONS.map((option) => {
               const isSelected = selected === option
@@ -63,7 +63,7 @@ const PremiumSelect = ({ selected, onChange }) => {
                     onChange(option)
                     setIsOpen(false)
                   }}
-                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-none text-sm font-medium transition-all cursor-pointer ${
                     isSelected
                       ? 'bg-primary/10 text-primary font-semibold'
                       : 'text-gray-700 hover:bg-slate-50 hover:text-heading'
@@ -289,7 +289,7 @@ const Contact = () => {
             </p>
 
             <div className="space-y-6">
-              <div className="flex items-start gap-5 p-5 rounded-2xl bg-white border border-border/60 shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
+              <div className="flex items-start gap-5 p-5 rounded-none bg-white border border-border/60 border-l-2 border-l-primary shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
                 <div className="text-primary flex-shrink-0 pt-0.5">
                   <FaLocationDot className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
@@ -302,7 +302,7 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-5 p-5 rounded-2xl bg-white border border-border/60 shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
+              <div className="flex items-start gap-5 p-5 rounded-none bg-white border border-border/60 border-l-2 border-l-primary shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
                 <div className="text-primary flex-shrink-0 pt-0.5">
                   <FaEnvelope className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
@@ -318,7 +318,7 @@ const Contact = () => {
 
           {/* Contact Form matching reference card design */}
           <div className="relative">
-            <form onSubmit={handleSubmit} className="relative p-6 sm:p-8 lg:p-10 rounded-3xl border border-border/60 bg-white shadow-soft-lg">
+            <form onSubmit={handleSubmit} className="relative p-6 sm:p-8 lg:p-10 rounded-none border border-border/60 border-t-2 border-t-primary bg-white shadow-soft-lg">
 
               <div className="space-y-6">
 
@@ -330,7 +330,7 @@ const Contact = () => {
                       required
                       type="text"
                       placeholder="Your full name"
-                      className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:bg-white transition-all"
+                      className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-none px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:bg-white transition-all"
                     />
                   </div>
 
@@ -340,7 +340,7 @@ const Contact = () => {
                       required
                       type="email"
                       placeholder="your@email.com"
-                      className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:bg-white transition-all"
+                      className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-none px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:bg-white transition-all"
                     />
                   </div>
                 </div>
@@ -361,7 +361,7 @@ const Contact = () => {
                     required
                     rows="4"
                     placeholder="Share your inquiry or project details..."
-                    className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:bg-white transition-all resize-none"
+                    className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-none px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:bg-white transition-all resize-none"
                   ></textarea>
                 </div>
 

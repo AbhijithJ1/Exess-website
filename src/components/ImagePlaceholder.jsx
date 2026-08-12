@@ -28,9 +28,7 @@ const ImagePlaceholder = ({
 
   return (
     <div
-      className={`relative w-full ${aspectRatio} overflow-hidden group select-none bg-[#071826]/90 border border-white/[0.08] ${
-        type === 'circle' ? 'rounded-full' : 'rounded-2xl sm:rounded-3xl'
-      } ${className}`}
+      className={`relative w-full ${aspectRatio} overflow-hidden group select-none bg-[#071826]/90 border border-white/[0.08] rounded-none ${className}`}
     >
       {/* ── REAL IMAGE RENDERING (when src provided) ───────────────────────── */}
       {showRealImage && (

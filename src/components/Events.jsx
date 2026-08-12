@@ -220,7 +220,7 @@ const Events = () => {
                     onClick={() => handleSelectNode(idx)}
                     className="group flex flex-col items-center gap-2 cursor-pointer focus:outline-none"
                   >
-                    <span className={`w-9 h-9 rounded-full border-2 flex items-center justify-center text-xs font-mono font-bold transition-all duration-500 ${
+                    <span className={`w-9 h-9 rounded-none border-2 flex items-center justify-center text-xs font-mono font-bold transition-all duration-500 ${
                       isActive
                         ? 'bg-primary text-white border-primary shadow-[0_0_20px_#32C5E8] scale-110'
                         : 'bg-white text-gray-500 border-slate-300 group-hover:border-primary/50 group-hover:text-primary'
@@ -249,7 +249,7 @@ const Events = () => {
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 exit={{ opacity: 0, y: -16, filter: 'blur(8px)' }}
                 transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                className="relative rounded-3xl bg-white border border-border/80 p-8 sm:p-10 shadow-soft-lg grid grid-cols-12 gap-10 items-center min-h-[420px]"
+                className="relative rounded-none border-t-2 border-t-primary bg-white border border-border/80 p-8 sm:p-10 shadow-soft-lg grid grid-cols-12 gap-10 items-center min-h-[420px]"
               >
                 {/* Metadata */}
                 <div className="col-span-5 flex flex-col justify-between h-full">
@@ -258,7 +258,7 @@ const Events = () => {
                       <span className="text-xs font-mono font-bold text-primary">
                         EVENT 0{validActiveIdx + 1} / 0{filteredEvents.length}
                       </span>
-                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide font-semibold ${
+                      <span className={`px-2.5 py-0.5 rounded-none text-[9px] font-brand tracking-wide font-semibold ${
                         activeEvent.status === 'upcoming'
                           ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
                           : 'text-gray-400 bg-slate-100'
@@ -275,7 +275,7 @@ const Events = () => {
                       {activeEvent.description}
                     </p>
 
-                    <div className="space-y-2 mb-6 p-4 rounded-2xl bg-slate-50 border border-border/60 font-inter">
+                    <div className="space-y-2 mb-6 p-4 rounded-none bg-slate-50 border border-border/60 font-inter border-l-2 border-l-primary">
                       <div className="flex items-center gap-2.5 text-xs text-heading">
                         <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
                         <span className="font-semibold">{activeEvent.date}</span>
@@ -298,14 +298,14 @@ const Events = () => {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleSelectNode((validActiveIdx - 1 + filteredEvents.length) % filteredEvents.length)}
-                        className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                        className="w-9 h-9 rounded-none bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
                         aria-label="Previous Event"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleSelectNode((validActiveIdx + 1) % filteredEvents.length)}
-                        className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                        className="w-9 h-9 rounded-none bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
                         aria-label="Next Event"
                       >
                         <ChevronRight className="w-4 h-4" />
@@ -316,13 +316,14 @@ const Events = () => {
 
                 {/* Event Image */}
                 <div className="col-span-7 h-full">
-                  <div className="rounded-2xl overflow-hidden border border-border/70 shadow-sm h-full min-h-[340px] relative bg-slate-900">
+                  <div className="rounded-none overflow-hidden border border-border/70 shadow-sm h-full min-h-[340px] relative bg-slate-900">
                     <ImagePlaceholder
                       src={activeEvent.image}
                       alt={activeEvent.title}
                       type="cover"
                       aspectRatio="w-full h-full"
                       badge={activeEvent.category}
+                      className="rounded-none"
                     />
                   </div>
                 </div>
@@ -342,7 +343,7 @@ const Events = () => {
                 exit={{ opacity: 0, y: -16 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 onClick={() => setSelectedEvent(activeEvent)}
-                className="relative pl-6 border-l-2 border-primary space-y-4 cursor-pointer group bg-white p-6 rounded-3xl border border-border/70 shadow-soft"
+                className="relative pl-6 border-l-2 border-primary space-y-4 cursor-pointer group bg-white p-6 rounded-none border border-border/70 shadow-soft"
               >
                 <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-primary border-2 border-white shadow-[0_0_12px_#32C5E8]" />
 

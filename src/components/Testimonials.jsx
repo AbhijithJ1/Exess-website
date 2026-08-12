@@ -130,7 +130,7 @@ const Testimonials = () => {
             </div>
 
             <div
-              className="bg-white/80 border border-border/80 p-5 sm:p-8 lg:p-12 rounded-3xl shadow-soft-lg backdrop-blur-sm relative"
+              className="bg-white/80 border border-border/80 border-t-2 border-t-primary p-5 sm:p-8 lg:p-12 rounded-none shadow-soft-lg backdrop-blur-sm relative"
             >
 
               <AnimatePresence mode="wait" custom={direction}>
@@ -149,13 +149,14 @@ const Testimonials = () => {
 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-border/60">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full overflow-hidden border border-border/80 bg-slate-100 flex-shrink-0">
+                      <div className="w-12 h-12 rounded-none overflow-hidden border border-border/80 bg-slate-100 flex-shrink-0">
                         <ImagePlaceholder
                           src={current.image}
                           alt={current.name}
                           type="avatar"
                           aspectRatio="w-full h-full"
                           initials={current.initials}
+                          className="rounded-none"
                         />
                       </div>
                       <div>
@@ -175,7 +176,7 @@ const Testimonials = () => {
                             onClick={() => {
                               if (i !== activeIdx) triggerQuoteSwap(i > activeIdx ? 1 : -1)
                             }}
-                            className={`w-1.5 h-1.5 rounded-full transition-all ${i === activeIdx ? 'bg-primary scale-125' : 'bg-border/60'}`}
+                            className={`w-1.5 h-1.5 rounded-none transition-all ${i === activeIdx ? 'bg-primary scale-125' : 'bg-border/60'}`}
                             aria-label={`Go to testimonial ${i + 1}`}
                           />
                         ))}
@@ -185,14 +186,14 @@ const Testimonials = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => triggerQuoteSwap(-1)}
-                          className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                          className="w-10 h-10 rounded-none bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
                           aria-label="Previous testimonial"
                         >
                           <ChevronLeft className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => triggerQuoteSwap(1)}
-                          className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                          className="w-10 h-10 rounded-none bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
                           aria-label="Next testimonial"
                         >
                           <ChevronRight className="w-4 h-4" />

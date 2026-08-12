@@ -221,9 +221,9 @@ const Gallery = () => {
                         rotateToIndex(idx)
                       }
                     }}
-                    className={`absolute inset-0 rounded-3xl overflow-hidden border transition-all duration-500 cursor-pointer ${
+                    className={`absolute inset-0 rounded-none overflow-hidden border transition-all duration-500 cursor-pointer ${
                       isFront
-                        ? 'border-cyan-400 shadow-[0_0_30px_rgba(50,197,232,0.4)] z-30 opacity-100 scale-105'
+                        ? 'border-cyan-400 border-t-2 border-t-cyan-400 shadow-[0_0_30px_rgba(50,197,232,0.4)] z-30 opacity-100 scale-105'
                         : 'border-slate-300/60 shadow-md opacity-45 hover:opacity-80 scale-90'
                     }`}
                     style={{
@@ -239,12 +239,12 @@ const Gallery = () => {
                         alt={item.title}
                         type="cover"
                         aspectRatio="w-full h-full"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-none"
                       />
 
                       {/* Front Card Glowing PCB Node Frame Accent */}
                       {isFront && (
-                        <div className="absolute inset-0 border-2 border-cyan-400/80 rounded-3xl pointer-events-none z-20 shadow-[inset_0_0_20px_rgba(50,197,232,0.3)] animate-pulse" />
+                        <div className="absolute inset-0 border-2 border-cyan-400/80 rounded-none pointer-events-none z-20 shadow-[inset_0_0_20px_rgba(50,197,232,0.3)] animate-pulse" />
                       )}
 
                       {/* Card Overlay Info */}
@@ -287,7 +287,7 @@ const Gallery = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={rotateToPrev}
-              className="w-11 h-11 rounded-2xl bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-primary transition-all shadow-sm cursor-pointer"
+              className="w-11 h-11 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-primary transition-all shadow-sm cursor-pointer"
               aria-label="Rotate Previous Image"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -308,7 +308,7 @@ const Gallery = () => {
 
             <button
               onClick={rotateToNext}
-              className="w-11 h-11 rounded-2xl bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-primary transition-all shadow-sm cursor-pointer"
+              className="w-11 h-11 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-primary transition-all shadow-sm cursor-pointer"
               aria-label="Rotate Next Image"
             >
               <ChevronRight className="w-5 h-5" />

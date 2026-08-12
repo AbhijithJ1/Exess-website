@@ -135,7 +135,7 @@ const Projects = () => {
                 viewport={{ once: false, margin: '-5%' }}
                 transition={{ duration: 0.8, delay: layout.delay, ease: [0.16, 1, 0.3, 1] }}
                 onClick={() => setSelectedProject(project)}
-                className={`${layout.colSpan} relative group cursor-pointer rounded-3xl overflow-hidden border border-border/80 bg-white shadow-soft hover:shadow-soft-xl hover:border-primary/50 transition-all duration-500 flex flex-col justify-between`}
+                className={`${layout.colSpan} relative group cursor-pointer rounded-none border border-border/80 border-t-2 border-t-primary bg-white shadow-soft hover:shadow-soft-xl hover:border-primary/50 transition-all duration-500 flex flex-col justify-between`}
               >
                 {/* Photo / Image Container */}
                 <div className={`relative w-full ${layout.aspect} overflow-hidden border-b border-border/60 bg-slate-900`}>
@@ -144,12 +144,12 @@ const Projects = () => {
                     alt={project.title}
                     type="cover"
                     aspectRatio="w-full h-full"
-                    className="group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                    className="group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100 rounded-none"
                   />
 
                   {/* Status Badge */}
                   <div className="absolute top-4 left-4 z-10">
-                    <span className={`px-3 py-1 rounded-full text-[9px] font-brand tracking-wider font-semibold backdrop-blur-md shadow-sm ${
+                    <span className={`px-3 py-1 rounded-none text-[9px] font-brand tracking-wider font-semibold backdrop-blur-md shadow-sm ${
                       project.status === 'Completed'
                         ? 'bg-emerald-500/90 text-white border border-emerald-400/40'
                         : 'bg-amber-500/90 text-white border border-amber-400/40'
@@ -159,7 +159,7 @@ const Projects = () => {
                   </div>
 
                   {/* Top Right Zoom Icon */}
-                  <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 group-hover:scale-110">
+                  <div className="absolute top-4 right-4 w-9 h-9 rounded-none bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 group-hover:scale-110">
                     <Maximize2 className="w-4 h-4" />
                   </div>
                 </div>
@@ -183,7 +183,7 @@ const Projects = () => {
                       {project.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="px-2.5 py-0.5 rounded-lg text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/60"
+                          className="px-2.5 py-0.5 rounded-none text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/60"
                         >
                           {tag}
                         </span>

@@ -32,19 +32,19 @@ const TeamMemberCard = ({ person, badge = null }) => {
   const linkedinUrl = person.socials?.linkedin || 'https://linkedin.com/company/exess-cec'
 
   return (
-    <div className="relative group bg-white border border-border/80 rounded-3xl p-5 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col h-full">
+    <div className="relative group bg-white border border-border/80 border-t-2 border-t-primary rounded-none p-5 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col h-full">
       {/* Dark PCB Image / Avatar Area */}
-      <div className="relative mb-5 rounded-2xl overflow-hidden border border-border/60">
+      <div className="relative mb-5 rounded-none overflow-hidden border border-border/60">
         <ImagePlaceholder
           src={person.image}
           alt={person.name}
           type="avatar"
           aspectRatio="aspect-[4/5]"
           initials={person.initials}
-          className="group-hover:scale-105 transition-transform duration-500"
+          className="group-hover:scale-105 transition-transform duration-500 rounded-none"
         />
         {badge && (
-          <span className="absolute top-3 right-3 bg-white/90 backdrop-blur text-[9px] font-brand uppercase tracking-wider font-bold px-2.5 py-1 rounded-lg text-primary shadow-sm border border-border/60">
+          <span className="absolute top-3 right-3 bg-white/90 backdrop-blur text-[9px] font-brand uppercase tracking-wider font-bold px-2.5 py-1 rounded-none text-primary shadow-sm border border-border/60">
             {badge}
           </span>
         )}
