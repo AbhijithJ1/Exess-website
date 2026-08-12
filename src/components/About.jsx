@@ -279,7 +279,6 @@ const About = () => {
                     <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                     MISSION // 01
                   </span>
-                  <Target className="w-5 h-5 text-primary opacity-80" />
                 </div>
                 <h3 className="font-brand text-heading text-xl sm:text-2xl font-bold mb-3 tracking-tight">
                   OUR MISSION
@@ -306,7 +305,6 @@ const About = () => {
                     <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
                     VISION // 02
                   </span>
-                  <Compass className="w-5 h-5 text-cyan-600 opacity-80" />
                 </div>
                 <h3 className="font-brand text-heading text-xl sm:text-2xl font-bold mb-3 tracking-tight">
                   OUR VISION
