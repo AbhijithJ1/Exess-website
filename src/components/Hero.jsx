@@ -204,7 +204,7 @@ const Hero = () => {
               {/* Technical Matrix Glyphs behind initial emergence */}
               {phase === 4 && (
                 <div className="absolute inset-0 flex items-center justify-center text-cyan-400/40 font-mono text-xs tracking-widest pointer-events-none">
-                  010101 EXESS SYSTEM ONLINE 010101
+                  010101 ExESS SYSTEM ONLINE 010101
                 </div>
               )}
 

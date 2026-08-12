@@ -112,9 +112,9 @@ const Footer = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false }}
-              className="font-brand text-6xl sm:text-8xl lg:text-[10rem] font-extrabold tracking-tight text-heading group-hover:text-primary transition-colors duration-300 leading-none uppercase"
+              className="font-brand text-6xl sm:text-8xl lg:text-[10rem] font-extrabold tracking-tight text-heading group-hover:text-primary transition-colors duration-300 leading-none"
             >
-              EXESS
+              ExESS
             </motion.h2>
 
             <motion.div

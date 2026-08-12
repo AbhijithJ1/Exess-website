@@ -206,7 +206,7 @@ const About = () => {
             <div className="relative min-h-[120px] sm:min-h-[180px] flex items-center justify-center">
               <h1
                 ref={bigWordRef}
-                className="font-brand font-black text-6xl sm:text-8xl lg:text-[10rem] tracking-tight text-primary uppercase leading-none select-none"
+                className="font-brand font-black text-6xl sm:text-8xl lg:text-[10rem] tracking-tight text-primary leading-none select-none"
               >
                 ExESS
               </h1>
