@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Github, Instagram, Linkedin, Mail } from 'lucide-react'
 import Logo from './Logo'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
@@ -12,7 +13,7 @@ const essentialNavLinks = [
 ]
 
 /**
- * FooterEngineeringBackground — Low-contrast PCB background trace with subtle animated signal
+ * FooterEngineeringBackground — Low-contrast PCB background trace with power-down signal pulse
  */
 const FooterEngineeringBackground = ({ isVisible }) => (
   <svg
@@ -33,7 +34,7 @@ const FooterEngineeringBackground = ({ isVisible }) => (
 
     {isVisible && (
       <circle r="3.5" fill="#32C5E8">
-        <animateMotion dur="2.2s" fill="freeze" path="M0 40 H400 V120 H900" />
+        <animateMotion dur="2.4s" fill="freeze" path="M0 40 H400 V120 H900 V180 H1440" />
       </circle>
     )}
   </svg>
@@ -41,6 +42,13 @@ const FooterEngineeringBackground = ({ isVisible }) => (
 
 const Footer = () => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 })
+
+  // Trigger final System Power-Down energy signal on entry
+  useEffect(() => {
+    if (isVisible) {
+      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
+    }
+  }, [isVisible])
 
   const handleNavClick = (e, href) => {
     e.preventDefault()

@@ -5,18 +5,23 @@ import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
 import PcbLightButton from './PcbLightButton'
 import { galleryItems } from '../data/galleryData'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
 
-// Duplicate gallery list for continuous seamless infinite looping
 const galleryMarqueeList = [...galleryItems, ...galleryItems]
-
-// Variable width patterns for moving visual filmstrip feel
 const widthClasses = ['w-72 sm:w-80', 'w-80 sm:w-96', 'w-72 sm:w-[420px]', 'w-80 sm:w-88']
 
 const Gallery = () => {
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation({ threshold: 0.15 })
   const [selectedImage, setSelectedImage] = useState(null)
   const [showAllModal, setShowAllModal] = useState(false)
 
-  // Lock body scroll and add ESC key listener when image detail modal is open
+  // Trigger Section Power-Up Electrical Surge on entry
+  useEffect(() => {
+    if (sectionVisible) {
+      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
+    }
+  }, [sectionVisible])
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -37,14 +42,14 @@ const Gallery = () => {
   }, [selectedImage, showAllModal])
 
   return (
-    <section id="gallery" className="relative section-gap overflow-hidden">
+    <section ref={sectionRef} id="gallery" className="relative section-gap overflow-hidden">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
         
         {/* ── 1. Section Header ───────────────────────────────────────── */}
         <PowerOnHeader
           badge="VISUAL SHOWCASE"
-          headline={<>Moving <span className="text-light-sweep-dark">Visual Field</span></>}
-          description="A filmstrip archive of our campus fests, hardware workshops, lab sessions, and community events."
+          headline={<>Visual <span className="text-light-sweep-dark">Transmission</span></>}
+          description="A continuous visual transmission of our campus fests, hardware workshops, lab sessions, and community events."
           align="left"
         />
 
@@ -56,10 +61,11 @@ const Gallery = () => {
               const isOffset = idx % 2 === 1
 
               return (
-                <div
+                <motion.div
                   key={`${item.id}-${idx}`}
+                  whileHover={{ scale: 1.04, zIndex: 20 }}
                   onClick={() => setSelectedImage(item)}
-                  className={`${widthCls} h-52 sm:h-64 flex-shrink-0 relative rounded-3xl overflow-hidden cursor-pointer border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/50 transition-all duration-500 group/card ${
+                  className={`${widthCls} h-52 sm:h-64 flex-shrink-0 relative rounded-3xl overflow-hidden cursor-pointer border border-border/70 shadow-soft hover:shadow-soft-lg hover:border-primary/50 transition-all duration-300 group/card ${
                     isOffset ? 'translate-y-2' : '-translate-y-2'
                   }`}
                 >
@@ -71,8 +77,8 @@ const Gallery = () => {
                     badge={item.category}
                     overlayContent={
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-85 group-hover/card:opacity-100 transition-opacity duration-300 p-5 flex flex-col justify-end">
-                        {/* PCB Active Cyan Node Indicator */}
-                        <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_#32C5E8] opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
+                        {/* Active Cyan PCB Indicator Node */}
+                        <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_10px_#32C5E8] opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
 
                         <div className="flex items-center justify-between">
                           <div>
@@ -90,7 +96,7 @@ const Gallery = () => {
                       </div>
                     }
                   />
-                </div>
+                </motion.div>
               )
             })}
           </div>
@@ -105,7 +111,7 @@ const Gallery = () => {
 
       </div>
 
-      {/* Full Moments Gallery Showcase Directory Modal */}
+      {/* Full Moments Gallery Directory Modal */}
       <AnimatePresence>
         {showAllModal && (
           <motion.div

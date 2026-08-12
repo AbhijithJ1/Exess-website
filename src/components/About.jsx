@@ -1,9 +1,10 @@
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Target, Compass } from 'lucide-react'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import ImagePlaceholder from './ImagePlaceholder'
 
-// Animated PCB Signal Lines that activate when Mission & Vision enter view
+// Animated PCB Signal Lines for Mission & Vision
 const PCBSignalTraces = ({ isVisible }) => (
   <svg
     aria-hidden="true"
@@ -12,7 +13,6 @@ const PCBSignalTraces = ({ isVisible }) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    {/* Base Trace Paths */}
     <path
       d="M0 40 H450 L520 120 H680 L750 200 H1200"
       stroke="rgba(30, 107, 147, 0.15)"
@@ -26,14 +26,13 @@ const PCBSignalTraces = ({ isVisible }) => (
       strokeLinecap="round"
     />
 
-    {/* Animated Signal Pulse when visible */}
     {isVisible && (
       <>
-        <circle r="4" fill="#32C5E8">
-          <animateMotion dur="2.5s" repeatCount="indefinite" path="M0 40 H450 L520 120 H680 L750 200 H1200" />
+        <circle r="4.5" fill="#32C5E8">
+          <animateMotion dur="2.2s" repeatCount="indefinite" path="M0 40 H450 L520 120 H680 L750 200 H1200" />
         </circle>
-        <circle r="4" fill="#1E6B93">
-          <animateMotion dur="2.5s" repeatCount="indefinite" path="M1200 40 H750 L680 120 H520 L450 200 H0" />
+        <circle r="4.5" fill="#1E6B93">
+          <animateMotion dur="2.2s" repeatCount="indefinite" path="M1200 40 H750 L680 120 H520 L450 200 H0" />
         </circle>
       </>
     )}
@@ -44,31 +43,43 @@ const About = () => {
   const { ref: storyRef, isVisible: storyVisible } = useScrollAnimation({ threshold: 0.15 })
   const { ref: mvRef, isVisible: mvVisible } = useScrollAnimation({ threshold: 0.2 })
 
+  // Trigger Section Power-Up Electrical Surge on entry
+  useEffect(() => {
+    if (storyVisible) {
+      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
+    }
+  }, [storyVisible])
+
   return (
     <section id="circuits" className="relative section-gap overflow-hidden bg-transparent">
       <div id="about" className="absolute -top-24" />
 
       <div className="section-padding max-w-7xl mx-auto relative z-10">
         
-        {/* ── 1. EDITORIAL STORY HEADLINE ────────────────────────────────── */}
+        {/* ── 1. EDITORIAL STORY HEADLINE ("ENERGY BECOMES KNOWLEDGE") ───── */}
         <div ref={storyRef} className="mb-16 sm:mb-24">
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start border-b border-border/60 pb-12 sm:pb-16">
             {/* Left Eyebrow Column */}
             <div className="lg:col-span-3">
-              <span className="section-label font-brand inline-flex items-center">
+              <motion.span
+                initial={{ opacity: 0, x: -20 }}
+                animate={storyVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                transition={{ duration: 0.6 }}
+                className="section-label font-brand inline-flex items-center"
+              >
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 <span className="section-label-text font-brand uppercase tracking-[0.22em] text-[10px] font-bold text-primary">
                   ABOUT ExESS
                 </span>
-              </span>
+              </motion.span>
             </div>
 
-            {/* Center/Right Very Large Editorial Statement */}
+            {/* Center/Right Precision Mask Reveal Headline */}
             <div className="lg:col-span-9">
               <motion.h2
-                initial={{ opacity: 0, y: 24 }}
-                animate={storyVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-                transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)', filter: 'blur(8px)', opacity: 0 }}
+                animate={storyVisible ? { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', filter: 'blur(0px)', opacity: 1 } : { clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)', filter: 'blur(8px)', opacity: 0 }}
+                transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
                 className="font-brand text-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.14] mb-8"
               >
                 Pioneering <span className="text-primary">Hardware</span> &amp;{' '}
@@ -78,9 +89,9 @@ const About = () => {
               {/* Editorial Split Paragraphs */}
               <div className="grid md:grid-cols-12 gap-8 items-start pt-4 border-t border-border/40">
                 <motion.div
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={storyVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-                  transition={{ duration: 0.65, delay: 0.2 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={storyVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                  transition={{ duration: 0.7, delay: 0.25 }}
                   className="md:col-span-7 space-y-4"
                 >
                   <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-800 font-normal">
@@ -92,9 +103,9 @@ const About = () => {
                 </motion.div>
 
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={storyVisible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.96 }}
-                  transition={{ duration: 0.65, delay: 0.35 }}
+                  initial={{ opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
+                  animate={storyVisible ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : { opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
+                  transition={{ duration: 0.75, delay: 0.4 }}
                   className="md:col-span-5 w-full"
                 >
                   <div className="rounded-3xl overflow-hidden border border-border/80 shadow-soft bg-white p-2">
@@ -118,11 +129,11 @@ const About = () => {
 
           <div className="grid md:grid-cols-2 gap-10 sm:gap-14 relative z-10">
             
-            {/* VISION EDITORIAL STATEMENT */}
+            {/* VISION STATEMENT (Left Signal Activation) */}
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)', opacity: 0, x: -30 }}
+              animate={mvVisible ? { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', opacity: 1, x: 0 } : { clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)', opacity: 0, x: -30 }}
+              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               className="relative p-8 sm:p-12 rounded-3xl bg-white/90 backdrop-blur-md border border-border/80 shadow-soft hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
             >
               <div>
@@ -149,11 +160,11 @@ const About = () => {
               </div>
             </motion.div>
 
-            {/* MISSION EDITORIAL STATEMENT */}
+            {/* MISSION STATEMENT (Right Signal Activation) */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={mvVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ clipPath: 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)', opacity: 0, x: 30 }}
+              animate={mvVisible ? { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', opacity: 1, x: 0 } : { clipPath: 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)', opacity: 0, x: 30 }}
+              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
               className="relative p-8 sm:p-12 rounded-3xl bg-white/90 backdrop-blur-md border border-border/80 shadow-soft hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
             >
               <div>

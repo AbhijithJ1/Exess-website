@@ -5,25 +5,32 @@ import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
 import PcbLightButton from './PcbLightButton'
 import { eventsData } from '../data/eventsData'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
 
 const Events = () => {
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation({ threshold: 0.15 })
   const [filter, setFilter] = useState('all')
   const [activeIdx, setActiveIdx] = useState(0)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [showAllModal, setShowAllModal] = useState(false)
 
+  // Trigger Section Power-Up Electrical Surge on entry
+  useEffect(() => {
+    if (sectionVisible) {
+      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
+    }
+  }, [sectionVisible])
+
   const filteredEvents = filter === 'all'
     ? eventsData
     : eventsData.filter((e) => e.status === filter)
 
-  // Reset active index if filter changes
   useEffect(() => {
     setActiveIdx(0)
   }, [filter])
 
   const activeEvent = filteredEvents[activeIdx] || filteredEvents[0]
 
-  // Lock body scroll when event detail modal is open
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -44,14 +51,14 @@ const Events = () => {
   }, [selectedEvent, showAllModal])
 
   return (
-    <section id="events" className="relative section-gap overflow-hidden">
+    <section ref={sectionRef} id="events" className="relative section-gap overflow-hidden">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
         
         {/* ── 1. Header Control Bar ────────────────────────────────────── */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 sm:gap-8 mb-10 border-b border-border/60 pb-6">
           <PowerOnHeader
             badge="EVENTS & HACKATHONS"
-            headline={<>The Event <span className="text-light-sweep-dark">Journey</span></>}
+            headline={<>Energy Through <span className="text-light-sweep-dark">Time</span></>}
             description="Explore our chronological technical lineup, hackathons, and hardware bootcamps."
             align="left"
             className="mb-0 max-w-2xl"
@@ -74,14 +81,14 @@ const Events = () => {
           </div>
         </div>
 
-        {/* ── 2. DESKTOP HORIZONTAL EVENT JOURNEY (Interactive Timeline) ── */}
+        {/* ── 2. DESKTOP HORIZONTAL EVENT JOURNEY STAGE ────────────────── */}
         <div className="hidden lg:block mb-12">
           {/* PCB Progression Connecting Timeline */}
           <div className="relative mb-8 px-4">
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-border/60 -translate-y-1/2 z-0" />
             <div
               className="absolute top-1/2 left-0 h-0.5 bg-primary transition-all duration-500 -translate-y-1/2 z-0"
-              style={{ width: `${((activeIdx + 1) / filteredEvents.length) * 100}%` }}
+              style={{ width: `${((activeIdx + 1) / Math.max(1, filteredEvents.length)) * 100}%` }}
             />
 
             <div className="relative z-10 flex items-center justify-between">
@@ -95,7 +102,7 @@ const Events = () => {
                 >
                   <span className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-mono font-bold transition-all ${
                     activeIdx === idx
-                      ? 'bg-primary text-white border-primary shadow-md'
+                      ? 'bg-primary text-white border-primary shadow-[0_0_12px_#32C5E8]'
                       : 'bg-white text-gray-500 border-border group-hover:border-primary/50'
                   }`}>
                     0{idx + 1}
@@ -110,104 +117,139 @@ const Events = () => {
             </div>
           </div>
 
-          {/* Active Event Horizontal Stage Panel */}
+          {/* Active Event Stage Panel */}
           {activeEvent && (
-            <div className="relative rounded-3xl bg-white border border-border/80 p-8 sm:p-10 shadow-soft-lg grid grid-cols-12 gap-10 items-center min-h-[420px]">
-              {/* Left Column (5 Cols): Metadata & Action */}
-              <div className="col-span-5 flex flex-col justify-between h-full">
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-xs font-mono font-bold text-primary">EVENT 0{activeIdx + 1} / 0{filteredEvents.length}</span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide font-semibold ${
-                      activeEvent.status === 'upcoming'
-                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
-                        : 'text-gray-400 bg-slate-100'
-                    }`}>
-                      {activeEvent.status === 'upcoming' ? 'Upcoming' : 'Completed'}
-                    </span>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeEvent.id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="relative rounded-3xl bg-white border border-border/80 p-8 sm:p-10 shadow-soft-lg grid grid-cols-12 gap-10 items-center min-h-[420px]"
+              >
+                {/* Left Column (5 Cols): Metadata & Action */}
+                <div className="col-span-5 flex flex-col justify-between h-full">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="text-xs font-mono font-bold text-primary">EVENT 0{activeIdx + 1} / 0{filteredEvents.length}</span>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide font-semibold ${
+                        activeEvent.status === 'upcoming'
+                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40'
+                          : 'text-gray-400 bg-slate-100'
+                      }`}>
+                        {activeEvent.status === 'upcoming' ? 'Upcoming' : 'Completed'}
+                      </span>
+                    </div>
+
+                    <h3 className="text-2xl font-bold font-brand text-heading mb-3 tracking-tight">
+                      {activeEvent.title}
+                    </h3>
+
+                    <p className="font-inter text-sm text-body leading-relaxed mb-6">
+                      {activeEvent.description}
+                    </p>
+
+                    <div className="space-y-2 mb-6 p-4 rounded-2xl bg-slate-50 border border-border/60 font-inter">
+                      <div className="flex items-center gap-2.5 text-xs text-heading">
+                        <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
+                        <span className="font-semibold">{activeEvent.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-xs text-heading">
+                        <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+                        <span className="font-semibold">{activeEvent.location}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <h3 className="text-2xl font-bold font-brand text-heading mb-3 tracking-tight">
-                    {activeEvent.title}
-                  </h3>
+                  <div className="flex items-center justify-between pt-4 border-t border-border/40">
+                    <button
+                      onClick={() => setSelectedEvent(activeEvent)}
+                      className="inline-flex items-center gap-2 text-xs font-brand uppercase tracking-wider text-primary hover:text-secondary font-bold"
+                    >
+                      View Full Details <ArrowRight className="w-4 h-4" />
+                    </button>
 
-                  <p className="font-inter text-sm text-body leading-relaxed mb-6">
-                    {activeEvent.description}
-                  </p>
-
-                  <div className="space-y-2 mb-6 p-4 rounded-2xl bg-slate-50 border border-border/60 font-inter">
-                    <div className="flex items-center gap-2.5 text-xs text-heading">
-                      <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
-                      <span className="font-semibold">{activeEvent.date}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5 text-xs text-heading">
-                      <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
-                      <span className="font-semibold">{activeEvent.location}</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={activeIdx === 0}
+                        onClick={() => setActiveIdx((prev) => Math.max(0, prev - 1))}
+                        className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        disabled={activeIdx === filteredEvents.length - 1}
+                        onClick={() => setActiveIdx((prev) => Math.min(filteredEvents.length - 1, prev + 1))}
+                        className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-border/40">
-                  <button
-                    onClick={() => setSelectedEvent(activeEvent)}
-                    className="inline-flex items-center gap-2 text-xs font-brand uppercase tracking-wider text-primary hover:text-secondary font-bold"
+                {/* Right Column (7 Cols): Visual Frame */}
+                <div className="col-span-7 h-full">
+                  <motion.div
+                    initial={{ scale: 0.96, clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)' }}
+                    animate={{ scale: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="rounded-2xl overflow-hidden border border-border/70 shadow-sm h-full min-h-[340px] relative"
                   >
-                    View Full Details <ArrowRight className="w-4 h-4" />
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      disabled={activeIdx === 0}
-                      onClick={() => setActiveIdx((prev) => Math.max(0, prev - 1))}
-                      className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      disabled={activeIdx === filteredEvents.length - 1}
-                      onClick={() => setActiveIdx((prev) => Math.min(filteredEvents.length - 1, prev + 1))}
-                      className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
+                    <ImagePlaceholder
+                      src={activeEvent.image}
+                      alt={activeEvent.title}
+                      type="cover"
+                      aspectRatio="w-full h-full"
+                      badge={activeEvent.category}
+                    />
+                  </motion.div>
                 </div>
-              </div>
-
-              {/* Right Column (7 Cols): Visual Frame */}
-              <div className="col-span-7 h-full">
-                <div className="rounded-2xl overflow-hidden border border-border/70 shadow-sm h-full min-h-[340px] relative">
-                  <ImagePlaceholder
-                    src={activeEvent.image}
-                    alt={activeEvent.title}
-                    type="cover"
-                    aspectRatio="w-full h-full"
-                    badge={activeEvent.category}
-                  />
-                </div>
-              </div>
-            </div>
+              </motion.div>
+            </AnimatePresence>
           )}
         </div>
 
-        {/* ── 3. MOBILE VERTICAL EVENT TIMELINE ──────────────────────────── */}
-        <div className="block lg:hidden space-y-6 mb-12">
+        {/* ── 3. MOBILE VERTICAL EVENT TIMELINE (IMAGES 100% VISIBLE!) ─── */}
+        <div className="block lg:hidden space-y-8 mb-12">
           {filteredEvents.map((ev, idx) => (
-            <div
+            <motion.div
               key={ev.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               onClick={() => setSelectedEvent(ev)}
-              className="relative pl-6 border-l-2 border-primary/40 space-y-3 cursor-pointer group"
+              className="relative pl-6 border-l-2 border-primary/40 space-y-4 cursor-pointer group bg-white p-5 rounded-3xl border border-border/70 shadow-soft"
             >
-              <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-2 border-primary group-hover:bg-primary transition-colors" />
-              <div className="flex items-center gap-2">
+              <div className="absolute -left-[9px] top-6 w-4 h-4 rounded-full bg-white border-2 border-primary group-hover:bg-primary transition-colors shadow-sm" />
+              
+              <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-primary font-bold">EVENT 0{idx + 1}</span>
-                <span className="text-[9px] font-brand uppercase tracking-wider text-gray-500">{ev.category}</span>
+                <span className="text-[9px] font-brand uppercase tracking-wider text-gray-500 font-semibold">{ev.category}</span>
               </div>
-              <h4 className="font-brand text-base text-heading font-bold group-hover:text-primary transition-colors">
-                {ev.title}
-              </h4>
-              <p className="font-inter text-xs text-gray-600 line-clamp-2">{ev.description}</p>
-            </div>
+
+              {/* EVENT IMAGE FULLY VISIBLE ON MOBILE */}
+              <div className="rounded-2xl overflow-hidden border border-border/60">
+                <ImagePlaceholder
+                  src={ev.image}
+                  alt={ev.title}
+                  type="cover"
+                  aspectRatio="aspect-[16/9]"
+                  badge={ev.status === 'upcoming' ? 'UPCOMING' : 'COMPLETED'}
+                />
+              </div>
+
+              <div>
+                <h4 className="font-brand text-lg text-heading font-bold group-hover:text-primary transition-colors mb-1">
+                  {ev.title}
+                </h4>
+                <p className="font-inter text-xs text-gray-600 line-clamp-2 mb-3">{ev.description}</p>
+                <div className="flex items-center gap-3 text-[11px] font-inter text-gray-500 pt-2 border-t border-border/40">
+                  <span className="flex items-center gap-1 font-semibold"><Calendar className="w-3.5 h-3.5 text-primary" /> {ev.date}</span>
+                </div>
+              </div>
+            </motion.div>
           ))}
         </div>
 

@@ -4,11 +4,9 @@ import { Quote, ChevronLeft, ChevronRight } from 'lucide-react'
 import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
 import { testimonialsData } from '../data/testimonialsData'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
 
-// Handcrafted low-contrast PCB background traces for Testimonials section
 const TestimonialsPCBBackground = ({ activeIdx, total }) => {
-  const progressPercent = ((activeIdx + 1) / total) * 100
-
   return (
     <svg
       aria-hidden="true"
@@ -23,24 +21,33 @@ const TestimonialsPCBBackground = ({ activeIdx, total }) => {
         <path d="M0 280 H300 L380 200 H1060 L1140 280 H1440" stroke="rgba(50, 197, 232, 0.30)" />
       </g>
 
-      {/* Dynamic Traveling Signal Node */}
       <circle
         cx={480 + (480 * (activeIdx / Math.max(1, total - 1)))}
         cy="160"
         r="5"
         fill="#32C5E8"
-        className="transition-all duration-700 ease-out"
+        className="transition-all duration-700 ease-out shadow-[0_0_12px_#32C5E8]"
       />
     </svg>
   )
 }
 
 const Testimonials = () => {
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation({ threshold: 0.15 })
   const [activeIdx, setActiveIdx] = useState(0)
+  const [direction, setDirection] = useState(1)
+
+  // Trigger Section Power-Up Electrical Surge on entry
+  useEffect(() => {
+    if (sectionVisible) {
+      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
+    }
+  }, [sectionVisible])
 
   // Auto-advance every 7 seconds
   useEffect(() => {
     const timer = setInterval(() => {
+      setDirection(1)
       setActiveIdx((prev) => (prev + 1) % testimonialsData.length)
     }, 7000)
     return () => clearInterval(timer)
@@ -48,8 +55,18 @@ const Testimonials = () => {
 
   const current = testimonialsData[activeIdx]
 
+  const handleNext = () => {
+    setDirection(1)
+    setActiveIdx((prev) => (prev + 1) % testimonialsData.length)
+  }
+
+  const handlePrev = () => {
+    setDirection(-1)
+    setActiveIdx((prev) => (prev - 1 + testimonialsData.length) % testimonialsData.length)
+  }
+
   return (
-    <section id="testimonials" className="relative section-gap overflow-hidden bg-transparent">
+    <section ref={sectionRef} id="testimonials" className="relative section-gap overflow-hidden bg-transparent">
       <div id="alumni" className="absolute -top-24" />
 
       {/* PCB Circuit Traces Flowing Across Full Viewport Width */}
@@ -60,24 +77,25 @@ const Testimonials = () => {
         {/* ── 1. Section Header ───────────────────────────────────────── */}
         <PowerOnHeader
           badge="COMMUNITY VOICES"
-          headline={<>Human <span className="text-light-sweep-dark">Voice</span> &amp; Impact</>}
+          headline={<>Human <span className="text-light-sweep-dark">Signal</span></>}
           description="Direct experiences from students, faculty mentors, workshop participants, and alumni."
           align="left"
         />
 
         {/* ── 2. ONE DOMINANT TESTIMONIAL STAGE ───────────────────────── */}
-        <div className="relative max-w-5xl mx-auto bg-white/90 backdrop-blur-md rounded-3xl p-8 sm:p-14 border border-border/80 shadow-soft-lg min-h-[380px] flex flex-col justify-between">
+        <div className="relative max-w-5xl mx-auto bg-white/90 backdrop-blur-md rounded-3xl p-8 sm:p-14 border border-border/80 shadow-soft-lg min-h-[380px] flex flex-col justify-between overflow-hidden">
           
           <div className="relative">
             <Quote className="w-12 h-12 text-primary/15 mb-6" />
 
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={current.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                custom={direction}
+                initial={{ opacity: 0, x: direction * 40, filter: 'blur(8px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, x: -direction * 40, filter: 'blur(8px)' }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               >
                 <blockquote className="font-inter text-lg sm:text-2xl md:text-3xl text-heading leading-relaxed font-medium italic mb-8">
                   &ldquo;{current.quote}&rdquo;
@@ -115,9 +133,12 @@ const Testimonials = () => {
               {testimonialsData.map((_, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setActiveIdx(idx)}
+                  onClick={() => {
+                    setDirection(idx > activeIdx ? 1 : -1)
+                    setActiveIdx(idx)
+                  }}
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    activeIdx === idx ? 'w-8 bg-primary' : 'w-2 bg-slate-200 hover:bg-slate-300'
+                    activeIdx === idx ? 'w-8 bg-primary shadow-[0_0_8px_#32C5E8]' : 'w-2 bg-slate-200 hover:bg-slate-300'
                   }`}
                   aria-label={`Go to testimonial ${idx + 1}`}
                 />
@@ -131,14 +152,14 @@ const Testimonials = () => {
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setActiveIdx((prev) => (prev - 1 + testimonialsData.length) % testimonialsData.length)}
+                  onClick={handlePrev}
                   className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
                   aria-label="Previous testimonial"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={() => setActiveIdx((prev) => (prev + 1) % testimonialsData.length)}
+                  onClick={handleNext}
                   className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
                   aria-label="Next testimonial"
                 >

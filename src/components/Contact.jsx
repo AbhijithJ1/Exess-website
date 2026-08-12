@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Mail, Phone, Send, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
@@ -11,9 +11,9 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 16, filter: 'blur(4px)' },
   visible: {
-    opacity: 1, y: 0,
+    opacity: 1, y: 0, filter: 'blur(0px)',
     transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
   },
 }
@@ -22,6 +22,13 @@ const Contact = () => {
   const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation({ threshold: 0.15 })
   const [formState, setFormState] = useState({ name: '', email: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
+
+  // Trigger Section Power-Up Electrical Surge on entry
+  useEffect(() => {
+    if (contentVisible) {
+      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
+    }
+  }, [contentVisible])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -33,20 +40,23 @@ const Contact = () => {
     <section id="contact" className="relative section-gap overflow-hidden">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
         
-        {/* PCB Connecting Signal SVG Line linking Map to Form */}
+        {/* PCB Connecting Circuit Line linking Map Node to Form Node */}
         <svg
           aria-hidden="true"
-          className="absolute top-1/3 left-1/3 w-1/3 h-48 pointer-events-none select-none z-0 hidden lg:block opacity-30"
+          className="absolute top-1/3 left-1/3 w-1/3 h-48 pointer-events-none select-none z-0 hidden lg:block opacity-40"
           viewBox="0 0 400 150"
           fill="none"
         >
-          <path
+          <motion.path
             d="M 10 20 H 200 V 130 H 390"
             stroke="#32C5E8"
             strokeWidth="2"
             strokeDasharray="6 6"
+            initial={{ pathLength: 0 }}
+            animate={contentVisible ? { pathLength: 1 } : { pathLength: 0 }}
+            transition={{ duration: 1.2, ease: 'easeInOut' }}
           />
-          <circle cx="10" cy="20" r="4" fill="#32C5E8" />
+          <circle cx="10" cy="20" r="4" fill="#32C5E8" className="animate-ping" />
           <circle cx="390" cy="130" r="4" fill="#1E6B93" />
         </svg>
 
@@ -57,13 +67,13 @@ const Contact = () => {
           variants={containerVariants}
           className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start"
         >
-          {/* Left Column (5 Cols): Connection Statement & Campus Map Interface */}
+          {/* Left Column (5 Cols): Connection Statement & Campus Map Node */}
           <div className="lg:col-span-5 space-y-8">
             <motion.div variants={itemVariants}>
               <span className="section-label font-brand inline-flex items-center mb-4">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 <span className="section-label-text font-brand uppercase tracking-[0.22em] text-[10px] font-bold text-primary">
-                  CONNECTION INTERFACE
+                  CONNECTION ESTABLISHMENT
                 </span>
               </span>
 
@@ -100,12 +110,12 @@ const Contact = () => {
               ))}
             </motion.div>
 
-            {/* Integrated Campus Location Map */}
+            {/* Integrated Campus Location Map Node */}
             <motion.div variants={itemVariants} className="pt-2 border-t border-border/50">
               <span className="text-[10px] font-brand uppercase tracking-[0.18em] text-primary font-bold block mb-3">
-                CAMPUS LOCATION
+                CAMPUS LOCATION NODE
               </span>
-              <div className="rounded-3xl border border-primary/20 bg-white p-4 shadow-soft space-y-3">
+              <div className="rounded-3xl border border-primary/30 bg-white p-4 shadow-soft space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -151,7 +161,7 @@ const Contact = () => {
             </motion.div>
           </div>
 
-          {/* Right Column (7 Cols): Sequential Contact Form */}
+          {/* Right Column (7 Cols): Sequential Contact Form Activation */}
           <motion.div variants={itemVariants} className="lg:col-span-7">
             <form onSubmit={handleSubmit} className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-border/80 shadow-soft-lg space-y-5">
               {submitted ? (
@@ -161,7 +171,7 @@ const Contact = () => {
                   className="text-center py-12 sm:py-16"
                 >
                   <CheckCircle className="w-14 h-14 text-emerald-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-brand text-heading mb-2 font-bold">Message Transmitted!</h3>
+                  <h3 className="text-xl font-brand text-heading mb-2 font-bold">Connection Established!</h3>
                   <p className="font-inter text-sm text-gray-600">Thank you for reaching out to ExESS. We will respond promptly.</p>
                 </motion.div>
               ) : (
@@ -173,7 +183,7 @@ const Contact = () => {
                         type="text" required
                         value={formState.name}
                         onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter"
+                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm font-inter focus:shadow-[0_0_12px_rgba(50,197,232,0.2)]"
                         placeholder="Your full name"
                       />
                     </div>
@@ -183,7 +193,7 @@ const Contact = () => {
                         type="email" required
                         value={formState.email}
                         onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter"
+                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm font-inter focus:shadow-[0_0_12px_rgba(50,197,232,0.2)]"
                         placeholder="your@email.com"
                       />
                     </div>
@@ -191,7 +201,7 @@ const Contact = () => {
 
                   <motion.div variants={itemVariants}>
                     <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Subject</label>
-                    <select className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter text-body">
+                    <select className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm font-inter text-body focus:shadow-[0_0_12px_rgba(50,197,232,0.2)]">
                       <option>General Inquiry</option>
                       <option>Join ExESS</option>
                       <option>Sponsorship / Research</option>
@@ -205,14 +215,14 @@ const Contact = () => {
                       required rows={5}
                       value={formState.message}
                       onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                      className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary transition-all duration-300 text-sm font-inter resize-none"
+                      className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm font-inter resize-none focus:shadow-[0_0_12px_rgba(50,197,232,0.2)]"
                       placeholder="Share your inquiry or project details..."
                     />
                   </motion.div>
 
                   <motion.div variants={itemVariants} className="pt-2">
                     <PcbLightButton type="submit" icon={Send} className="w-full py-4">
-                      TRANSMIT MESSAGE
+                      ESTABLISH CONNECTION
                     </PcbLightButton>
                   </motion.div>
                 </>

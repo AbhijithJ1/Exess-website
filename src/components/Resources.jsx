@@ -4,12 +4,20 @@ import { Download, X, FileText } from 'lucide-react'
 import PowerOnHeader from './PowerOnHeader'
 import PcbLightButton from './PcbLightButton'
 import { resourcesData } from '../data/resourcesData'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
 
 const Resources = () => {
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation({ threshold: 0.15 })
   const [showAllModal, setShowAllModal] = useState(false)
   const [hoveredIdx, setHoveredIdx] = useState(null)
 
-  // Curated 4 resources on homepage
+  // Trigger Section Power-Up Electrical Surge on entry
+  useEffect(() => {
+    if (sectionVisible) {
+      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
+    }
+  }, [sectionVisible])
+
   const curatedResources = resourcesData.slice(0, 4)
 
   useEffect(() => {
@@ -29,38 +37,47 @@ const Resources = () => {
   }, [showAllModal])
 
   return (
-    <section id="resources" className="relative section-gap overflow-hidden bg-transparent">
+    <section ref={sectionRef} id="resources" className="relative section-gap overflow-hidden bg-transparent">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
         
         {/* ── 1. Section Header ───────────────────────────────────────── */}
         <PowerOnHeader
           badge="LEARNING VAULT & TECHNICAL ARCHIVE"
-          headline={<>Indexed <span className="text-light-sweep-dark">Engineering Assets</span></>}
-          description="Curated technical documentation, PCB layout guides, synthesizable RTL templates, and engineering assets."
+          headline={<>Technical <span className="text-light-sweep-dark">Archive</span></>}
+          description="Curated technical schematics, PCB layout guides, synthesizable RTL templates, and engineering assets."
           align="left"
         />
 
-        {/* ── 2. TECHNICAL ARCHIVE INDEX LIST (Horizontal Rows) ───────── */}
+        {/* Horizontal Section Activation Scanning Beam */}
+        <motion.div
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={sectionVisible ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mb-8 origin-left"
+        />
+
+        {/* ── 2. TECHNICAL ARCHIVE INDEX LIST ─────────────────────────── */}
         <div className="space-y-4 mb-12">
           {curatedResources.map((res, idx) => {
             const isHovered = hoveredIdx === idx
             return (
               <motion.div
                 key={res.id}
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -25 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.08 }}
                 onMouseEnter={() => setHoveredIdx(idx)}
                 onMouseLeave={() => setHoveredIdx(null)}
                 className={`group relative p-5 sm:p-7 rounded-2xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer ${
                   isHovered
-                    ? 'bg-white border-primary/50 shadow-soft-lg scale-[1.01]'
-                    : 'bg-white/80 border-border/70 hover:border-border'
+                    ? 'bg-white border-primary/60 shadow-soft-lg scale-[1.015]'
+                    : 'bg-white/85 border-border/70 hover:border-border'
                 }`}
               >
                 {/* PCB Node Indicator on Left Edge */}
-                <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r-full transition-colors duration-300 ${
-                  isHovered ? 'bg-primary' : 'bg-transparent'
+                <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 rounded-r-full transition-all duration-300 ${
+                  isHovered ? 'bg-primary shadow-[0_0_10px_#32C5E8]' : 'bg-transparent'
                 }`} />
 
                 <div className="flex items-start sm:items-center gap-4 sm:gap-6">
@@ -74,12 +91,12 @@ const Resources = () => {
                   {/* Resource Info */}
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider ${
-                        isHovered ? 'bg-primary text-white' : 'bg-slate-100 text-slate-600'
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider transition-colors ${
+                        isHovered ? 'bg-primary text-white shadow-sm' : 'bg-slate-100 text-slate-600'
                       }`}>
                         {res.format}
                       </span>
-                      <span className="text-[10px] font-brand uppercase tracking-wider text-gray-400">
+                      <span className="text-[10px] font-brand uppercase tracking-wider text-gray-400 font-semibold">
                         {res.category}
                       </span>
                     </div>
@@ -105,7 +122,7 @@ const Resources = () => {
                     href={res.url}
                     className={`px-4 py-2 rounded-xl text-xs font-brand uppercase tracking-wider font-semibold inline-flex items-center gap-2 transition-all ${
                       isHovered
-                        ? 'bg-primary text-white shadow-sm'
+                        ? 'bg-primary text-white shadow-sm translate-x-1'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -126,7 +143,7 @@ const Resources = () => {
 
       </div>
 
-      {/* Full Resources Vault Directory Modal */}
+      {/* Full Resources Directory Modal */}
       <AnimatePresence>
         {showAllModal && (
           <motion.div

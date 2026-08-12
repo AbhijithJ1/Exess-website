@@ -1,15 +1,13 @@
 import { useEffect, useRef } from 'react'
 
 /**
- * GlobalCircuitNetwork — Ultra-High Performance Viewport-Scoped Electrical Signal System
+ * GlobalCircuitNetwork — Viewport-Scoped Electrical Signal System & Section Power-Up System
  *
- * Optimized to run at 60 FPS on 100vh viewport canvas (zero lag / zero memory bloat):
- * - Canvas sized strictly to 100vh viewport (100% resolution, zero massive multi-thousand px canvas allocation).
- * - Smooth lerped scroll tracking: current scroll position drives fluid movement.
+ * Runs at 60 FPS on 100vh viewport canvas (zero lag / zero memory bloat):
+ * - Canvas sized strictly to 100vh viewport.
+ * - Smooth lerped scroll tracking.
  * - Viewport clipping: only active visible trace segments in the viewport are processed.
- * - Downward scroll: electrical pulse travels forward through motherboard traces.
- * - Upward scroll: electrical pulse reverses naturally along traces.
- * - Bright cyan core, soft blue halo, fading tail, via pad illumination.
+ * - SECTION POWER-UP SURGE: Listens for section entry and triggers a high-intensity cyan/white electrical discharge burst across motherboard traces.
  */
 const GlobalCircuitNetwork = () => {
   const canvasRef = useRef(null)
@@ -25,9 +23,19 @@ const GlobalCircuitNetwork = () => {
     let docHeight = Math.max(document.documentElement.scrollHeight || 6000, 6000)
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
 
-    // Lerped scroll tracking for ultra-smooth 60 FPS motion
+    // Lerped scroll tracking
     let targetScrollY = window.scrollY
     let lerpedScrollY = window.scrollY
+
+    // Power-up electrical surge state
+    let surgeIntensity = 0
+
+    const triggerSurge = () => {
+      surgeIntensity = 1.0
+    }
+
+    // Listen for custom section activation event
+    window.addEventListener('exess-section-powerup', triggerSurge)
 
     const resize = () => {
       width = window.innerWidth
@@ -55,7 +63,7 @@ const GlobalCircuitNetwork = () => {
     const resizeObserver = new ResizeObserver(() => handleResize())
     resizeObserver.observe(document.body)
 
-    // Seed continuous motherboard PCB traces
+    // Seed motherboard PCB traces
     const numTraces = Math.min(20, Math.max(12, Math.floor(width / 85)))
     const paths = []
 
@@ -111,13 +119,17 @@ const GlobalCircuitNetwork = () => {
         return
       }
 
-      // Lerp scroll position for smooth acceleration and deceleration
+      // Decay surge intensity
+      if (surgeIntensity > 0) {
+        surgeIntensity = Math.max(0, surgeIntensity - 0.025)
+      }
+
       lerpedScrollY += (targetScrollY - lerpedScrollY) * 0.12
 
       ctx.clearRect(0, 0, width, height)
 
       // 1. Engineering Blueprint Grid
-      ctx.strokeStyle = 'rgba(30, 107, 147, 0.03)'
+      ctx.strokeStyle = `rgba(30, 107, 147, ${0.03 + surgeIntensity * 0.04})`
       ctx.lineWidth = 1
       const gridStep = 70
       const gridOffsetY = - (lerpedScrollY % gridStep)
@@ -135,11 +147,11 @@ const GlobalCircuitNetwork = () => {
       }
       ctx.stroke()
 
-      // 2. Motherboard Copper Traces & Scroll-Driven Electrical Pulses
+      // 2. Motherboard Copper Traces & Electrical Surge
       paths.forEach((p, pathIdx) => {
-        // Trace lines (The Wires) rendered relative to current viewport
-        ctx.strokeStyle = `rgba(30, 107, 147, ${p.alpha})`
-        ctx.lineWidth = p.width
+        const activeAlpha = p.alpha + surgeIntensity * 0.25
+        ctx.strokeStyle = `rgba(30, 107, 147, ${activeAlpha})`
+        ctx.lineWidth = p.width + surgeIntensity * 0.8
         ctx.lineCap = 'square'
 
         ctx.beginPath()
@@ -158,14 +170,15 @@ const GlobalCircuitNetwork = () => {
         p.viaNodes.forEach((node) => {
           const ny = node.y - lerpedScrollY
           if (ny >= -20 && ny <= height + 20) {
-            ctx.fillStyle = `rgba(30, 107, 147, ${p.alpha * 2.2})`
+            const viaAlpha = activeAlpha * 2.2 + surgeIntensity * 0.4
+            ctx.fillStyle = surgeIntensity > 0.4 ? '#32C5E8' : `rgba(30, 107, 147, ${viaAlpha})`
             ctx.beginPath()
-            ctx.arc(node.x, ny, node.r, 0, Math.PI * 2)
+            ctx.arc(node.x, ny, node.r + surgeIntensity * 1.5, 0, Math.PI * 2)
             ctx.fill()
           }
         })
 
-        // Scroll-driven Electrical Energy Pulse (Synchronized with scroll progress)
+        // Electrical Energy Pulse
         const scrollDistance = lerpedScrollY * p.offsetMultiplier + (pathIdx * 140)
         const currentDist = Math.abs(scrollDistance) % p.totalLength
         let accumulated = 0
@@ -179,50 +192,39 @@ const GlobalCircuitNetwork = () => {
             const screenPy = py - lerpedScrollY
 
             if (screenPy >= -30 && screenPy <= height + 30) {
-              // Fading Trail behind pulse
-              const startHeadRatio = Math.max(0, ratio - 0.25)
+              const trailLen = 0.25 + surgeIntensity * 0.2
+              const startHeadRatio = Math.max(0, ratio - trailLen)
               const tailX = seg.x1 + (seg.x2 - seg.x1) * startHeadRatio
               const tailY = seg.y1 + (seg.y2 - seg.y1) * startHeadRatio - lerpedScrollY
 
               const trailGrad = ctx.createLinearGradient(tailX, tailY, px, screenPy)
               trailGrad.addColorStop(0, 'rgba(50, 197, 232, 0)')
-              trailGrad.addColorStop(1, 'rgba(50, 197, 232, 0.50)')
+              trailGrad.addColorStop(1, `rgba(50, 197, 232, ${0.50 + surgeIntensity * 0.4})`)
 
               ctx.strokeStyle = trailGrad
-              ctx.lineWidth = p.width * 1.8
+              ctx.lineWidth = (p.width * 1.8) + surgeIntensity * 1.5
               ctx.beginPath()
               ctx.moveTo(tailX, tailY)
               ctx.lineTo(px, screenPy)
               ctx.stroke()
 
-              // Soft Blue Halo
-              const pulseGrad = ctx.createRadialGradient(px, screenPy, 0, px, screenPy, 14)
-              pulseGrad.addColorStop(0, 'rgba(50, 197, 232, 0.90)')
-              pulseGrad.addColorStop(0.35, 'rgba(50, 197, 232, 0.35)')
+              // Soft Blue / White Electrical Discharge Glow
+              const pulseRadius = 14 + surgeIntensity * 16
+              const pulseGrad = ctx.createRadialGradient(px, screenPy, 0, px, screenPy, pulseRadius)
+              pulseGrad.addColorStop(0, surgeIntensity > 0.3 ? 'rgba(255, 255, 255, 0.95)' : 'rgba(50, 197, 232, 0.90)')
+              pulseGrad.addColorStop(0.35, 'rgba(50, 197, 232, 0.50)')
               pulseGrad.addColorStop(1, 'rgba(50, 197, 232, 0)')
 
               ctx.fillStyle = pulseGrad
               ctx.beginPath()
-              ctx.arc(px, screenPy, 14, 0, Math.PI * 2)
+              ctx.arc(px, screenPy, pulseRadius, 0, Math.PI * 2)
               ctx.fill()
 
-              // Bright Cyan Core Dot
+              // Bright Core Dot
               ctx.fillStyle = '#FFFFFF'
               ctx.beginPath()
-              ctx.arc(px, screenPy, 2.2, 0, Math.PI * 2)
+              ctx.arc(px, screenPy, 2.2 + surgeIntensity * 2.0, 0, Math.PI * 2)
               ctx.fill()
-
-              // Via Pad Illumination when pulse passes over via node
-              p.viaNodes.forEach((node) => {
-                const distToNode = Math.hypot(px - node.x, py - node.y)
-                if (distToNode < 14) {
-                  const ny = node.y - lerpedScrollY
-                  ctx.fillStyle = `rgba(50, 197, 232, ${0.85 * (1 - distToNode / 14)})`
-                  ctx.beginPath()
-                  ctx.arc(node.x, ny, node.r + 2.5, 0, Math.PI * 2)
-                  ctx.fill()
-                }
-              })
             }
             break
           }
@@ -239,6 +241,7 @@ const GlobalCircuitNetwork = () => {
       cancelAnimationFrame(animationFrameId)
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('exess-section-powerup', triggerSurge)
       clearTimeout(resizeTimeout)
       resizeObserver.disconnect()
     }

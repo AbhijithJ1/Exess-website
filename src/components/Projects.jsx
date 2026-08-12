@@ -5,15 +5,22 @@ import PowerOnHeader from './PowerOnHeader'
 import ImagePlaceholder from './ImagePlaceholder'
 import PcbLightButton from './PcbLightButton'
 import { projectsData } from '../data/projectsData'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
 
 const Projects = () => {
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation({ threshold: 0.15 })
   const [selectedProject, setSelectedProject] = useState(null)
   const [showAllModal, setShowAllModal] = useState(false)
 
-  // Curated 3 projects on homepage
+  // Trigger Section Power-Up Electrical Surge on entry
+  useEffect(() => {
+    if (sectionVisible) {
+      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
+    }
+  }, [sectionVisible])
+
   const curatedProjects = projectsData.slice(0, 3)
 
-  // Lock body scroll and handle ESC key listener when modal is active
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -34,21 +41,23 @@ const Projects = () => {
   }, [selectedProject, showAllModal])
 
   return (
-    <section id="projects" className="relative section-gap overflow-hidden">
+    <section ref={sectionRef} id="projects" className="relative section-gap overflow-hidden">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
         
         {/* ── 1. Section Header ───────────────────────────────────────── */}
         <PowerOnHeader
           badge="PROJECTS & INNOVATION"
-          headline={<>Featured <span className="text-light-sweep-dark">Tech Showcase</span></>}
-          description="Engineering case studies, circuit prototypes, and hardware systems engineered by ExESS members."
+          headline={<>Engineering <span className="text-light-sweep-dark">Inspection</span></>}
+          description="Hardware case studies, circuit prototypes, and embedded systems engineered by ExESS members."
           align="left"
         />
 
-        {/* ── 2. Alternating Editorial Tech Showcase Compositions ────── */}
+        {/* ── 2. Alternating Technical Inspection Case Studies ────────── */}
         <div className="space-y-16 sm:space-y-24 mb-16">
           {curatedProjects.map((project, idx) => {
             const isEven = idx % 2 === 0
+            const scanDirectionRight = idx % 2 === 0
+
             return (
               <motion.div
                 key={project.id}
@@ -59,35 +68,48 @@ const Projects = () => {
                 onClick={() => setSelectedProject(project)}
                 className="group cursor-pointer rounded-3xl bg-white border border-border/80 p-6 sm:p-10 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 relative overflow-hidden"
               >
-                {/* PCB Accent Trace on Border */}
-                <div className="absolute top-0 left-0 w-24 h-1 bg-gradient-to-r from-primary to-accent opacity-80" />
+                {/* PCB Accent Line */}
+                <div className="absolute top-0 left-0 w-28 h-1 bg-gradient-to-r from-primary via-accent to-transparent opacity-80" />
 
                 <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                   
-                  {/* Visual Panel (60% / 7 Cols) */}
-                  <motion.div
-                    initial={{ scale: 0.96 }}
-                    whileInView={{ scale: 1 }}
-                    transition={{ duration: 0.6 }}
-                    className={`lg:col-span-7 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}
-                  >
+                  {/* Technical Visual Panel with Scanning Beam Reveal */}
+                  <div className={`lg:col-span-7 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
                     <div className="rounded-2xl overflow-hidden border border-border/70 shadow-sm relative group-hover:shadow-md transition-shadow">
-                      <ImagePlaceholder
-                        src={project.image}
-                        alt={project.title}
-                        type="cover"
-                        aspectRatio="aspect-[16/10]"
-                        badge={project.status}
+                      
+                      {/* Scanning Line Animation Beam */}
+                      <motion.div
+                        initial={{ x: scanDirectionRight ? '-100%' : '100%' }}
+                        whileInView={{ x: scanDirectionRight ? '100%' : '-100%' }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.2, ease: 'easeInOut', delay: 0.2 }}
+                        className="absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent z-20 pointer-events-none shadow-[0_0_20px_#32C5E8]"
                       />
-                    </div>
-                  </motion.div>
 
-                  {/* Information Panel (40% / 5 Cols) */}
+                      {/* Image reveals from muted/soft to full clarity */}
+                      <motion.div
+                        initial={{ filter: 'grayscale(60%) brightness(0.9)', opacity: 0.8 }}
+                        whileInView={{ filter: 'grayscale(0%) brightness(1)', opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.0, delay: 0.4 }}
+                      >
+                        <ImagePlaceholder
+                          src={project.image}
+                          alt={project.title}
+                          type="cover"
+                          aspectRatio="aspect-[16/10]"
+                          badge={project.status}
+                        />
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* Information Panel (Sequential Tech Metadata Reveal) */}
                   <div className={`lg:col-span-5 ${isEven ? 'lg:order-2' : 'lg:order-1'} flex flex-col justify-between`}>
                     <div>
                       <div className="flex items-center justify-between mb-4">
                         <span className="text-xs font-mono font-bold text-primary flex items-center gap-1.5">
-                          <Cpu className="w-3.5 h-3.5" /> CASE_STUDY_0{idx + 1}
+                          <Cpu className="w-3.5 h-3.5" /> SYSTEM_INSPECTION_0{idx + 1}
                         </span>
                         <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wide font-semibold ${
                           project.status === 'Completed'
@@ -123,7 +145,7 @@ const Projects = () => {
                         <Users className="w-3.5 h-3.5 text-primary" /> {project.team}
                       </span>
                       <span className="inline-flex items-center gap-2 text-xs font-brand uppercase tracking-wider text-primary group-hover:text-secondary font-bold">
-                        Read Engineering Case Study <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        Inspect Case Study <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </span>
                     </div>
                   </div>
@@ -143,7 +165,7 @@ const Projects = () => {
 
       </div>
 
-      {/* Full Projects Showcase Directory Modal */}
+      {/* Full Projects Directory Modal */}
       <AnimatePresence>
         {showAllModal && (
           <motion.div
@@ -199,7 +221,7 @@ const Projects = () => {
         )}
       </AnimatePresence>
 
-      {/* Single Project Detail Modal */}
+      {/* Single Project Detail Lightbox */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
