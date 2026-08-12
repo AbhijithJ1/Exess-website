@@ -5,7 +5,7 @@ import Logo from './Logo'
 
 const navLinks = [
   { name: 'Home', href: '#home', id: 'home' },
-  { name: 'About', href: '#circuits', id: 'circuits' },
+  { name: 'About', href: '#about', id: 'about' },
   { name: 'Team', href: '#team', id: 'team' },
   { name: 'Events', href: '#events', id: 'events' },
   { name: 'Projects', href: '#projects', id: 'projects' },
@@ -25,30 +25,35 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Robust IntersectionObserver & Scroll Spy for Active Bubble
+  // Bulletproof real-time Scroll Spy for Active Bubble Navigation
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id
-            if (id === 'circuits' || id === 'about') {
-              setActiveSection('circuits')
-            } else {
-              setActiveSection(id)
-            }
+    const sectionIds = ['home', 'about', 'team', 'events', 'projects', 'contact']
+
+    const handleScrollSpy = () => {
+      const scrollPosition = window.scrollY + 220
+      const isBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60
+
+      if (isBottom) {
+        setActiveSection('contact')
+        return
+      }
+
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const id = sectionIds[i]
+        const element = document.getElementById(id)
+        if (element) {
+          const top = element.offsetTop
+          if (scrollPosition >= top) {
+            setActiveSection(id)
+            break
           }
-        })
-      },
-      { threshold: 0.15, rootMargin: '-70px 0px -55% 0px' }
-    )
+        }
+      }
+    }
 
-    navLinks.forEach((link) => {
-      const section = document.querySelector(link.href)
-      if (section) observer.observe(section)
-    })
-
-    return () => observer.disconnect()
+    handleScrollSpy()
+    window.addEventListener('scroll', handleScrollSpy, { passive: true })
+    return () => window.removeEventListener('scroll', handleScrollSpy)
   }, [])
 
   const handleNavClick = useCallback((e, href, id) => {
