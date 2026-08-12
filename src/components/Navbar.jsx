@@ -30,20 +30,28 @@ const Navbar = () => {
     const sectionIds = ['home', 'about', 'team', 'events', 'projects', 'contact']
 
     const handleScrollSpy = () => {
-      const scrollPosition = window.scrollY + 220
-      const isBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60
+      const currentScroll = window.scrollY
 
+      // If at or near top of page, force active section to 'home'
+      if (currentScroll < 150) {
+        setActiveSection('home')
+        return
+      }
+
+      // If at bottom of page, force active section to 'contact'
+      const isBottom = window.innerHeight + currentScroll >= document.documentElement.scrollHeight - 60
       if (isBottom) {
         setActiveSection('contact')
         return
       }
 
+      const scrollThreshold = currentScroll + 120
+
       for (let i = sectionIds.length - 1; i >= 0; i--) {
         const id = sectionIds[i]
         const element = document.getElementById(id)
         if (element) {
-          const top = element.offsetTop
-          if (scrollPosition >= top) {
+          if (scrollThreshold >= element.offsetTop) {
             setActiveSection(id)
             break
           }
