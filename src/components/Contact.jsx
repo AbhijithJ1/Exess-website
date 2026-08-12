@@ -118,12 +118,12 @@ const Contact = () => {
             </h2>
           </motion.div>
 
-          {/* Routing Signals (SVG) connecting CONTACT to the Hub — hidden on mobile */}
+          {/* Routing Signals (SVG) connecting CONTACT to the Hub */}
           <motion.div 
             initial="hidden"
             whileInView="visible"
             viewport={{ once: false, margin: "-10%" }}
-            className="hidden sm:block w-full h-32 relative flex justify-center"
+            className="w-full h-28 sm:h-32 relative flex justify-center"
           >
             <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1000 100">
               {/* Left Route */}
@@ -155,13 +155,13 @@ const Contact = () => {
               />
             </svg>
 
-            {/* Central Communication Hub */}
+            {/* Central Communication Hub — anchored at bottom-center of the SVG container */}
             <motion.div
               variants={{
-                hidden: { scale: 0, opacity: 0, y: 100 },
-                visible: { scale: 1, opacity: 1, y: 100, transition: { duration: 0.5, delay: 1.4, type: "spring" } }
+                hidden: { scale: 0, opacity: 0 },
+                visible: { scale: 1, opacity: 1, transition: { duration: 0.5, delay: 1.4, type: "spring" } }
               }}
-              className="absolute w-12 h-12 bg-white rounded-full border-4 border-primary shadow-[0_0_20px_#32C5E8] flex items-center justify-center z-10"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-12 h-12 bg-white rounded-full border-4 border-primary shadow-[0_0_20px_#32C5E8] flex items-center justify-center z-10"
             >
               <div className="w-3 h-3 bg-primary rounded-full animate-ping" />
             </motion.div>

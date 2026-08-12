@@ -121,7 +121,10 @@ const Testimonials = () => {
               <span className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-2">
                 COMMUNITY VOICES &amp; ALUMNI TESTIMONIALS
               </span>
-              <h2 className="font-brand text-heading text-4xl sm:text-5xl font-bold tracking-tight leading-[1.0] text-light-sweep-dark">
+              <h2
+                className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
+                style={{ fontSize: 'clamp(1.8rem, 7vw, 3.5rem)' }}
+              >
                 TESTIMONIALS
               </h2>
             </div>

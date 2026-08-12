@@ -150,10 +150,13 @@ const Gallery = () => {
             MEMORIES &amp; COMMUNITY ARCHIVE
           </motion.span>
 
-          <div className="relative overflow-hidden min-h-[90px] sm:min-h-[130px] flex items-center">
+          <div className="relative py-2">
             {/* GALLERY — per-character stagger animation */}
-            <div className="relative w-full flex items-center justify-center sm:justify-start py-2">
-              <h2 className="font-brand text-heading text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.0] text-light-sweep-dark">
+            <div className="relative w-full flex items-center justify-center sm:justify-start">
+              <h2
+                className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
+                style={{ fontSize: 'clamp(2.2rem, 9vw, 6rem)' }}
+              >
                 {'GALLERY'.split('').map((char, i) => (
                   <motion.span
                     key={i}

@@ -145,13 +145,14 @@ const Events = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: false, margin: '-10%' }}
-              className="flex items-center gap-1 sm:gap-2 my-2 overflow-hidden py-2"
+              className="flex items-center gap-0.5 sm:gap-1 my-2 py-2"
             >
               {EVENTS_CHARS.map((char, i) => (
                 <motion.span
                   key={i}
                   variants={charVariants}
-                  className="font-brand font-bold text-5xl sm:text-7xl lg:text-8xl tracking-tight leading-none inline-block"
+                  className="font-brand font-bold tracking-tight leading-none inline-block"
+                  style={{ fontSize: 'clamp(1.8rem, 8vw, 6rem)' }}
                 >
                   {char}
                 </motion.span>

@@ -48,7 +48,7 @@ const Resources = () => {
             LEARNING VAULT &amp; TECHNICAL ARCHIVE
           </motion.span>
 
-          <div className="relative overflow-hidden min-h-[120px] sm:min-h-[180px]">
+          <div className="relative">
             {/* Fast Archival Data Strips overlay */}
             <motion.div
               initial={{ x: "-100%", opacity: 0 }}
@@ -72,7 +72,10 @@ const Resources = () => {
               transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
               className="origin-left"
             >
-              <h2 className="font-brand text-heading text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.0] text-light-sweep-dark">
+              <h2
+                className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
+                style={{ fontSize: 'clamp(2.2rem, 9vw, 6rem)' }}
+              >
                 RESOURCES
               </h2>
             </motion.div>

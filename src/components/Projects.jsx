@@ -53,7 +53,7 @@ const Projects = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: false, margin: '-10%' }}
-            className="origin-left relative min-h-[120px] sm:min-h-[160px]"
+            className="origin-left relative min-h-[80px] sm:min-h-[120px] lg:min-h-[160px]"
           >
             {/* Overlay CAD Construction Lines */}
             <svg className="absolute -top-4 -left-4 right-0 bottom-0 w-full h-full pointer-events-none z-10 overflow-visible">
@@ -87,8 +87,8 @@ const Projects = () => {
             <div className="relative">
               {/* Wireframe text */}
               <motion.h2
-                className="absolute top-0 left-0 font-brand text-heading text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.0]"
-                style={{ WebkitTextStroke: '1px #32C5E8', WebkitTextFillColor: 'transparent' }}
+                className="absolute top-0 left-0 font-brand text-heading font-bold tracking-tight leading-[1.0]"
+                style={{ fontSize: 'clamp(2.2rem, 9vw, 6rem)', WebkitTextStroke: '1px #32C5E8', WebkitTextFillColor: 'transparent' }}
                 variants={{
                   hidden: { opacity: 0, scale: 1.05 },
                   visible: { opacity: [0, 1, 0], scale: 1, transition: { duration: 1.0, ease: 'easeOut' } }
@@ -99,7 +99,8 @@ const Projects = () => {
 
               {/* Solid text */}
               <motion.h2
-                className="font-brand text-heading text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
+                className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
+                style={{ fontSize: 'clamp(2.2rem, 9vw, 6rem)' }}
                 variants={{
                   hidden: { opacity: 0, scale: 1.05, filter: 'blur(4px)' },
                   visible: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.8, delay: 0.8, ease: 'easeOut' } }
