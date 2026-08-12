@@ -154,8 +154,8 @@ const Gallery = () => {
             {/* GALLERY — per-character stagger animation */}
             <div className="relative w-full flex items-center justify-center sm:justify-start">
               <h2
-                className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
-                style={{ fontSize: 'clamp(2.2rem, 9vw, 6rem)' }}
+                className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark flex flex-wrap"
+                style={{ fontSize: 'clamp(1.5rem, 7vw, 5.5rem)' }}
               >
                 {'GALLERY'.split('').map((char, i) => (
                   <motion.span

@@ -74,7 +74,7 @@ const Resources = () => {
             >
               <h2
                 className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
-                style={{ fontSize: 'clamp(2.2rem, 9vw, 6rem)' }}
+                style={{ fontSize: 'clamp(1.5rem, 7vw, 5.5rem)' }}
               >
                 RESOURCES
               </h2>

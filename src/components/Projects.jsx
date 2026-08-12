@@ -88,7 +88,7 @@ const Projects = () => {
               {/* Wireframe text */}
               <motion.h2
                 className="absolute top-0 left-0 font-brand text-heading font-bold tracking-tight leading-[1.0]"
-                style={{ fontSize: 'clamp(2.2rem, 9vw, 6rem)', WebkitTextStroke: '1px #32C5E8', WebkitTextFillColor: 'transparent' }}
+                style={{ fontSize: 'clamp(1.5rem, 7vw, 5.5rem)', WebkitTextStroke: '1px #32C5E8', WebkitTextFillColor: 'transparent' }}
                 variants={{
                   hidden: { opacity: 0, scale: 1.05 },
                   visible: { opacity: [0, 1, 0], scale: 1, transition: { duration: 1.0, ease: 'easeOut' } }
@@ -100,7 +100,7 @@ const Projects = () => {
               {/* Solid text */}
               <motion.h2
                 className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
-                style={{ fontSize: 'clamp(2.2rem, 9vw, 6rem)' }}
+                style={{ fontSize: 'clamp(1.5rem, 7vw, 5.5rem)' }}
                 variants={{
                   hidden: { opacity: 0, scale: 1.05, filter: 'blur(4px)' },
                   visible: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.8, delay: 0.8, ease: 'easeOut' } }

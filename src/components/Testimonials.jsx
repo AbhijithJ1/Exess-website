@@ -123,7 +123,7 @@ const Testimonials = () => {
               </span>
               <h2
                 className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
-                style={{ fontSize: 'clamp(1.8rem, 7vw, 3.5rem)' }}
+                style={{ fontSize: 'clamp(1.4rem, 6vw, 3.5rem)' }}
               >
                 TESTIMONIALS
               </h2>

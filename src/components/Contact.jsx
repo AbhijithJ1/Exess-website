@@ -101,19 +101,19 @@ const Contact = () => {
       <div className="section-padding max-w-7xl mx-auto relative z-10">
 
         {/* ── 1. SIGNAL ROUTING TYPOGRAPHY & HUB ───────────────────────────── */}
-        <div className="relative mb-16 sm:mb-24 flex flex-col items-center">
+        <div className="relative mb-12 sm:mb-20 flex flex-col items-center">
           
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: "-10%" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-center mb-8"
+            className="text-center mb-6"
           >
             <span className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-2">
               ESTABLISH CONNECTION
             </span>
-            <h2 className="font-brand font-bold tracking-tight leading-[1.0] text-light-sweep-dark" style={{ fontSize: 'clamp(2.5rem, 10vw, 4.5rem)' }}>
+            <h2 className="font-brand font-bold tracking-tight leading-[1.0] text-light-sweep-dark" style={{ fontSize: 'clamp(1.6rem, 7.5vw, 4.5rem)' }}>
               CONTACT
             </h2>
           </motion.div>
@@ -123,47 +123,77 @@ const Contact = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: false, margin: "-10%" }}
-            className="w-full h-28 sm:h-32 relative flex justify-center"
+            className="w-full max-w-xl h-24 sm:h-28 relative flex justify-center items-end"
           >
             <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1000 100">
-              {/* Left Route */}
+              {/* Left Route Track */}
               <motion.path
-                d="M 300 0 Q 300 50 450 50 T 500 100"
+                d="M 200 0 Q 200 70 500 100"
                 stroke="#32C5E8" strokeWidth="2" fill="none" strokeDasharray="5 5"
                 variants={{
                   hidden: { pathLength: 0, opacity: 0 },
-                  visible: { pathLength: 1, opacity: 0.5, transition: { duration: 1.0, delay: 0.3, ease: "easeInOut" } }
+                  visible: { pathLength: 1, opacity: 0.4, transition: { duration: 1.0, delay: 0.3, ease: "easeInOut" } }
                 }}
               />
-              {/* Right Route */}
+              {/* Left Route Animated Light Pulse */}
               <motion.path
-                d="M 700 0 Q 700 50 550 50 T 500 100"
+                d="M 200 0 Q 200 70 500 100"
+                stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" fill="none"
+                strokeDasharray="40 300"
+                animate={{ strokeDashoffset: [340, 0] }}
+                transition={{ repeat: Infinity, duration: 2.5, ease: "linear", delay: 0.2 }}
+                style={{ filter: 'drop-shadow(0 0 5px #32C5E8)' }}
+              />
+
+              {/* Right Route Track */}
+              <motion.path
+                d="M 800 0 Q 800 70 500 100"
                 stroke="#32C5E8" strokeWidth="2" fill="none" strokeDasharray="5 5"
                 variants={{
                   hidden: { pathLength: 0, opacity: 0 },
-                  visible: { pathLength: 1, opacity: 0.5, transition: { duration: 1.0, delay: 0.5, ease: "easeInOut" } }
+                  visible: { pathLength: 1, opacity: 0.4, transition: { duration: 1.0, delay: 0.5, ease: "easeInOut" } }
                 }}
               />
-              {/* Center Direct Route */}
+              {/* Right Route Animated Light Pulse */}
+              <motion.path
+                d="M 800 0 Q 800 70 500 100"
+                stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" fill="none"
+                strokeDasharray="40 300"
+                animate={{ strokeDashoffset: [340, 0] }}
+                transition={{ repeat: Infinity, duration: 2.5, ease: "linear", delay: 0.7 }}
+                style={{ filter: 'drop-shadow(0 0 5px #32C5E8)' }}
+              />
+
+              {/* Center Direct Route Track */}
               <motion.path
                 d="M 500 0 L 500 100"
-                stroke="#0F4C81" strokeWidth="2" fill="none"
+                stroke="#1E6B93" strokeWidth="2" fill="none"
                 variants={{
                   hidden: { pathLength: 0, opacity: 0 },
-                  visible: { pathLength: 1, opacity: 0.8, transition: { duration: 0.8, delay: 0.8, ease: "easeInOut" } }
+                  visible: { pathLength: 1, opacity: 0.7, transition: { duration: 0.8, delay: 0.7, ease: "easeInOut" } }
                 }}
+              />
+              {/* Center Route Animated Light Pulse */}
+              <motion.path
+                d="M 500 0 L 500 100"
+                stroke="#32C5E8" strokeWidth="3.5" strokeLinecap="round" fill="none"
+                strokeDasharray="30 200"
+                animate={{ strokeDashoffset: [230, 0] }}
+                transition={{ repeat: Infinity, duration: 2.0, ease: "linear", delay: 0.4 }}
+                style={{ filter: 'drop-shadow(0 0 6px #32C5E8)' }}
               />
             </svg>
 
-            {/* Central Communication Hub — anchored at bottom-center of the SVG container */}
+            {/* Central Communication Hub Circle */}
             <motion.div
               variants={{
                 hidden: { scale: 0, opacity: 0 },
-                visible: { scale: 1, opacity: 1, transition: { duration: 0.5, delay: 1.4, type: "spring" } }
+                visible: { scale: 1, opacity: 1, transition: { duration: 0.5, delay: 1.2, type: "spring" } }
               }}
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-12 h-12 bg-white rounded-full border-4 border-primary shadow-[0_0_20px_#32C5E8] flex items-center justify-center z-10"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full border-4 border-primary shadow-[0_0_24px_#32C5E8] flex items-center justify-center z-10"
             >
-              <div className="w-3 h-3 bg-primary rounded-full animate-ping" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-primary rounded-full animate-ping" />
+              <div className="absolute inset-0 rounded-full border border-cyan-400/60 animate-pulse pointer-events-none" />
             </motion.div>
           </motion.div>
 
