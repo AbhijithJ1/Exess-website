@@ -118,83 +118,154 @@ const Contact = () => {
             </h2>
           </motion.div>
 
-          {/* Routing Signals (SVG) connecting CONTACT to the Hub */}
+          {/* Routing Signals (SVG) — 3 light-blue paths, 1-time entrance flow to center, continuous glittering blast flare */}
           <motion.div 
             initial="hidden"
             whileInView="visible"
             viewport={{ once: false, margin: "-10%" }}
-            className="w-full max-w-xl h-24 sm:h-28 relative flex justify-center items-end"
+            className="w-full max-w-xl h-24 sm:h-28 relative flex justify-center items-end overflow-visible"
           >
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1000 100">
-              {/* Left Route Track */}
+            <svg className="w-full h-full overflow-visible pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1000 100">
+              <defs>
+                {/* Light Cyan Glow Filter */}
+                <filter id="cyan-glitter-glow" x="-100%" y="-100%" width="300%" height="300%">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+
+                {/* Radial Gradient for light blue burst */}
+                <radialGradient id="burst-cyan-grad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#32C5E8" stopOpacity="0.95" />
+                  <stop offset="40%" stopColor="#5ED8F2" stopOpacity="0.5" />
+                  <stop offset="100%" stopColor="#32C5E8" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+
+              {/* ── 1. LEFT ROUTE TRACK (Base track + 1-time beam flow) ── */}
               <motion.path
                 d="M 200 0 Q 200 70 500 100"
-                stroke="#32C5E8" strokeWidth="2" fill="none" strokeDasharray="5 5"
+                stroke="#32C5E8" strokeWidth="1.5" strokeDasharray="5 5" fill="none"
                 variants={{
                   hidden: { pathLength: 0, opacity: 0 },
-                  visible: { pathLength: 1, opacity: 0.4, transition: { duration: 1.0, delay: 0.3, ease: "easeInOut" } }
+                  visible: { pathLength: 1, opacity: 0.4, transition: { duration: 0.9, delay: 0.1, ease: "easeInOut" } }
                 }}
               />
-              {/* Left Route Animated Light Pulse */}
               <motion.path
                 d="M 200 0 Q 200 70 500 100"
                 stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" fill="none"
-                strokeDasharray="40 300"
-                animate={{ strokeDashoffset: [340, 0] }}
-                transition={{ repeat: Infinity, duration: 2.5, ease: "linear", delay: 0.2 }}
+                variants={{
+                  hidden: { pathLength: 0, pathOffset: 0, opacity: 0 },
+                  visible: { 
+                    pathLength: [0, 0.35, 0],
+                    pathOffset: [0, 0.7, 1],
+                    opacity: [0, 1, 1, 0],
+                    transition: { duration: 1.1, delay: 0.2, ease: "easeInOut" } 
+                  }
+                }}
                 style={{ filter: 'drop-shadow(0 0 5px #32C5E8)' }}
               />
 
-              {/* Right Route Track */}
+              {/* ── 2. RIGHT ROUTE TRACK (Base track + 1-time beam flow) ── */}
               <motion.path
                 d="M 800 0 Q 800 70 500 100"
-                stroke="#32C5E8" strokeWidth="2" fill="none" strokeDasharray="5 5"
+                stroke="#32C5E8" strokeWidth="1.5" strokeDasharray="5 5" fill="none"
                 variants={{
                   hidden: { pathLength: 0, opacity: 0 },
-                  visible: { pathLength: 1, opacity: 0.4, transition: { duration: 1.0, delay: 0.5, ease: "easeInOut" } }
+                  visible: { pathLength: 1, opacity: 0.4, transition: { duration: 0.9, delay: 0.1, ease: "easeInOut" } }
                 }}
               />
-              {/* Right Route Animated Light Pulse */}
               <motion.path
                 d="M 800 0 Q 800 70 500 100"
                 stroke="#32C5E8" strokeWidth="3" strokeLinecap="round" fill="none"
-                strokeDasharray="40 300"
-                animate={{ strokeDashoffset: [340, 0] }}
-                transition={{ repeat: Infinity, duration: 2.5, ease: "linear", delay: 0.7 }}
+                variants={{
+                  hidden: { pathLength: 0, pathOffset: 0, opacity: 0 },
+                  visible: { 
+                    pathLength: [0, 0.35, 0],
+                    pathOffset: [0, 0.7, 1],
+                    opacity: [0, 1, 1, 0],
+                    transition: { duration: 1.1, delay: 0.3, ease: "easeInOut" } 
+                  }
+                }}
                 style={{ filter: 'drop-shadow(0 0 5px #32C5E8)' }}
               />
 
-              {/* Center Direct Route Track */}
+              {/* ── 3. CENTER DIRECT ROUTE TRACK (Base track + 1-time beam flow) ── */}
               <motion.path
                 d="M 500 0 L 500 100"
-                stroke="#1E6B93" strokeWidth="2" fill="none"
+                stroke="#32C5E8" strokeWidth="2" fill="none"
                 variants={{
                   hidden: { pathLength: 0, opacity: 0 },
-                  visible: { pathLength: 1, opacity: 0.7, transition: { duration: 0.8, delay: 0.7, ease: "easeInOut" } }
+                  visible: { pathLength: 1, opacity: 0.65, transition: { duration: 0.8, delay: 0.2, ease: "easeInOut" } }
                 }}
               />
-              {/* Center Route Animated Light Pulse */}
               <motion.path
                 d="M 500 0 L 500 100"
                 stroke="#32C5E8" strokeWidth="3.5" strokeLinecap="round" fill="none"
-                strokeDasharray="30 200"
-                animate={{ strokeDashoffset: [230, 0] }}
-                transition={{ repeat: Infinity, duration: 2.0, ease: "linear", delay: 0.4 }}
+                variants={{
+                  hidden: { pathLength: 0, pathOffset: 0, opacity: 0 },
+                  visible: { 
+                    pathLength: [0, 0.35, 0],
+                    pathOffset: [0, 0.7, 1],
+                    opacity: [0, 1, 1, 0],
+                    transition: { duration: 1.0, delay: 0.4, ease: "easeInOut" } 
+                  }
+                }}
                 style={{ filter: 'drop-shadow(0 0 6px #32C5E8)' }}
               />
-            </svg>
 
-            {/* Central Communication Hub Circle */}
-            <motion.div
-              variants={{
-                hidden: { scale: 0, opacity: 0 },
-                visible: { scale: 1, opacity: 1, transition: { duration: 0.5, delay: 1.2, type: "spring" } }
-              }}
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full border-4 border-primary shadow-[0_0_24px_#32C5E8] flex items-center justify-center z-10"
-            >
-              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-primary rounded-full animate-ping" />
-              <div className="absolute inset-0 rounded-full border border-cyan-400/60 animate-pulse pointer-events-none" />
-            </motion.div>
+              {/* ── 4. CENTER LIGHT-BLUE CONTINUOUS GLITTERING BURST (NO CIRCLE) ── */}
+              {/* Outer static SVG group fixed at center (500, 100) */}
+              <g transform="translate(500, 100)">
+                <motion.g
+                  variants={{
+                    hidden: { scale: 0, opacity: 0 },
+                    visible: { scale: 1, opacity: 1, transition: { duration: 0.6, delay: 1.1, ease: "easeOut" } }
+                  }}
+                >
+                  {/* Soft Ambient Light Burst Bloom */}
+                  <motion.circle
+                    cx="0" cy="0" r="32"
+                    fill="url(#burst-cyan-grad)"
+                    animate={{ scale: [0.85, 1.4, 0.85], opacity: [0.6, 0.95, 0.6] }}
+                    transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+                  />
+
+                  {/* Expanding Continuous Glitter Ring 1 */}
+                  <motion.circle
+                    cx="0" cy="0" r="8"
+                    fill="none" stroke="#32C5E8" strokeWidth="2"
+                    animate={{ r: [8, 38], opacity: [0.95, 0] }}
+                    transition={{ repeat: Infinity, duration: 2.0, ease: "easeOut" }}
+                  />
+
+                  {/* Expanding Continuous Glitter Ring 2 */}
+                  <motion.circle
+                    cx="0" cy="0" r="4"
+                    fill="none" stroke="#5ED8F2" strokeWidth="1.5"
+                    animate={{ r: [4, 28], opacity: [1, 0] }}
+                    transition={{ repeat: Infinity, duration: 2.0, ease: "easeOut", delay: 1.0 }}
+                  />
+
+                  {/* Continuous Glittering Sparkle Cross Lines (Light Burst Flare) */}
+                  <motion.g
+                    animate={{ rotate: 360, opacity: [0.75, 1, 0.75] }}
+                    transition={{ rotate: { repeat: Infinity, duration: 8, ease: "linear" }, opacity: { repeat: Infinity, duration: 1.6, ease: "easeInOut" } }}
+                  >
+                    <line x1="-15" y1="0" x2="15" y2="0" stroke="#32C5E8" strokeWidth="2" strokeLinecap="round" filter="url(#cyan-glitter-glow)" />
+                    <line x1="0" y1="-15" x2="0" y2="15" stroke="#32C5E8" strokeWidth="2" strokeLinecap="round" filter="url(#cyan-glitter-glow)" />
+                    <line x1="-10" y1="-10" x2="10" y2="10" stroke="#5ED8F2" strokeWidth="1.5" strokeLinecap="round" opacity="0.85" />
+                    <line x1="-10" y1="10" x2="10" y2="-10" stroke="#5ED8F2" strokeWidth="1.5" strokeLinecap="round" opacity="0.85" />
+                  </motion.g>
+
+                  {/* Central Light-Blue Core Sparkle Node */}
+                  <circle cx="0" cy="0" r="4.5" fill="#32C5E8" filter="url(#cyan-glitter-glow)" />
+                  <circle cx="0" cy="0" r="2" fill="#FFFFFF" />
+                </motion.g>
+              </g>
+            </svg>
           </motion.div>
 
         </div>
