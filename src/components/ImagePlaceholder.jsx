@@ -95,18 +95,8 @@ const ImagePlaceholder = ({
                   <Layers className="w-5 h-5 text-accent" />
                 )}
               </div>
-              <span className="font-mono text-[10px] sm:text-[11px] tracking-widest text-primary/80 uppercase">
-                [ MEDIA_PAD ]
-              </span>
             </div>
           )}
-
-          <div className="absolute top-2.5 left-3 font-mono text-[9px] text-white/30 tracking-widest uppercase">
-            {badge || 'ExESS_CAD'}
-          </div>
-          <div className="absolute bottom-2.5 right-3 font-mono text-[9px] text-white/30 tracking-widest uppercase">
-            READY_FOR_ASSET
-          </div>
 
           <div className="absolute inset-0 bg-accent/0 group-hover:bg-accent/[0.04] transition-colors duration-500 pointer-events-none" />
         </div>

@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Linkedin, ChevronDown } from 'lucide-react'
-import PowerOnHeader from './PowerOnHeader'
+import { motion } from 'framer-motion'
+import { Linkedin } from 'lucide-react'
 import ImagePlaceholder from './ImagePlaceholder'
 import {
   facultyCoordinator,
@@ -9,226 +7,145 @@ import {
   officeBearers,
   committeeMembers,
 } from '../data/teamData'
-import { useScrollAnimation } from '../hooks/useScrollAnimation'
 
-// Team dataset for 2025-2026
-const team2025 = [
-  facultyCoordinator,
-  ...executiveCommittee,
-  ...officeBearers,
-  ...committeeMembers,
-]
+/**
+ * Timeline Stagger Animation Component
+ * Animates elements sequentially as they enter the viewport
+ */
+const TimelineAnimation = ({ children, delay = 0, className = '' }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 25, filter: 'blur(4px)' }}
+    whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+    viewport={{ once: false, margin: '-10%' }}
+    transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+)
 
-// Team dataset for 2024-2025 (Previous Term)
-const team2024 = [
-  facultyCoordinator,
-  {
-    id: 'prev-1',
-    name: 'Siddharth V',
-    role: 'Former Chairperson',
-    department: 'Final Year, ECE',
-    initials: 'SV',
-    image: null,
-    socials: { linkedin: 'https://linkedin.com', email: 'siddharth@exess-cec.org' },
-  },
-  {
-    id: 'prev-2',
-    name: 'Gautam Ram',
-    role: 'Former Vice Chair',
-    department: 'Final Year, ECE',
-    initials: 'GR',
-    image: null,
-    socials: { linkedin: 'https://linkedin.com', github: 'https://github.com' },
-  },
-  {
-    id: 'prev-3',
-    name: 'Riya Joseph',
-    role: 'Former Secretary',
-    department: 'Final Year, ECE',
-    initials: 'RJ',
-    image: null,
-    socials: { linkedin: 'https://linkedin.com', email: 'riya@exess-cec.org' },
-  },
-  {
-    id: 'prev-4',
-    name: 'Nikhil K',
-    role: 'Former Tech Lead',
-    department: 'Final Year, ECE',
-    initials: 'NK',
-    image: null,
-    socials: { linkedin: 'https://linkedin.com', github: 'https://github.com' },
-  },
-]
-
-// 3D Perspective Card Component
-const Team3DCard = ({ member, isMarquee = false, idx = 0 }) => {
-  const [rotate, setRotate] = useState({ x: 0, y: 0 })
-
-  const handleMouseMove = (e) => {
-    if (isMarquee) return
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - rect.left - rect.width / 2
-    const y = e.clientY - rect.top - rect.height / 2
-    setRotate({ x: -y * 0.08, y: x * 0.08 })
-  }
-
-  const handleMouseLeave = () => {
-    setRotate({ x: 0, y: 0 })
-  }
+/**
+ * Vertical PCB Team Card — Executive Team only
+ * Dark PCB avatar box, initials, badge, name, role & LinkedIn
+ */
+const TeamMemberCard = ({ person, badge = null }) => {
+  const linkedinUrl = person.socials?.linkedin || 'https://linkedin.com/company/exess-cec'
 
   return (
-    <motion.div
-      initial={{ opacity: 0, z: -60, rotateX: 15 }}
-      whileInView={{ opacity: 1, z: 0, rotateX: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.65, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        transformStyle: 'preserve-3d',
-        transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
-      }}
-      className={`group bg-white rounded-3xl border border-border/70 p-4 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
-        isMarquee ? 'w-72 sm:w-80 h-[380px] sm:h-[400px] flex-shrink-0' : 'h-[380px] sm:h-[400px]'
-      }`}
-    >
-      {/* Cyan 3D Accent Line on Hover */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-      {/* Member Photo Focus */}
-      <div
-        style={{ transform: 'translateZ(15px)' }}
-        className="w-full h-[62%] rounded-2xl overflow-hidden relative bg-slate-100 shadow-inner group-hover:scale-[1.02] transition-transform duration-300"
-      >
+    <div className="relative group bg-white border border-border/80 rounded-3xl p-5 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col h-full">
+      {/* Dark PCB Image / Avatar Area */}
+      <div className="relative mb-5 rounded-2xl overflow-hidden border border-border/60">
         <ImagePlaceholder
-          src={member.image}
-          alt={member.name}
+          src={person.image}
+          alt={person.name}
           type="avatar"
-          aspectRatio="w-full h-full"
-          initials={member.initials}
+          aspectRatio="aspect-[4/5]"
+          initials={person.initials}
+          className="group-hover:scale-105 transition-transform duration-500"
         />
-      </div>
-
-      {/* Name, Role & LinkedIn Link */}
-      <div style={{ transform: 'translateZ(25px)' }} className="pt-3 px-2 flex items-end justify-between">
-        <div>
-          <h4 className="font-brand text-heading text-base sm:text-lg mb-0.5 tracking-tight group-hover:text-primary transition-colors font-bold">
-            {member.name}
-          </h4>
-          <p className="text-[11px] font-brand uppercase tracking-wider text-primary font-semibold">
-            {member.role}
-          </p>
-        </div>
-
-        {member.socials && member.socials.linkedin && (
-          <a
-            href={member.socials.linkedin}
-            target="_blank"
-            rel="noreferrer"
-            className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-primary hover:text-white text-gray-600 transition-colors flex-shrink-0 shadow-sm"
-            title="LinkedIn Profile"
-          >
-            <Linkedin className="w-4 h-4" />
-          </a>
+        {badge && (
+          <span className="absolute top-3 right-3 bg-white/90 backdrop-blur text-[9px] font-brand uppercase tracking-wider font-bold px-2.5 py-1 rounded-lg text-primary shadow-sm border border-border/60">
+            {badge}
+          </span>
         )}
       </div>
-    </motion.div>
+
+      {/* Name, Role & LinkedIn Connect Button */}
+      <div className="flex items-end justify-between gap-3 pt-2 mt-auto">
+        <div className="overflow-hidden">
+          <h4 className="font-brand font-bold text-heading text-base sm:text-lg group-hover:text-primary transition-colors leading-snug truncate">
+            {person.name}
+          </h4>
+          <p className="font-inter text-[11px] sm:text-xs font-semibold text-primary/90 uppercase tracking-wide mt-0.5 truncate">
+            {person.role}
+          </p>
+        </div>
+        <a
+          href={linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-[#0A66C2] hover:text-white hover:shadow-md transition-all border border-border/60 flex-shrink-0 group/link"
+          aria-label={`Connect with ${person.name} on LinkedIn`}
+        >
+          <Linkedin className="w-4 h-4 group-hover/link:scale-110 transition-transform" />
+        </a>
+      </div>
+    </div>
   )
 }
 
+
 const Team = () => {
-  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation({ threshold: 0.15 })
-  const [selectedYear, setSelectedYear] = useState('2025–2026')
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-
-  // Trigger Section Power-Up Electrical Surge on entry
-  useEffect(() => {
-    if (sectionVisible) {
-      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
-    }
-  }, [sectionVisible])
-
-  const activeMembers = selectedYear === '2025–2026' ? team2025 : team2024
-  const leadershipMembers = activeMembers.slice(0, 4)
-  const committeeTier = activeMembers.slice(4)
-  const marqueeList = committeeTier.length > 0 ? [...committeeTier, ...committeeTier] : [...activeMembers, ...activeMembers]
-
   return (
-    <section ref={sectionRef} id="team" className="relative section-gap overflow-hidden">
+    <section id="team" className="relative section-gap overflow-hidden bg-slate-50/50">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
-        
-        {/* Header Row with Title + Inline Right-Aligned Year Switcher */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 border-b border-border/60 pb-6">
-          <PowerOnHeader
-            badge="EXECUTIVE LEADERSHIP"
-            headline={<>EXECUTIVE <span className="text-light-sweep-dark">TEAM</span> {selectedYear}</>}
-            description="Meet the faculty advisors and student leaders steering ExESS initiatives."
-            align="left"
-            className="mb-0"
-          />
 
-          {/* Inline Right-Aligned Year Switcher */}
-          <div className="relative flex-shrink-0 self-start sm:self-end">
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-border/80 text-xs font-brand font-bold text-primary shadow-soft hover:border-primary/40 transition-colors cursor-pointer"
-            >
-              <span>TEAM {selectedYear}</span>
-              <ChevronDown className={`w-4 h-4 text-primary transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {dropdownOpen && (
-              <div className="absolute right-0 top-12 z-30 w-44 bg-white rounded-2xl shadow-xl border border-border/80 py-2 space-y-1">
-                {['2025–2026', '2024–2025'].map((year) => (
-                  <button
-                    key={year}
-                    onClick={() => {
-                      setSelectedYear(year)
-                      setDropdownOpen(false)
-                    }}
-                    className={`w-full text-left px-4 py-2 text-xs font-brand transition-colors cursor-pointer ${
-                      selectedYear === year
-                        ? 'bg-primary/10 text-primary font-bold'
-                        : 'text-gray-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    TEAM {year}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ── 1. 3D Executive Leadership Card Grid ─────────────────────── */}
-        <div className="mb-14">
-          <span className="text-[11px] font-brand uppercase tracking-[0.20em] text-primary mb-4 block font-bold">
-            CORE LEADERSHIP TIER
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AnimatePresence mode="wait">
-              {leadershipMembers.map((member, idx) => (
-                <Team3DCard key={`${selectedYear}-${member.id}`} member={member} idx={idx} />
-              ))}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* ── 2. 3D Committee Tier Marquee ───────────────────────────── */}
-        {committeeTier.length > 0 && (
-          <div className="pt-4">
-            <span className="text-[11px] font-brand uppercase tracking-[0.20em] text-gray-500 mb-4 block font-bold">
-              COMMITTEE &amp; OFFICE BEARERS
+        {/* ── 1. TIMELINE ANIMATION — SECTION HEADING ─────────────────────── */}
+        <div className="mb-14 border-b border-border/60 pb-10 text-center">
+          <TimelineAnimation delay={0.1}>
+            <span className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-2">
+              CORE SYSTEM ARCHITECTS
             </span>
-            <div className="relative w-full overflow-hidden my-2 py-2 group">
-              <div className="flex gap-6 w-max animate-marquee group-hover:[animation-play-state:paused] will-change-transform">
-                {marqueeList.map((m, idx) => (
-                  <Team3DCard key={`${selectedYear}-${m.id}-${idx}`} member={m} isMarquee={true} idx={idx} />
-                ))}
-              </div>
+          </TimelineAnimation>
+
+          <TimelineAnimation delay={0.2}>
+            <h2 className="font-brand text-heading text-4xl sm:text-6xl font-bold tracking-tight leading-[1.0] text-light-sweep-dark">
+              EXECUTIVE <span className="text-primary">TEAM</span>
+            </h2>
+          </TimelineAnimation>
+
+          <TimelineAnimation delay={0.3}>
+            <p className="font-inter text-body text-sm sm:text-base text-gray-600 mt-4 max-w-2xl mx-auto">
+              The driving force behind ExESS. Our leadership structure facilitates technical events, hardware mentorship, and organisational growth.
+            </p>
+          </TimelineAnimation>
+        </div>
+
+        {/* ── 2. EXECUTIVE TEAM GRID (FACULTY + CORE LEADERS) ─────────────── */}
+        <div className="relative max-w-5xl mx-auto mb-20">
+          {/* Faculty Coordinator — Centered Top */}
+          <div className="flex justify-center mb-10">
+            <TimelineAnimation delay={0.4} className="w-full max-w-xs">
+              <TeamMemberCard person={facultyCoordinator} badge="FACULTY" />
+            </TimelineAnimation>
+          </div>
+
+          {/* Executive Committee Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {executiveCommittee.map((person, i) => (
+              <TimelineAnimation key={person.id} delay={0.5 + i * 0.1}>
+                <TeamMemberCard
+                  person={person}
+                  badge={person.role.includes('Chair') ? 'SYS_ADMIN' : 'CORE_EXEC'}
+                />
+              </TimelineAnimation>
+            ))}
+          </div>
+        </div>
+
+        {/* ── 3. EXTENDED COMMITTEE — SINGLE ROW MARQUEE ─────────────────── */}
+        <div className="relative pt-16 border-t border-border/40">
+          <TimelineAnimation delay={0.2} className="text-center mb-10">
+            <h3 className="font-brand text-2xl sm:text-3xl font-bold text-heading uppercase tracking-tight">
+              COMMITTEE &amp; OFFICE BEARERS
+            </h3>
+            <p className="text-xs font-inter text-gray-500 mt-2">
+              The operational nodes maintaining ExESS systems across all domains
+            </p>
+          </TimelineAnimation>
+
+          {/* Single row: all members combined, duplicated once for seamless loop */}
+          <div className="relative overflow-hidden w-full py-4">
+            <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused] w-max">
+              {[...officeBearers, ...committeeMembers, ...officeBearers, ...committeeMembers].map((person, idx) => (
+                <div key={`ext-${person.id}-${idx}`} className="w-64 sm:w-72 flex-shrink-0">
+                  <TeamMemberCard person={person} badge={officeBearers.includes(person) ? 'OFFICE_BEARER' : 'COMMITTEE'} />
+                </div>
+              ))}
             </div>
           </div>
-        )}
+        </div>
+
       </div>
     </section>
   )

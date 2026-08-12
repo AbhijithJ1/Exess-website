@@ -1,175 +1,207 @@
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Quote, ChevronLeft, ChevronRight } from 'lucide-react'
-import PowerOnHeader from './PowerOnHeader'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ImagePlaceholder from './ImagePlaceholder'
 import { testimonialsData } from '../data/testimonialsData'
-import { useScrollAnimation } from '../hooks/useScrollAnimation'
 
-const TestimonialsPCBBackground = ({ activeIdx, total }) => {
-  return (
-    <svg
-      aria-hidden="true"
-      className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-visible opacity-35 z-0"
-      viewBox="0 0 1440 360"
-      preserveAspectRatio="xMidYMid slice"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g stroke="rgba(30, 107, 147, 0.25)" strokeWidth="1.5" strokeLinecap="square">
-        <path d="M0 60 H400 L480 160 H960 L1040 60 H1440" />
-        <path d="M0 280 H300 L380 200 H1060 L1140 280 H1440" stroke="rgba(50, 197, 232, 0.30)" />
-      </g>
-
-      <circle
-        cx={480 + (480 * (activeIdx / Math.max(1, total - 1)))}
-        cy="160"
-        r="5"
-        fill="#32C5E8"
-        className="transition-all duration-700 ease-out shadow-[0_0_12px_#32C5E8]"
-      />
-    </svg>
-  )
-}
-
+/**
+ * Testimonials — "HUGE QUOTE -> RETRACT -> SIGNAL CORE -> NEXT QUOTE EMERGES"
+ *
+ * Motion Grammar:
+ *   - HUGE QUOTE symbol dominates.
+ *   - Upon entering view, quote retracts into central glowing signal core.
+ *   - Core expands into testimonial stage.
+ *   - Replayable: plays on enter, resets on leave.
+ *   - Auto-cycles every 5 seconds using the same signal-core transition.
+ *   - Autoplay pauses when section is out of view or on hover.
+ *   - Arrow controls reset the autoplay timer.
+ */
 const Testimonials = () => {
-  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation({ threshold: 0.15 })
   const [activeIdx, setActiveIdx] = useState(0)
   const [direction, setDirection] = useState(1)
+  const [transmitting, setTransmitting] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+  const containerRef = useRef(null)
+  const autoplayRef = useRef(null)
 
-  // Trigger Section Power-Up Electrical Surge on entry
+  // Intersection Observer — only autoplay when section is visible
   useEffect(() => {
-    if (sectionVisible) {
-      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
-    }
-  }, [sectionVisible])
-
-  // Auto-advance every 7 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDirection(1)
-      setActiveIdx((prev) => (prev + 1) % testimonialsData.length)
-    }, 7000)
-    return () => clearInterval(timer)
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.3 }
+    )
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
   }, [])
+
+  const triggerQuoteSwap = useCallback((dir, resetTimer = true) => {
+    if (transmitting) return
+    setTransmitting(true)
+    setDirection(dir)
+    setTimeout(() => {
+      setActiveIdx((prev) => (prev + dir + testimonialsData.length) % testimonialsData.length)
+      setTransmitting(false)
+    }, 450)
+    // Reset autoplay timer after manual interaction
+    if (resetTimer) {
+      clearInterval(autoplayRef.current)
+      autoplayRef.current = null
+    }
+  }, [transmitting])
+
+  // Autoplay loop — runs only when visible and not paused
+  useEffect(() => {
+    if (!isVisible || isPaused) {
+      clearInterval(autoplayRef.current)
+      autoplayRef.current = null
+      return
+    }
+
+    autoplayRef.current = setInterval(() => {
+      triggerQuoteSwap(1, false)
+    }, 2000)
+
+    return () => clearInterval(autoplayRef.current)
+  }, [isVisible, isPaused, activeIdx, triggerQuoteSwap])
+
+  // Respect prefers-reduced-motion
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   const current = testimonialsData[activeIdx]
 
-  const handleNext = () => {
-    setDirection(1)
-    setActiveIdx((prev) => (prev + 1) % testimonialsData.length)
-  }
-
-  const handlePrev = () => {
-    setDirection(-1)
-    setActiveIdx((prev) => (prev - 1 + testimonialsData.length) % testimonialsData.length)
-  }
-
   return (
-    <section ref={sectionRef} id="testimonials" className="relative section-gap overflow-hidden bg-transparent">
+    <section
+      id="testimonials"
+      ref={containerRef}
+      className="relative section-gap overflow-hidden bg-transparent"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div id="alumni" className="absolute -top-24" />
 
-      {/* PCB Circuit Traces Flowing Across Full Viewport Width */}
-      <TestimonialsPCBBackground activeIdx={activeIdx} total={testimonialsData.length} />
+      <div className="section-padding max-w-7xl mx-auto relative z-10 min-h-[85vh] flex flex-col items-center justify-center">
 
-      <div className="section-padding max-w-7xl mx-auto relative z-10">
-        
-        {/* ── 1. Section Header ───────────────────────────────────────── */}
-        <PowerOnHeader
-          badge="COMMUNITY VOICES"
-          headline={<>Human <span className="text-light-sweep-dark">Signal</span></>}
-          description="Direct experiences from students, faculty mentors, workshop participants, and alumni."
-          align="left"
-        />
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, margin: "-10%" }}
+          className="w-full relative flex flex-col items-center justify-center min-h-[500px]"
+        >
 
-        {/* ── 2. ONE DOMINANT TESTIMONIAL STAGE ───────────────────────── */}
-        <div className="relative max-w-5xl mx-auto bg-white/90 backdrop-blur-md rounded-3xl p-8 sm:p-14 border border-border/80 shadow-soft-lg min-h-[380px] flex flex-col justify-between overflow-hidden">
-          
-          <div className="relative">
-            <Quote className="w-12 h-12 text-primary/15 mb-6" />
+          {/* Phase 1: HUGE QUOTE */}
+          {!prefersReducedMotion && (
+            <motion.div
+              variants={{
+                hidden: { scale: 3, opacity: 1 },
+                visible: { scale: 0, opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }
+              }}
+              className="absolute inset-0 flex items-center justify-center text-[20rem] sm:text-[30rem] font-serif text-cyan-500/20 leading-none z-20 pointer-events-none origin-center"
+            >
+              &ldquo;
+            </motion.div>
+          )}
 
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={current.id}
-                custom={direction}
-                initial={{ opacity: 0, x: direction * 40, filter: 'blur(8px)' }}
-                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, x: -direction * 40, filter: 'blur(8px)' }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <blockquote className="font-inter text-lg sm:text-2xl md:text-3xl text-heading leading-relaxed font-medium italic mb-8">
-                  &ldquo;{current.quote}&rdquo;
-                </blockquote>
+          {/* Phase 3: TESTIMONIAL STAGE REVEAL */}
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, scaleY: prefersReducedMotion ? 1 : 0.1, filter: prefersReducedMotion ? "none" : "blur(20px)" },
+              visible: {
+                opacity: 1,
+                scaleY: 1,
+                filter: "blur(0px)",
+                transition: { duration: 0.8, delay: prefersReducedMotion ? 0 : 0.4, ease: [0.16, 1, 0.3, 1] }
+              }
+            }}
+            className="w-full max-w-4xl relative z-10"
+          >
+            <div className="text-center mb-8">
+              <span className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-2">
+                COMMUNITY VOICES &amp; ALUMNI TESTIMONIALS
+              </span>
+              <h2 className="font-brand text-heading text-4xl sm:text-5xl font-bold tracking-tight leading-[1.0] text-light-sweep-dark">
+                TESTIMONIALS
+              </h2>
+            </div>
 
-                {/* Author Info */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6 border-t border-border/50">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 flex-shrink-0">
-                      <ImagePlaceholder
-                        src={current.image}
-                        alt={current.name}
-                        type="circle"
-                        aspectRatio="aspect-square"
-                        initials={current.initials}
-                      />
+            <div
+              className="bg-white/80 border border-border/80 p-8 sm:p-12 rounded-3xl shadow-soft-lg backdrop-blur-sm relative"
+            >
+
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={current.id}
+                  custom={direction}
+                  initial={{ scaleY: prefersReducedMotion ? 1 : 1.6, opacity: 0, filter: prefersReducedMotion ? 'none' : 'blur(10px)', y: direction * 16 }}
+                  animate={{ scaleY: 1, opacity: 1, filter: 'blur(0px)', y: 0 }}
+                  exit={{ scaleY: prefersReducedMotion ? 1 : 0.2, opacity: 0, filter: prefersReducedMotion ? 'none' : 'blur(10px)', y: -direction * 16 }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ transformOrigin: 'center center' }}
+                >
+                  <blockquote className="font-inter text-lg sm:text-2xl md:text-3xl text-heading leading-relaxed font-medium italic mb-8">
+                    &ldquo;{current.quote}&rdquo;
+                  </blockquote>
+
+                  <div className="flex items-center justify-between pt-6 border-t border-border/60">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full overflow-hidden border border-border/80 bg-slate-100 flex-shrink-0">
+                        <ImagePlaceholder
+                          src={current.image}
+                          alt={current.name}
+                          type="avatar"
+                          aspectRatio="w-full h-full"
+                          initials={current.initials}
+                        />
+                      </div>
+                      <div>
+                        <h4 className="font-brand font-bold text-heading text-base">{current.name}</h4>
+                        <p className="font-inter text-xs text-primary font-semibold">{current.role} &bull; {current.company}</p>
+                        <span className="font-mono text-[10px] text-gray-400">Batch of {current.batch}</span>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-brand text-base sm:text-lg text-heading font-bold">{current.name}</h4>
-                      <p className="font-inter text-xs font-semibold text-primary uppercase tracking-wider">{current.role}</p>
+
+                    {/* Progress dots + controls */}
+                    <div className="flex flex-col items-end gap-3">
+                      {/* Dot indicators */}
+                      <div className="flex gap-1.5">
+                        {testimonialsData.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => {
+                              if (i !== activeIdx) triggerQuoteSwap(i > activeIdx ? 1 : -1)
+                            }}
+                            className={`w-1.5 h-1.5 rounded-full transition-all ${i === activeIdx ? 'bg-primary scale-125' : 'bg-border/60'}`}
+                            aria-label={`Go to testimonial ${i + 1}`}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Arrow controls */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => triggerQuoteSwap(-1)}
+                          className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                          aria-label="Previous testimonial"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => triggerQuoteSwap(1)}
+                          className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                          aria-label="Next testimonial"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  <span className="px-3.5 py-1.5 rounded-full text-[10px] font-brand uppercase tracking-widest bg-primary/10 text-primary font-bold self-start sm:self-center">
-                    {current.category}
-                  </span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Stage Controls & Index Counter */}
-          <div className="flex items-center justify-between pt-8 mt-8 border-t border-border/40">
-            <div className="flex items-center gap-2">
-              {testimonialsData.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setDirection(idx > activeIdx ? 1 : -1)
-                    setActiveIdx(idx)
-                  }}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    activeIdx === idx ? 'w-8 bg-primary shadow-[0_0_8px_#32C5E8]' : 'w-2 bg-slate-200 hover:bg-slate-300'
-                  }`}
-                  aria-label={`Go to testimonial ${idx + 1}`}
-                />
-              ))}
+                </motion.div>
+              </AnimatePresence>
             </div>
-
-            <div className="flex items-center gap-4">
-              <span className="font-mono text-xs text-gray-400 font-bold">
-                0{activeIdx + 1} / 0{testimonialsData.length}
-              </span>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handlePrev}
-                  className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
-                  aria-label="Previous testimonial"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-colors cursor-pointer"
-                  aria-label="Next testimonial"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-        </div>
+          </motion.div>
+        </motion.div>
 
       </div>
     </section>

@@ -1,199 +1,327 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Target, Compass } from 'lucide-react'
-import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import ImagePlaceholder from './ImagePlaceholder'
 
-// Animated PCB Signal Lines for Mission & Vision
-const PCBSignalTraces = ({ isVisible }) => (
-  <svg
-    aria-hidden="true"
-    className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-visible z-0"
-    viewBox="0 0 1200 240"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M0 40 H450 L520 120 H680 L750 200 H1200"
-      stroke="rgba(30, 107, 147, 0.15)"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-    />
-    <path
-      d="M1200 40 H750 L680 120 H520 L450 200 H0"
-      stroke="rgba(50, 197, 232, 0.18)"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-    />
+gsap.registerPlugin(ScrollTrigger)
 
-    {isVisible && (
-      <>
-        <circle r="4.5" fill="#32C5E8">
-          <animateMotion dur="2.2s" repeatCount="indefinite" path="M0 40 H450 L520 120 H680 L750 200 H1200" />
-        </circle>
-        <circle r="4.5" fill="#1E6B93">
-          <animateMotion dur="2.2s" repeatCount="indefinite" path="M1200 40 H750 L680 120 H520 L450 200 H0" />
-        </circle>
-      </>
-    )}
-  </svg>
-)
+/**
+ * About — "SIGNAL, NOT BLOCKS" (Rhythm-driven Pinned Sequence)
+ *
+ * Pacing & Architecture:
+ *   Stage 1 — Pulse Only: Energy convergence burst at section anchor (~0.5s pause beat).
+ *   Stage 2 — Oversized Word: Single word "ExESS" fills the viewport at massive scale.
+ *   Stage 3 — Word Recedes: "ExESS" scales down into headline; full sentence clip-reveals.
+ *   Stage 4 — Image as a Breath: Generous image hero beat with SVG frame draw & light scan pass.
+ *   Stage 5 — Supporting Copy & Panels: Paragraphs + Mission/Vision schematic panels reveal.
+ */
 
 const About = () => {
-  const { ref: storyRef, isVisible: storyVisible } = useScrollAnimation({ threshold: 0.15 })
-  const { ref: mvRef, isVisible: mvVisible } = useScrollAnimation({ threshold: 0.2 })
+  const wrapperRef = useRef(null)
+  const pinContainerRef = useRef(null)
 
-  // Trigger Section Power-Up Electrical Surge on entry
+  // Stage element refs
+  const burstRef = useRef(null)
+  const bigWordRef = useRef(null)
+  const headlineWrapRef = useRef(null)
+  const headlineSubRef = useRef(null)
+  const imageStageRef = useRef(null)
+  const imageFrameSvgRef = useRef(null)
+  const imageScanRef = useRef(null)
+  const copyPanelRef = useRef(null)
+  const missionPanelRef = useRef(null)
+  const visionPanelRef = useRef(null)
+
+  const [isReducedMotion, setIsReducedMotion] = useState(false)
+
   useEffect(() => {
-    if (storyVisible) {
-      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
-    }
-  }, [storyVisible])
+    const reducedMedia = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setIsReducedMotion(reducedMedia.matches)
+
+    if (reducedMedia.matches) return
+
+    const isMobile = window.innerWidth < 768
+    const scrollDistance = isMobile ? '+=150%' : '+=220%'
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: wrapperRef.current,
+          pin: pinContainerRef.current,
+          start: 'top top',
+          end: scrollDistance,
+          scrub: 1,
+          anticipatePin: 1,
+          onRefresh: () => {
+            // Recalculate ScrollTrigger positions after Lenis refresh
+          }
+        }
+      })
+
+      // Initial state setup for discrete timeline stages
+      gsap.set(burstRef.current, { scale: 0, opacity: 0 })
+      gsap.set(bigWordRef.current, { scale: isMobile ? 1.4 : 2.2, opacity: 0, filter: 'blur(16px)' })
+      gsap.set(headlineWrapRef.current, { opacity: 0, y: 30 })
+      gsap.set(headlineSubRef.current, { opacity: 0, y: 20 })
+      gsap.set(imageStageRef.current, { opacity: 0, scale: 1.06, filter: 'blur(12px)', y: 40 })
+      gsap.set(copyPanelRef.current, { opacity: 0, y: 30 })
+      gsap.set(missionPanelRef.current, { opacity: 0, x: -30 })
+      gsap.set(visionPanelRef.current, { opacity: 0, x: 30 })
+
+      // ── STAGE 1: Pulse Only (Convergence burst at center anchor) ───────
+      tl.addLabel('stage1')
+        .to(burstRef.current, {
+          scale: 1,
+          opacity: 1,
+          duration: 0.4,
+          ease: 'power2.out'
+        })
+        .to(burstRef.current, {
+          scale: 1.8,
+          opacity: 0,
+          duration: 0.4,
+          ease: 'power2.in'
+        })
+
+      // ── STAGE 2: One Oversized Word ("ExESS" presence moment) ─────────
+      tl.addLabel('stage2')
+        .to(bigWordRef.current, {
+          opacity: 1,
+          scale: isMobile ? 1.2 : 1.6,
+          filter: 'blur(0px)',
+          duration: 0.8,
+          ease: 'power3.out'
+        })
+        .to({}, { duration: 0.5 }) // Controlled hold beat ("breathing room")
+
+      // ── STAGE 3: Word Recedes into Real Headline Sentence ──────────────
+      tl.addLabel('stage3')
+        .to(bigWordRef.current, {
+          scale: 1.0,
+          y: -20,
+          duration: 0.7,
+          ease: 'power3.inOut'
+        })
+        .to(headlineWrapRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out'
+        }, '-=0.4')
+        .to(headlineSubRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out'
+        }, '-=0.3')
+        .to({}, { duration: 0.4 }) // Hold beat
+
+      // ── STAGE 4: Image as a Breath (Full-bleed hero beat) ───────────────
+      tl.addLabel('stage4')
+        .to([headlineWrapRef.current, headlineSubRef.current, bigWordRef.current], {
+          y: -40,
+          opacity: 0.3,
+          duration: 0.5,
+          ease: 'power2.inOut'
+        })
+        .to(imageStageRef.current, {
+          opacity: 1,
+          scale: 1.0,
+          filter: 'blur(0px)',
+          y: 0,
+          duration: 0.9,
+          ease: 'power3.out'
+        }, '-=0.3')
+        .to(imageScanRef.current, {
+          x: '200%',
+          duration: 0.8,
+          ease: 'power2.inOut'
+        }, '-=0.5')
+        .to({}, { duration: 0.6 }) // Pause beat (Image as a breath)
+
+      // ── STAGE 5: Supporting Copy + Mission/Vision Panels ───────────────
+      tl.addLabel('stage5')
+        .to([headlineWrapRef.current, headlineSubRef.current, bigWordRef.current], {
+          y: 0,
+          opacity: 1,
+          duration: 0.5
+        })
+        .to(imageStageRef.current, {
+          scale: 0.98,
+          duration: 0.5
+        }, '-=0.5')
+        .to(copyPanelRef.current, {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: 'power2.out'
+        })
+        .to([missionPanelRef.current, visionPanelRef.current], {
+          opacity: 1,
+          x: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: 'power3.out'
+        }, '-=0.3')
+
+    }, wrapperRef)
+
+    return () => ctx.revert()
+  }, [])
 
   return (
-    <section id="circuits" className="relative section-gap overflow-hidden bg-transparent">
+    <section id="circuits" ref={wrapperRef} className="relative bg-transparent">
       <div id="about" className="absolute -top-24" />
 
-      <div className="section-padding max-w-7xl mx-auto relative z-10">
-        
-        {/* ── 1. EDITORIAL STORY HEADLINE ("ENERGY BECOMES KNOWLEDGE") ───── */}
-        <div ref={storyRef} className="mb-16 sm:mb-24">
-          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start border-b border-border/60 pb-12 sm:pb-16">
-            {/* Left Eyebrow Column */}
-            <div className="lg:col-span-3">
-              <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={storyVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                transition={{ duration: 0.6 }}
-                className="section-label font-brand inline-flex items-center"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="section-label-text font-brand uppercase tracking-[0.22em] text-[10px] font-bold text-primary">
-                  ABOUT ExESS
-                </span>
-              </motion.span>
+      {/* Pinned Container Wrapper */}
+      <div
+        ref={pinContainerRef}
+        className="w-full min-h-screen flex items-center justify-center py-12 relative overflow-hidden"
+      >
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full relative z-10">
+
+          {/* ── STAGE 1: ANCHOR PULSE CONVERGENCE BURST ──────────────────── */}
+          {!isReducedMotion && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+              <div
+                ref={burstRef}
+                className="w-48 h-48 sm:w-80 sm:h-80 rounded-full bg-cyan-400/20 border-2 border-cyan-400 shadow-[0_0_80px_#32C5E8]"
+              />
+            </div>
+          )}
+
+          {/* ── STAGE 2 & 3: OVERSIZED WORD & HEADLINE SENTENCE ───────────── */}
+          <div className="mb-12 text-center max-w-4xl mx-auto relative z-10">
+            {/* Section Tagline */}
+            <div className="inline-flex items-center gap-2 mb-4">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="font-brand uppercase tracking-[0.24em] text-xs font-bold text-primary">
+                ABOUT ExESS // 01
+              </span>
             </div>
 
-            {/* Center/Right Precision Mask Reveal Headline */}
-            <div className="lg:col-span-9">
-              <motion.h2
-                initial={{ clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)', filter: 'blur(8px)', opacity: 0 }}
-                animate={storyVisible ? { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', filter: 'blur(0px)', opacity: 1 } : { clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)', filter: 'blur(8px)', opacity: 0 }}
-                transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-                className="font-brand text-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.14] mb-8"
+            {/* Standalone Oversized "Presence" Word */}
+            <div className="relative min-h-[120px] sm:min-h-[180px] flex items-center justify-center">
+              <h1
+                ref={bigWordRef}
+                className="font-brand font-black text-6xl sm:text-8xl lg:text-[10rem] tracking-tight text-primary uppercase leading-none select-none"
               >
-                Pioneering <span className="text-primary">Hardware</span> &amp;{' '}
-                <span className="text-primary">Embedded Systems</span> Excellence at College of Engineering Chengannur.
-              </motion.h2>
+                ExESS
+              </h1>
+            </div>
 
-              {/* Editorial Split Paragraphs */}
-              <div className="grid md:grid-cols-12 gap-8 items-start pt-4 border-t border-border/40">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={storyVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                  transition={{ duration: 0.7, delay: 0.25 }}
-                  className="md:col-span-7 space-y-4"
-                >
-                  <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-800 font-normal">
-                    Electronics Students Society (ExESS) is the official departmental forum at CEC. Our mission is to transform theoretical understanding into real-world hardware engineering mastery.
-                  </p>
-                  <p className="font-inter text-body text-sm sm:text-base leading-relaxed text-gray-600">
-                    Throughout the academic calendar, ExESS organizes hands-on PCB fabrication bootcamps, synthesizable Verilog/FPGA workshops, national hackathons, and guest lecture series from silicon industry specialists.
-                  </p>
-                </motion.div>
+            {/* Full Headline Sentence */}
+            <div ref={headlineWrapRef} className="mt-2">
+              <h2 className="font-brand text-heading text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
+                Pioneering Hardware &amp; Embedded Systems Excellence at College of Engineering Chengannur.
+              </h2>
+            </div>
 
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
-                  animate={storyVisible ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : { opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
-                  transition={{ duration: 0.75, delay: 0.4 }}
-                  className="md:col-span-5 w-full"
-                >
-                  <div className="rounded-3xl overflow-hidden border border-border/80 shadow-soft bg-white p-2">
-                    <ImagePlaceholder
-                      src={null}
-                      alt="ExESS Electronics Lab & CAD Facilities"
-                      type="cover"
-                      aspectRatio="aspect-[16/10]"
-                      badge="LAB_FACILITIES_CAD"
-                    />
-                  </div>
-                </motion.div>
-              </div>
+            <p ref={headlineSubRef} className="font-inter text-slate-600 text-sm sm:text-base mt-4 max-w-2xl mx-auto">
+              Electronics Students Society (ExESS) is the official departmental forum at CEC. Our mission is to transform theoretical understanding into real-world hardware engineering mastery.
+            </p>
+          </div>
+
+          {/* ── STAGE 4: IMAGE AS A BREATH (HERO BEAT) ───────────────────── */}
+          <div ref={imageStageRef} className="max-w-4xl mx-auto mb-16 relative">
+            <div className="relative rounded-3xl overflow-hidden border border-border/80 shadow-soft bg-white p-3 group">
+              
+              {/* Technical SVG Corner Frame Overlay */}
+              <svg
+                ref={imageFrameSvgRef}
+                className="absolute inset-0 w-full h-full pointer-events-none z-20"
+                fill="none"
+              >
+                <path d="M 12 30 L 12 12 L 30 12" stroke="#32C5E8" strokeWidth="2.5" />
+                <path d="M C(100%-30) 12 L C(100%-12) 12 L C(100%-12) 30" stroke="#32C5E8" strokeWidth="2.5" />
+                <path d="M 12 C(100%-30) L 12 C(100%-12) L 30 C(100%-12)" stroke="#32C5E8" strokeWidth="2.5" />
+                <path d="M C(100%-30) C(100%-12) L C(100%-12) C(100%-12) L C(100%-12) C(100%-30)" stroke="#32C5E8" strokeWidth="2.5" />
+              </svg>
+
+              {/* Light Scan Pass Overlay */}
+              <div
+                ref={imageScanRef}
+                className="absolute top-0 bottom-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent pointer-events-none z-20 -translate-x-full"
+              />
+
+              <ImagePlaceholder
+                src={null}
+                alt="ExESS Electronics Lab Facilities"
+                type="cover"
+                aspectRatio="aspect-[16/9] sm:aspect-[21/9]"
+                badge="LAB_FACILITIES_CAD"
+                className="rounded-2xl"
+              />
             </div>
           </div>
-        </div>
 
-        {/* ── 2. MISSION & VISION EDITORIAL STATEMENTS ("Powered into view") ── */}
-        <div ref={mvRef} className="relative pt-6">
-          <PCBSignalTraces isVisible={mvVisible} />
+          {/* ── STAGE 5: SUPPORTING COPY + MISSION / VISION PANELS ─────────── */}
+          <div ref={copyPanelRef} className="max-w-4xl mx-auto mb-12 text-center">
+            <p className="font-inter text-slate-700 text-sm sm:text-base leading-relaxed max-w-3xl mx-auto">
+              Throughout the academic calendar, ExESS organizes hands-on PCB fabrication bootcamps, synthesizable Verilog/FPGA workshops, national hackathons, and guest lecture series from silicon industry specialists.
+            </p>
+          </div>
 
-          <div className="grid md:grid-cols-2 gap-10 sm:gap-14 relative z-10">
-            
-            {/* VISION STATEMENT (Left Signal Activation) */}
-            <motion.div
-              initial={{ clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)', opacity: 0, x: -30 }}
-              animate={mvVisible ? { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', opacity: 1, x: 0 } : { clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)', opacity: 0, x: -30 }}
-              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-              className="relative p-8 sm:p-12 rounded-3xl bg-white/90 backdrop-blur-md border border-border/80 shadow-soft hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
+          {/* Mission & Vision Schematic Panels */}
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+
+            {/* MISSION PANEL */}
+            <div
+              ref={missionPanelRef}
+              className="relative p-6 sm:p-8 rounded-3xl border border-border/80 border-l-4 border-l-primary bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between mb-8">
-                  <span className="text-[10px] font-brand uppercase tracking-[0.22em] text-secondary font-bold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-                    ASPIRATION &amp; LEGACY
-                  </span>
-                  <Compass className="w-6 h-6 text-secondary" />
-                </div>
-
-                <h3 className="font-brand text-heading text-2xl sm:text-3xl font-bold mb-5 tracking-tight">
-                  OUR VISION
-                </h3>
-
-                <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-700 font-normal">
-                  To serve as a benchmark student engineering body that nurtures inquisitive minds, inspires hardware innovation, and empowers electronics undergraduates to become competent, industry-ready technology leaders.
-                </p>
-              </div>
-
-              <div className="pt-8 mt-6 border-t border-border/40 flex items-center justify-between text-xs font-mono text-gray-400">
-                <span>SYSTEM_VISION // CEC</span>
-                <span className="w-2 h-2 rounded-full bg-secondary/50" />
-              </div>
-            </motion.div>
-
-            {/* MISSION STATEMENT (Right Signal Activation) */}
-            <motion.div
-              initial={{ clipPath: 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)', opacity: 0, x: 30 }}
-              animate={mvVisible ? { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', opacity: 1, x: 0 } : { clipPath: 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)', opacity: 0, x: 30 }}
-              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
-              className="relative p-8 sm:p-12 rounded-3xl bg-white/90 backdrop-blur-md border border-border/80 shadow-soft hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-8">
-                  <span className="text-[10px] font-brand uppercase tracking-[0.22em] text-primary font-bold flex items-center gap-2">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-brand uppercase tracking-[0.2em] text-primary font-bold flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    PURPOSE &amp; ACTION
+                    MISSION // 01
                   </span>
-                  <Target className="w-6 h-6 text-primary" />
+                  <Target className="w-5 h-5 text-primary opacity-80" />
                 </div>
-
-                <h3 className="font-brand text-heading text-2xl sm:text-3xl font-bold mb-5 tracking-tight">
+                <h3 className="font-brand text-heading text-xl sm:text-2xl font-bold mb-3 tracking-tight">
                   OUR MISSION
                 </h3>
-
-                <p className="font-inter text-body text-base sm:text-lg leading-relaxed text-gray-700 font-normal">
+                <p className="font-inter text-slate-700 text-xs sm:text-sm leading-relaxed">
                   Our mission is to strengthen students&apos; technical knowledge through workshops, technical talks, hands-on sessions, hackathons, competitions, PCB design activities, embedded systems learning, and industry-oriented skill development.
                 </p>
               </div>
-
-              <div className="pt-8 mt-6 border-t border-border/40 flex items-center justify-between text-xs font-mono text-gray-400">
+              <div className="pt-4 mt-6 border-t border-border/40 flex items-center justify-between text-[10px] font-mono text-gray-400">
                 <span>SYSTEM_MISSION // CEC</span>
-                <span className="w-2 h-2 rounded-full bg-primary/50" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
               </div>
-            </motion.div>
+            </div>
+
+            {/* VISION PANEL */}
+            <div
+              ref={visionPanelRef}
+              className="relative p-6 sm:p-8 rounded-3xl border border-border/80 border-r-4 border-r-cyan-500 bg-white/90 shadow-soft backdrop-blur-sm flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-brand uppercase tracking-[0.2em] text-cyan-600 font-bold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                    VISION // 02
+                  </span>
+                  <Compass className="w-5 h-5 text-cyan-600 opacity-80" />
+                </div>
+                <h3 className="font-brand text-heading text-xl sm:text-2xl font-bold mb-3 tracking-tight">
+                  OUR VISION
+                </h3>
+                <p className="font-inter text-slate-700 text-xs sm:text-sm leading-relaxed">
+                  To serve as a benchmark student engineering body that nurtures inquisitive minds, inspires hardware innovation, and empowers electronics undergraduates to become competent, industry-ready technology leaders.
+                </p>
+              </div>
+              <div className="pt-4 mt-6 border-t border-border/40 flex items-center justify-between text-[10px] font-mono text-gray-400">
+                <span>SYSTEM_VISION // CEC</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/60" />
+              </div>
+            </div>
 
           </div>
-        </div>
 
+        </div>
       </div>
     </section>
   )

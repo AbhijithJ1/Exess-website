@@ -1,235 +1,301 @@
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { MapPin, Mail, Phone, Send, CheckCircle, Clock, ExternalLink } from 'lucide-react'
-import { useScrollAnimation } from '../hooks/useScrollAnimation'
-import ImagePlaceholder from './ImagePlaceholder'
+import { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { MapPin, Mail, Send, CheckCircle, ChevronDown, Check } from 'lucide-react'
 import PcbLightButton from './PcbLightButton'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
-}
+const SUBJECT_OPTIONS = [
+  'General Inquiry',
+  'Event Sponsorship',
+  'Join ExESS',
+  'Project Collaboration',
+]
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 16, filter: 'blur(4px)' },
-  visible: {
-    opacity: 1, y: 0, filter: 'blur(0px)',
-    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
-  },
-}
+/**
+ * Premium Custom Dropdown Component
+ */
+const PremiumSelect = ({ selected, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef(null)
 
-const Contact = () => {
-  const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation({ threshold: 0.15 })
-  const [formState, setFormState] = useState({ name: '', email: '', message: '' })
-  const [submitted, setSubmitted] = useState(false)
-
-  // Trigger Section Power-Up Electrical Surge on entry
   useEffect(() => {
-    if (contentVisible) {
-      window.dispatchEvent(new CustomEvent('exess-section-powerup'))
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
     }
-  }, [contentVisible])
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  return (
+    <div ref={dropdownRef} className="relative w-full">
+      {/* Dropdown Trigger Button */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading font-inter flex items-center justify-between focus:outline-none focus:border-primary/50 focus:bg-white transition-all cursor-pointer shadow-sm hover:border-slate-300"
+      >
+        <span className="font-medium text-heading">{selected}</span>
+        <ChevronDown
+          className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${
+            isOpen ? 'rotate-180 text-primary' : ''
+          }`}
+        />
+      </button>
+
+      {/* Premium Floating Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 4, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute left-0 right-0 top-full z-40 bg-white border border-border/80 rounded-2xl shadow-xl p-2 space-y-1 font-inter overflow-hidden"
+          >
+            {SUBJECT_OPTIONS.map((option) => {
+              const isSelected = selected === option
+              return (
+                <div
+                  key={option}
+                  onClick={() => {
+                    onChange(option)
+                    setIsOpen(false)
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-primary/10 text-primary font-semibold'
+                      : 'text-gray-700 hover:bg-slate-50 hover:text-heading'
+                  }`}
+                >
+                  <span>{option}</span>
+                  {isSelected && <Check className="w-4 h-4 text-primary" />}
+                </div>
+              )
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/**
+ * Contact — "SIGNAL ROUTING"
+ */
+const Contact = () => {
+  const [formStatus, setFormStatus] = useState('idle')
+  const [selectedSubject, setSelectedSubject] = useState('General Inquiry')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 4000)
+    setFormStatus('sending')
+    setTimeout(() => {
+      setFormStatus('sent')
+      setTimeout(() => setFormStatus('idle'), 3000)
+    }, 1200)
   }
 
   return (
-    <section id="contact" className="relative section-gap overflow-hidden">
+    <section id="contact" className="relative section-gap overflow-hidden bg-transparent pb-32">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
-        
-        {/* PCB Connecting Circuit Line linking Map Node to Form Node */}
-        <svg
-          aria-hidden="true"
-          className="absolute top-1/3 left-1/3 w-1/3 h-48 pointer-events-none select-none z-0 hidden lg:block opacity-40"
-          viewBox="0 0 400 150"
-          fill="none"
-        >
-          <motion.path
-            d="M 10 20 H 200 V 130 H 390"
-            stroke="#32C5E8"
-            strokeWidth="2"
-            strokeDasharray="6 6"
-            initial={{ pathLength: 0 }}
-            animate={contentVisible ? { pathLength: 1 } : { pathLength: 0 }}
-            transition={{ duration: 1.2, ease: 'easeInOut' }}
-          />
-          <circle cx="10" cy="20" r="4" fill="#32C5E8" className="animate-ping" />
-          <circle cx="390" cy="130" r="4" fill="#1E6B93" />
-        </svg>
 
-        <motion.div
-          ref={contentRef}
-          initial="hidden"
-          animate={contentVisible ? 'visible' : 'hidden'}
-          variants={containerVariants}
-          className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start"
-        >
-          {/* Left Column (5 Cols): Connection Statement & Campus Map Node */}
-          <div className="lg:col-span-5 space-y-8">
-            <motion.div variants={itemVariants}>
-              <span className="section-label font-brand inline-flex items-center mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="section-label-text font-brand uppercase tracking-[0.22em] text-[10px] font-bold text-primary">
-                  CONNECTION ESTABLISHMENT
-                </span>
-              </span>
+        {/* ── 1. SIGNAL ROUTING TYPOGRAPHY & HUB ───────────────────────────── */}
+        <div className="relative mb-16 sm:mb-24 flex flex-col items-center">
+          
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: "-10%" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-center mb-8"
+          >
+            <span className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-2">
+              ESTABLISH CONNECTION
+            </span>
+            <h2 className="font-brand text-heading text-5xl sm:text-7xl font-bold tracking-tight leading-[1.0] text-light-sweep-dark">
+              CONTACT
+            </h2>
+          </motion.div>
 
-              <h2 className="font-brand text-heading text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.14] mb-4">
-                LET&apos;S <span className="text-primary">CONNECT</span>
-              </h2>
+          {/* Routing Signals (SVG) connecting CONTACT to the Hub */}
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: false, margin: "-10%" }}
+            className="w-full h-32 relative flex justify-center"
+          >
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1000 100">
+              {/* Left Route */}
+              <motion.path
+                d="M 300 0 Q 300 50 450 50 T 500 100"
+                stroke="#32C5E8" strokeWidth="2" fill="none" strokeDasharray="5 5"
+                variants={{
+                  hidden: { pathLength: 0, opacity: 0 },
+                  visible: { pathLength: 1, opacity: 0.5, transition: { duration: 1.0, delay: 0.3, ease: "easeInOut" } }
+                }}
+              />
+              {/* Right Route */}
+              <motion.path
+                d="M 700 0 Q 700 50 550 50 T 500 100"
+                stroke="#32C5E8" strokeWidth="2" fill="none" strokeDasharray="5 5"
+                variants={{
+                  hidden: { pathLength: 0, opacity: 0 },
+                  visible: { pathLength: 1, opacity: 0.5, transition: { duration: 1.0, delay: 0.5, ease: "easeInOut" } }
+                }}
+              />
+              {/* Center Direct Route */}
+              <motion.path
+                d="M 500 0 L 500 100"
+                stroke="#0F4C81" strokeWidth="2" fill="none"
+                variants={{
+                  hidden: { pathLength: 0, opacity: 0 },
+                  visible: { pathLength: 1, opacity: 0.8, transition: { duration: 0.8, delay: 0.8, ease: "easeInOut" } }
+                }}
+              />
+            </svg>
 
-              <p className="font-inter text-sm sm:text-base text-gray-600 leading-relaxed">
-                Whether you&apos;re a student looking to join, an industry partner interested in research, or an alumnus offering technical mentorship &mdash; submit your query below.
-              </p>
+            {/* Central Communication Hub */}
+            <motion.div
+              variants={{
+                hidden: { scale: 0, opacity: 0, y: 100 },
+                visible: { scale: 1, opacity: 1, y: 100, transition: { duration: 0.5, delay: 1.4, type: "spring" } }
+              }}
+              className="absolute w-12 h-12 bg-white rounded-full border-4 border-primary shadow-[0_0_20px_#32C5E8] flex items-center justify-center z-10"
+            >
+              <div className="w-3 h-3 bg-primary rounded-full animate-ping" />
             </motion.div>
+          </motion.div>
 
-            {/* Direct Contact Channels */}
-            <motion.div variants={itemVariants} className="space-y-4 pt-2 border-t border-border/50">
-              <span className="text-[10px] font-brand uppercase tracking-[0.18em] text-primary font-bold block mb-3">
-                DIRECT CONTACT CHANNELS
-              </span>
-              {[
-                { icon: Mail, title: 'Email', lines: ['exess@cec.ac.in', 'contact.exess@gmail.com'] },
-                { icon: Phone, title: 'Phone', lines: ['+91 98765 43210'] },
-                { icon: Clock, title: 'Office Hours', lines: ['Mon - Fri: 9:00 AM - 5:00 PM'] },
-              ].map((item) => (
-                <div key={item.title} className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-primary/[0.06] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <item.icon className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="text-[11px] font-brand text-heading uppercase tracking-wider mb-0.5 font-semibold">{item.title}</h4>
-                    {item.lines.map((line, i) => (
-                      <p key={i} className="text-xs font-inter text-gray-600">{line}</p>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
+        </div>
 
-            {/* Integrated Campus Location Map Node */}
-            <motion.div variants={itemVariants} className="pt-2 border-t border-border/50">
-              <span className="text-[10px] font-brand uppercase tracking-[0.18em] text-primary font-bold block mb-3">
-                CAMPUS LOCATION NODE
-              </span>
-              <div className="rounded-3xl border border-primary/30 bg-white p-4 shadow-soft space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                      <MapPin className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="font-brand text-xs text-heading font-semibold">College of Engineering Chengannur</h4>
-                      <p className="text-[10px] font-mono text-gray-400">Chengannur, Alappuzha, Kerala 689121</p>
-                    </div>
-                  </div>
-                  <a
-                    href="https://www.google.com/maps/place/College+of+Engineering+Chengannur/@9.317325,76.617486,15z/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors"
-                    title="Open College Location on Google Maps"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
+        {/* ── 2. COMMUNICATION CHANNELS & FORM ───────────────────────────── */}
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-10%" }}
+          transition={{ duration: 0.8, delay: 1.8, ease: "easeOut" }}
+          className="grid lg:grid-cols-2 gap-12 lg:gap-20 mt-10"
+        >
+          {/* Information & Channels */}
+          <div>
+            <h3 className="font-brand text-2xl sm:text-3xl font-bold text-heading mb-6">
+              GET IN TOUCH
+            </h3>
+            <p className="font-inter text-body text-base leading-relaxed mb-10 max-w-md">
+              Whether you want to sponsor an event, collaborate on hardware research, or join the community, our communication channels are open.
+            </p>
 
-                <div className="rounded-2xl overflow-hidden border border-border/60">
-                  <ImagePlaceholder
-                    src={null}
-                    alt="College of Engineering Chengannur Location Map"
-                    type="cover"
-                    aspectRatio="aspect-[16/9]"
-                    badge="GOOGLE_MAPS_CEC"
-                  />
+            <div className="space-y-6">
+              <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-border/60 shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
+                <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-primary border border-border/80 group-hover:bg-primary group-hover:text-white transition-colors">
+                  <MapPin className="w-5 h-5" />
                 </div>
-                <div className="flex items-center justify-between text-[10px] font-mono text-gray-400">
-                  <span>Lat 9.3173° N &bull; Long 76.6174° E</span>
-                  <a
-                    href="https://www.google.com/maps/place/College+of+Engineering+Chengannur/@9.317325,76.617486,15z/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-primary hover:underline font-brand font-semibold"
-                  >
-                    Google Maps →
+                <div>
+                  <h4 className="font-brand text-sm font-bold text-heading mb-1">Address</h4>
+                  <p className="font-inter text-sm text-gray-500 leading-relaxed">
+                    College of Engineering Chengannur<br />
+                    Alappuzha, Kerala - 689121
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-border/60 shadow-sm hover:shadow-soft hover:border-primary/30 transition-all group">
+                <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-primary border border-border/80 group-hover:bg-primary group-hover:text-white transition-colors">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-brand text-sm font-bold text-heading mb-1">Email</h4>
+                  <a href="mailto:exess@ceconline.edu" className="font-inter text-sm text-gray-500 hover:text-primary transition-colors">
+                    exess@ceconline.edu
                   </a>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
 
-          {/* Right Column (7 Cols): Sequential Contact Form Activation */}
-          <motion.div variants={itemVariants} className="lg:col-span-7">
-            <form onSubmit={handleSubmit} className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-border/80 shadow-soft-lg space-y-5">
-              {submitted ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-12 sm:py-16"
-                >
-                  <CheckCircle className="w-14 h-14 text-emerald-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-brand text-heading mb-2 font-bold">Connection Established!</h3>
-                  <p className="font-inter text-sm text-gray-600">Thank you for reaching out to ExESS. We will respond promptly.</p>
-                </motion.div>
-              ) : (
-                <>
-                  <motion.div variants={itemVariants} className="grid sm:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Name</label>
-                      <input
-                        type="text" required
-                        value={formState.name}
-                        onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm font-inter focus:shadow-[0_0_12px_rgba(50,197,232,0.2)]"
-                        placeholder="Your full name"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Email</label>
-                      <input
-                        type="email" required
-                        value={formState.email}
-                        onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm font-inter focus:shadow-[0_0_12px_rgba(50,197,232,0.2)]"
-                        placeholder="your@email.com"
-                      />
-                    </div>
-                  </motion.div>
+          {/* Contact Form matching reference card design */}
+          <div className="relative">
+            <form onSubmit={handleSubmit} className="relative p-8 sm:p-10 rounded-3xl border border-border/60 bg-white shadow-soft-lg">
 
-                  <motion.div variants={itemVariants}>
-                    <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Subject</label>
-                    <select className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm font-inter text-body focus:shadow-[0_0_12px_rgba(50,197,232,0.2)]">
-                      <option>General Inquiry</option>
-                      <option>Join ExESS</option>
-                      <option>Sponsorship / Research</option>
-                      <option>Workshop Collaboration</option>
-                    </select>
-                  </motion.div>
+              <div className="space-y-6">
 
-                  <motion.div variants={itemVariants}>
-                    <label className="block text-xs font-brand uppercase tracking-wider text-heading mb-2 font-semibold">Message</label>
-                    <textarea
-                      required rows={5}
-                      value={formState.message}
-                      onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                      className="w-full px-4 py-3.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-300 text-sm font-inter resize-none focus:shadow-[0_0_12px_rgba(50,197,232,0.2)]"
-                      placeholder="Share your inquiry or project details..."
+                {/* Name & Email Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="font-brand font-bold text-xs uppercase tracking-wider text-heading block">NAME</label>
+                    <input
+                      required
+                      type="text"
+                      placeholder="Your full name"
+                      className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:bg-white transition-all"
                     />
-                  </motion.div>
+                  </div>
 
-                  <motion.div variants={itemVariants} className="pt-2">
-                    <PcbLightButton type="submit" icon={Send} className="w-full py-4">
-                      ESTABLISH CONNECTION
-                    </PcbLightButton>
-                  </motion.div>
-                </>
-              )}
+                  <div className="space-y-2">
+                    <label className="font-brand font-bold text-xs uppercase tracking-wider text-heading block">EMAIL</label>
+                    <input
+                      required
+                      type="email"
+                      placeholder="your@email.com"
+                      className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:bg-white transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Premium Subject Dropdown Row */}
+                <div className="space-y-2">
+                  <label className="font-brand font-bold text-xs uppercase tracking-wider text-heading block">SUBJECT</label>
+                  <PremiumSelect
+                    selected={selectedSubject}
+                    onChange={setSelectedSubject}
+                  />
+                </div>
+
+                {/* Message Textarea Row */}
+                <div className="space-y-2">
+                  <label className="font-brand font-bold text-xs uppercase tracking-wider text-heading block">MESSAGE</label>
+                  <textarea
+                    required
+                    rows="4"
+                    placeholder="Share your inquiry or project details..."
+                    className="w-full bg-[#F8FAFC] border border-slate-200/80 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 text-sm text-heading placeholder:text-gray-400 focus:outline-none focus:border-primary/50 focus:bg-white transition-all resize-none"
+                  ></textarea>
+                </div>
+
+                {/* Submit Button */}
+                <div className="pt-4">
+                  <PcbLightButton
+                    type="submit"
+                    disabled={formStatus !== 'idle'}
+                    icon={Send}
+                    className="w-full justify-center text-center"
+                  >
+                    <AnimatePresence mode="wait">
+                      {formStatus === 'idle' && (
+                        <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                          ESTABLISH CONNECTION
+                        </motion.span>
+                      )}
+                      {formStatus === 'sending' && (
+                        <motion.span key="sending" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                          ESTABLISHING SIGNAL...
+                        </motion.span>
+                      )}
+                      {formStatus === 'sent' && (
+                        <motion.span key="sent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-cyan-600 font-bold">
+                          CONNECTION ESTABLISHED ✓
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </PcbLightButton>
+                </div>
+
+              </div>
             </form>
-          </motion.div>
+          </div>
         </motion.div>
+
       </div>
     </section>
   )
