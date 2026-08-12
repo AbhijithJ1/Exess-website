@@ -34,7 +34,7 @@ const ImagePlaceholder = ({
       {showRealImage && (
         <>
           {!loaded && (
-            <div className="absolute inset-0 bg-[#0B2135] animate-pulse flex items-center justify-center">
+            <div className="absolute inset-0 bg-[#0B2135] flex items-center justify-center">
               <div className="w-8 h-8 rounded-full border-2 border-primary/30 border-t-accent animate-spin" />
             </div>
           )}

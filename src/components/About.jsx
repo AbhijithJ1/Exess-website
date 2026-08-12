@@ -196,7 +196,7 @@ const About = () => {
           <div className="mb-12 text-center max-w-4xl mx-auto relative z-10">
             {/* Section Tagline */}
             <div className="inline-flex items-center gap-2 mb-4">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-primary" />
               <span className="font-brand uppercase tracking-[0.24em] text-xs font-bold text-primary">
                 ABOUT ExESS // 01
               </span>
@@ -276,7 +276,7 @@ const About = () => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[10px] font-brand uppercase tracking-[0.2em] text-primary font-bold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-primary" />
                     MISSION // 01
                   </span>
                 </div>
@@ -302,7 +302,7 @@ const About = () => {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[10px] font-brand uppercase tracking-[0.2em] text-cyan-600 font-bold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
                     VISION // 02
                   </span>
                 </div>

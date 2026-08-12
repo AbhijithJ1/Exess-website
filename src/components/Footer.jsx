@@ -92,7 +92,7 @@ const Footer = () => {
             viewport={{ once: false }}
             className="flex items-center gap-2 mb-2"
           >
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-primary" />
             <span className="font-brand text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] text-primary">
               SHAPING THE FUTURE OF ELECTRONICS &amp; HARDWARE
             </span>
