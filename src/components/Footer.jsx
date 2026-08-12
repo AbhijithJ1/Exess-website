@@ -41,7 +41,9 @@ const Footer = () => {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <Logo className="w-8 h-8 sm:w-9 sm:h-9" />
-                <span className="font-brand font-bold text-lg text-heading tracking-tight">ExESS</span>
+                <span className="font-brand font-bold text-lg tracking-tight text-heading">
+                  Ex<span className="text-primary">ESS</span>
+                </span>
               </div>
               <p className="font-inter text-body text-xs sm:text-sm leading-relaxed max-w-lg mb-5 text-gray-500">
                 Electronics Students Society (ExESS) is the official departmental body powering hardware, embedded systems, and robotics innovation at College of Engineering Chengannur.
@@ -106,10 +108,10 @@ const Footer = () => {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false }}
-              className="font-brand font-extrabold tracking-tight text-heading group-hover:text-primary transition-colors duration-300 leading-none"
+              className="font-brand font-extrabold tracking-tight text-heading duration-300 leading-none"
               style={{ fontSize: 'clamp(2.5rem, 8vw, 6rem)' }}
             >
-              ExESS
+              Ex<span className="text-primary">ESS</span>
             </motion.h2>
 
             <motion.div
