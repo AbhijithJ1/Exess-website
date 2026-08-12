@@ -247,7 +247,7 @@ const About = () => {
               />
 
               <ImagePlaceholder
-                src={null}
+                src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1600&q=80"
                 alt="ExESS Electronics Lab Facilities"
                 type="cover"
                 aspectRatio="aspect-[16/9] sm:aspect-[21/9]"

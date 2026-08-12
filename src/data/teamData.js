@@ -10,7 +10,7 @@ export const facultyCoordinator = {
   category: 'Faculty Coordinator',
   department: 'Associate Professor, ECE Dept.',
   initials: 'EG',
-  image: null,
+  image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
   bio: 'Guides ExESS technical workshops, hardware research projects, and departmental academic initiatives.',
   socials: {
     linkedin: 'https://linkedin.com',
@@ -26,7 +26,7 @@ export const executiveCommittee = [
     category: 'Executive Committee',
     year: 'Final Year, ECE',
     initials: 'AK',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
     bio: 'Specializes in Embedded Real-Time Operating Systems (RTOS) and FPGA prototyping.',
     socials: {
       linkedin: 'https://linkedin.com',
@@ -41,7 +41,7 @@ export const executiveCommittee = [
     category: 'Executive Committee',
     year: 'Final Year, ECE',
     initials: 'MN',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=600&q=80',
     bio: 'Focuses on RF System Architecture and Microwave Antenna design.',
     socials: {
       linkedin: 'https://linkedin.com',
@@ -56,7 +56,7 @@ export const executiveCommittee = [
     category: 'Executive Committee',
     year: 'Third Year, ECE',
     initials: 'RM',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
     bio: 'Passionate about Mixed-Signal Circuit Design and Analog Front-Ends.',
     socials: {
       linkedin: 'https://linkedin.com',
@@ -71,7 +71,7 @@ export const executiveCommittee = [
     category: 'Executive Committee',
     year: 'Third Year, ECE',
     initials: 'AR',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=600&q=80',
     bio: 'Leads VLSI Design workshops and Digital Signal Processing (DSP) initiatives.',
     socials: {
       linkedin: 'https://linkedin.com',
@@ -89,7 +89,7 @@ export const officeBearers = [
     category: 'Office Bearers',
     year: 'Third Year, ECE',
     initials: 'VS',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80',
     bio: 'Coordinates national-level hackathons and hands-on PCB soldering bootcamps.',
     socials: {
       linkedin: 'https://linkedin.com',
@@ -104,7 +104,7 @@ export const officeBearers = [
     category: 'Office Bearers',
     year: 'Third Year, ECE',
     initials: 'PT',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80',
     bio: 'Architects hardware CAD schematics and visual graphics for ExESS events.',
     socials: {
       linkedin: 'https://linkedin.com',
@@ -119,7 +119,7 @@ export const officeBearers = [
     category: 'Office Bearers',
     year: 'Third Year, ECE',
     initials: 'KD',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&q=80',
     bio: 'Oversees student hardware projects, sensor mesh networks, and IoT prototypes.',
     socials: {
       linkedin: 'https://linkedin.com',
@@ -134,7 +134,7 @@ export const officeBearers = [
     category: 'Office Bearers',
     year: 'Second Year, ECE',
     initials: 'SM',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=600&q=80',
     bio: 'Manages Industry-Academia outreach and alumni technical mentorship programs.',
     socials: {
       linkedin: 'https://linkedin.com',
@@ -152,7 +152,7 @@ export const committeeMembers = [
     category: 'Committee Members',
     year: 'Second Year, ECE',
     initials: 'AB',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80',
     bio: 'Maintains the official ExESS website and digital event branding.',
   },
   {
@@ -162,7 +162,7 @@ export const committeeMembers = [
     category: 'Committee Members',
     year: 'Second Year, ECE',
     initials: 'SK',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=600&q=80',
     bio: 'Assists in soldering tool setups and hardware component logistics.',
   },
   {
@@ -172,7 +172,7 @@ export const committeeMembers = [
     category: 'Committee Members',
     year: 'Second Year, ECE',
     initials: 'DV',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80',
     bio: 'Writes technical articles and documents ExESS project showcases.',
   },
   {
@@ -182,7 +182,7 @@ export const committeeMembers = [
     category: 'Committee Members',
     year: 'Second Year, ECE',
     initials: 'RN',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=600&q=80',
     bio: 'Manages oscilloscope equipment and microcontroller kit inventory.',
   },
 ]

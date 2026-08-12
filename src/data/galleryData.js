@@ -9,7 +9,7 @@ export const galleryItems = [
     category: 'Hackathon',
     date: 'March 2025',
     color: 'bg-primary/15',
-    image: null, // Add photo URL e.g. '/images/gallery/hackathon.jpg'
+    image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
     caption: '36 hours of continuous hardware debugging, PCB soldering, and prototype demonstrations.',
   },
   {
@@ -18,7 +18,7 @@ export const galleryItems = [
     category: 'Workshop',
     date: 'February 2025',
     color: 'bg-secondary/15',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80',
     caption: 'Students routing their first 2-layer microcontroller boards using KiCad PCB software.',
   },
   {
@@ -27,7 +27,7 @@ export const galleryItems = [
     category: 'Exhibition',
     date: 'January 2025',
     color: 'bg-accent/15',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80',
     caption: 'Exhibition of student IoT devices, FPGA signal processors, and autonomous rovers.',
   },
   {
@@ -36,7 +36,7 @@ export const galleryItems = [
     category: 'Industrial Visit',
     date: 'November 2024',
     color: 'bg-primary/15',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&w=1200&q=80',
     caption: 'Members observing high-precision SMT pick-and-place machines and reflow ovens.',
   },
   {
@@ -45,7 +45,7 @@ export const galleryItems = [
     category: 'Hands-on Lab',
     date: 'October 2024',
     color: 'bg-secondary/15',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&w=1200&q=80',
     caption: 'Practical lab session training students in 0805 and QFP surface-mount soldering.',
   },
   {
@@ -54,7 +54,7 @@ export const galleryItems = [
     category: 'Tech Fest',
     date: 'September 2024',
     color: 'bg-accent/15',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
     caption: 'Interactive electronics maze and wireless Tesla coil demonstrations for college visitors.',
   },
   {
@@ -63,7 +63,7 @@ export const galleryItems = [
     category: 'Technical Talk',
     date: 'August 2024',
     color: 'bg-primary/15',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
     caption: 'Keynote address on physical IC layout verification and sub-micron silicon fabrication.',
   },
   {
@@ -72,7 +72,7 @@ export const galleryItems = [
     category: 'Community',
     date: 'July 2024',
     color: 'bg-secondary/15',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
     caption: 'Core team planning the annual technical roadmap and equipment acquisition.',
   },
 ]

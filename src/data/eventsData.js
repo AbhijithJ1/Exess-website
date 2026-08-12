@@ -14,7 +14,7 @@ export const eventsData = [
     category: 'Hackathon',
     status: 'upcoming',
     color: 'bg-primary',
-    image: null, // Add event cover photo path e.g. '/images/events/circuitforge.jpg'
+    image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=1200&q=80',
     tags: ['PCB Design', 'Embedded Systems', 'Rapid Prototyping', 'Hardware Hackathon'],
     highlights: [
       '₹1,00,000+ Prize Pool',
@@ -35,7 +35,7 @@ export const eventsData = [
     category: 'Workshop',
     status: 'upcoming',
     color: 'bg-secondary',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80',
     tags: ['DSP', 'MATLAB', 'Python', 'ARM Cortex'],
     highlights: [
       'FIR/IIR digital filter design tutorial',
@@ -55,7 +55,7 @@ export const eventsData = [
     category: 'Workshop',
     status: 'past',
     color: 'bg-accent',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80',
     tags: ['KiCad', 'High-Speed PCB', 'Signal Integrity', 'Gerber Generation'],
     highlights: [
       '2-layer & 4-layer stackup design',
@@ -75,7 +75,7 @@ export const eventsData = [
     category: 'Bootcamp',
     status: 'past',
     color: 'bg-primary',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=1200&q=80',
     tags: ['FreeRTOS', 'ARM Cortex', 'C/C++', 'Embedded C'],
     highlights: [
       'Real-time task scheduling & mutex synchronization',
@@ -95,7 +95,7 @@ export const eventsData = [
     category: 'Talk',
     status: 'past',
     color: 'bg-secondary',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=80',
     tags: ['VLSI', 'ASIC', 'Verilog', 'Semiconductor Industry'],
     highlights: [
       'Keynote on FinFET & Gate-All-Around transistor architectures',
@@ -115,7 +115,7 @@ export const eventsData = [
     category: 'Workshop',
     status: 'past',
     color: 'bg-accent',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1200&q=80',
     tags: ['Robotics', 'PID Control', 'Motor Drivers', 'Encoders'],
     highlights: [
       'Tuning PID loops with live oscilloscope plotting',

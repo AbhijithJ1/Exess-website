@@ -12,7 +12,7 @@ export const alumniData = [
     quote: 'ExESS laid the foundation for my career in semiconductor design. The hands-on PCB prototyping and peer mentorship I received at CEC were invaluable.',
     initials: 'AK',
     color: 'from-primary to-secondary',
-    image: null, // Add alumni photo URL e.g. '/images/alumni/arun.jpg'
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
     linkedin: 'https://linkedin.com',
   },
   {
@@ -25,7 +25,7 @@ export const alumniData = [
     quote: 'The practical exposure to microwave circuits and antenna simulation at ExESS gave me a distinct edge during graduate research and industry projects.',
     initials: 'PM',
     color: 'from-secondary to-accent',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
     linkedin: 'https://linkedin.com',
   },
   {
@@ -38,7 +38,7 @@ export const alumniData = [
     quote: 'Being part of ExESS taught me that real engineering is about building robust physical hardware. That hands-on culture shaped my product engineering mindset.',
     initials: 'RN',
     color: 'from-accent to-primary',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
     linkedin: 'https://linkedin.com',
   },
   {
@@ -51,7 +51,7 @@ export const alumniData = [
     quote: 'The FPGA workshops and Verilog study sessions at ExESS were instrumental in helping me secure my dream role in silicon verification.',
     initials: 'AR',
     color: 'from-primary to-accent',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80',
     linkedin: 'https://linkedin.com',
   },
 ]
