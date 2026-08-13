@@ -25,14 +25,6 @@ const SOCIAL_LINKS = [
 
 /**
  * Footer — Premium Electronics Studio Mobile/Desktop Refinement
- * 
- * Mobile Structure (< 768px):
- *   1. CONNECT WITH ExESS + 2-Column Readable Navigation (Home, About, Events, Projects, Gallery, Contact)
- *   2. Thin Divider
- *   3. SHAPING THE FUTURE OF ELECTRONICS & HARDWARE + ExESS ↗ Wordmark CTA
- *   4. Dedicated Social Links Row below ExESS CTA (Instagram, LinkedIn, GitHub, Email)
- *   5. Final Thin Divider
- *   6. Legal Links (Privacy Policy, Terms of Service) & Copyright Notice
  */
 const Footer = () => {
   return (
@@ -43,14 +35,13 @@ const Footer = () => {
         {/* ── SECTION 1 — CONNECTION + NAVIGATION ───────────────────────────── */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary" />
             <span className="font-brand text-xs sm:text-sm font-bold uppercase tracking-[0.22em] text-primary">
               CONNECT WITH ExESS
             </span>
           </div>
 
-          {/* Clean 2-Column Navigation on Mobile, Horizontal Row on Desktop */}
-          <ul className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-x-8 sm:gap-x-8 gap-y-3 font-inter text-sm sm:text-sm font-medium w-full sm:w-auto">
+          {/* Navigation Links */}
+          <ul className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-end gap-x-8 sm:gap-x-8 gap-y-3 font-inter text-sm sm:text-sm font-medium w-full sm:w-auto">
             {essentialNavLinks.map((link) => (
               <li key={link.name}>
                 <a
@@ -109,7 +100,7 @@ const Footer = () => {
             </a>
           </div>
 
-          {/* Dedicated Social Links Row (Below ExESS wordmark on mobile, right-aligned on desktop) */}
+          {/* Dedicated Social Links Row */}
           <div className="flex items-center gap-3 sm:gap-4 pt-2 sm:pt-0 w-full sm:w-auto justify-start sm:justify-end">
             {SOCIAL_LINKS.map((social) => (
               <a
@@ -133,7 +124,7 @@ const Footer = () => {
         {/* ── SECTION 6 — LEGAL & COPYRIGHT ─────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           
-          {/* Legal Links top on mobile, right on desktop */}
+          {/* Legal Links */}
           <div className="flex items-center gap-6 order-1 sm:order-2">
             {legalLinks.map((link) => (
               <a

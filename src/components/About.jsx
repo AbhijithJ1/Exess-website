@@ -277,8 +277,7 @@ const About = () => {
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-brand uppercase tracking-[0.2em] text-primary font-bold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-primary" />
+                  <span className="text-[10px] font-brand uppercase tracking-[0.2em] text-primary font-bold">
                     MISSION // 01
                   </span>
                 </div>
@@ -291,7 +290,6 @@ const About = () => {
               </div>
               <div className="pt-4 mt-6 border-t border-border/40 flex items-center justify-between text-[10px] font-mono text-gray-400">
                 <span>SYSTEM_MISSION // CEC</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
               </div>
             </div>
 
@@ -303,8 +301,7 @@ const About = () => {
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-brand uppercase tracking-[0.2em] text-cyan-600 font-bold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                  <span className="text-[10px] font-brand uppercase tracking-[0.2em] text-cyan-600 font-bold">
                     VISION // 02
                   </span>
                 </div>
@@ -317,7 +314,6 @@ const About = () => {
               </div>
               <div className="pt-4 mt-6 border-t border-border/40 flex items-center justify-between text-[10px] font-mono text-gray-400">
                 <span>SYSTEM_VISION // CEC</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/60" />
               </div>
             </div>
 

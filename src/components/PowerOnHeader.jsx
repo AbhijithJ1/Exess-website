@@ -61,7 +61,6 @@ const PowerOnHeader = ({
           className={`inline-flex items-center mb-5 ${isCenter ? 'justify-center' : ''}`}
         >
           <span className="section-label font-brand">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
             <span className="section-label-text font-brand uppercase tracking-[0.16em] text-[10px]">{badge}</span>
           </span>
         </motion.div>
