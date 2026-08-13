@@ -21,28 +21,6 @@ import Antigravity from './Antigravity'
  *     - Signature PcbLightButton CTA illuminates.
  */
 
-const PCB_TRACES_LEFT = [
-  { id: 'L1', d: 'M 40,80 H 340 L 390,140 H 430', outer: [40, 80] },
-  { id: 'L2', d: 'M 60,120 H 320 L 370,175 H 440', outer: [60, 120] },
-  { id: 'L3', d: 'M 30,160 H 300 L 350,210 H 450', outer: [30, 160] },
-  { id: 'L4', d: 'M 50,200 H 280 L 330,245 H 460', outer: [50, 200] },
-  { id: 'L5', d: 'M 40,240 H 270 L 320,280 H 460', outer: [40, 240] },
-  { id: 'L6', d: 'M 70,280 H 290 L 340,315 H 450', outer: [70, 280] },
-  { id: 'L7', d: 'M 30,320 H 280 L 330,350 H 440', outer: [30, 320] },
-  { id: 'L8', d: 'M 50,370 H 240 L 280,370 H 350', outer: [50, 370] },
-]
-
-const PCB_TRACES_RIGHT = [
-  { id: 'R1', d: 'M 1160,80 H 860 L 810,140 H 770', outer: [1160, 80] },
-  { id: 'R2', d: 'M 1140,120 H 880 L 830,175 H 760', outer: [1140, 120] },
-  { id: 'R3', d: 'M 1170,160 H 900 L 850,210 H 750', outer: [1170, 160] },
-  { id: 'R4', d: 'M 1150,200 H 920 L 870,245 H 740', outer: [1150, 200] },
-  { id: 'R5', d: 'M 1160,240 H 930 L 880,280 H 740', outer: [1160, 240] },
-  { id: 'R6', d: 'M 1130,280 H 910 L 860,315 H 750', outer: [1130, 280] },
-  { id: 'R7', d: 'M 1170,320 H 920 L 870,350 H 760', outer: [1170, 320] },
-  { id: 'R8', d: 'M 1150,370 H 960 L 920,370 H 850', outer: [1150, 370] },
-]
-
 const Hero = () => {
   const containerRef = useRef(null)
   const [phase, setPhase] = useState(1)
@@ -71,7 +49,7 @@ const Hero = () => {
   }, [])
 
   const scrollToAbout = () =>
-    document.querySelector('#circuits')?.scrollIntoView({ behavior: 'smooth' })
+    document.querySelector('#about')?.scrollIntoView({ behavior: 'smooth' })
 
   const exessLetters = ['E', 'x', 'E', 'S', 'S']
 
@@ -81,125 +59,21 @@ const Hero = () => {
       id="home"
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-white text-slate-900"
     >
-      {/* ── 0. ANTIGRAVITY REACT BITS THREE.JS BACKGROUND ────────────────── */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-60">
+      {/* ── ANTIGRAVITY THREE.JS DYNAMIC HERO BACKGROUND ────────────────── */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-75">
         <Antigravity
-          count={250}
-          magnetRadius={8}
-          ringRadius={9}
+          count={300}
+          magnetRadius={6}
+          ringRadius={7}
           waveSpeed={0.4}
           waveAmplitude={1}
-          particleSize={1.6}
+          particleSize={1.5}
           lerpSpeed={0.05}
           color={'#32C5E8'}
           autoAnimate={true}
-          particleVariance={0.8}
+          particleVariance={1}
         />
       </div>
-
-      {/* ── 1. PCB CANVAS & ENERGY FIELD (Strict Negative Space Around Text) ── */}
-      <svg
-        aria-hidden="true"
-        className="absolute inset-0 w-full h-full pointer-events-none select-none z-0"
-        viewBox="0 0 1200 700"
-        preserveAspectRatio="xMidYMid slice"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <radialGradient id="heroHeadlineField" cx="50%" cy="38%" r="52%">
-            <stop offset="0%" stopColor="#32C5E8" stopOpacity={phase >= 4 ? '0.24' : '0.04'} />
-            <stop offset="60%" stopColor="#1E6B93" stopOpacity="0.04" />
-            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-          </radialGradient>
-
-          {/* Mask to ensure PCB lines NEVER cross through central headline text */}
-          <mask id="headlineClearanceMask">
-            <rect x="0" y="0" width="1200" height="700" fill="white" />
-            <rect x="360" y="160" width="480" height="260" rx="30" fill="black" />
-          </mask>
-        </defs>
-
-        <rect x="0" y="0" width="1200" height="700" fill="url(#heroHeadlineField)" />
-
-        {/* Crosshairs */}
-        <g stroke="rgba(30,107,147,0.18)" strokeWidth="0.8">
-          <path d="M 30 30 H 50 M 40 20 V 40" />
-          <path d="M 1170 30 H 1150 M 1160 20 V 40" />
-          <path d="M 30 670 H 50 M 40 660 V 680" />
-          <path d="M 1170 670 H 1150 M 1160 660 V 680" />
-        </g>
-
-        {/* 16 Base PCB Traces (Masked to clear headline zone) */}
-        <g mask="url(#headlineClearanceMask)" stroke="rgba(30,107,147,0.22)" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
-          {PCB_TRACES_LEFT.map((t) => <path key={t.id} d={t.d} />)}
-          {PCB_TRACES_RIGHT.map((t) => <path key={t.id} d={t.d} />)}
-        </g>
-
-        {/* 16 Outer Circular Endpoints */}
-        <g>
-          {PCB_TRACES_LEFT.map((t, idx) => {
-            const isNodeActive = phase >= 2
-            return (
-              <g key={`node-L-${t.id}`}>
-                <motion.circle
-                  cx={t.outer[0]} cy={t.outer[1]} r="4.5"
-                  fill="#FFFFFF" stroke={isNodeActive ? '#32C5E8' : '#1E6B93'}
-                  strokeWidth={isNodeActive ? '2.5' : '1.8'}
-                  initial={{ scale: 0.8, opacity: 0.5 }}
-                  animate={isNodeActive ? { scale: [1, 1.25, 1], opacity: 1 } : { opacity: 0.5 }}
-                  transition={{ duration: 0.4, delay: idx * 0.05 }}
-                  style={{ filter: isNodeActive ? 'drop-shadow(0 0 6px #32C5E8)' : 'none' }}
-                />
-                {isNodeActive && <circle cx={t.outer[0]} cy={t.outer[1]} r="2" fill="#32C5E8" />}
-              </g>
-            )
-          })}
-
-          {PCB_TRACES_RIGHT.map((t, idx) => {
-            const isNodeActive = phase >= 2
-            return (
-              <g key={`node-R-${t.id}`}>
-                <motion.circle
-                  cx={t.outer[0]} cy={t.outer[1]} r="4.5"
-                  fill="#FFFFFF" stroke={isNodeActive ? '#32C5E8' : '#1E6B93'}
-                  strokeWidth={isNodeActive ? '2.5' : '1.8'}
-                  initial={{ scale: 0.8, opacity: 0.5 }}
-                  animate={isNodeActive ? { scale: [1, 1.25, 1], opacity: 1 } : { opacity: 0.5 }}
-                  transition={{ duration: 0.4, delay: idx * 0.05 }}
-                  style={{ filter: isNodeActive ? 'drop-shadow(0 0 6px #32C5E8)' : 'none' }}
-                />
-                {isNodeActive && <circle cx={t.outer[0]} cy={t.outer[1]} r="2" fill="#32C5E8" />}
-              </g>
-            )
-          })}
-        </g>
-
-        {/* Stage 1: Inward Energy Stream & Central Emblem Formation */}
-        {phase >= 3 && phase <= 5 && (
-          <g mask="url(#headlineClearanceMask)">
-            {PCB_TRACES_LEFT.map((t, idx) => (
-              <motion.path
-                key={`pulse-L-${t.id}`}
-                d={t.d} stroke="#32C5E8" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none"
-                style={{ filter: 'drop-shadow(0 0 8px #32C5E8) drop-shadow(0 0 14px #00F0FF)' }}
-                initial={{ pathLength: 0.08, pathOffset: 0, opacity: 0 }}
-                animate={{ pathOffset: 0.92, opacity: [0, 1, 1, 0.4] }}
-                transition={{ duration: 1.1, delay: idx * 0.04, ease: 'easeInOut' }}
-              />
-            ))}
-            {PCB_TRACES_RIGHT.map((t, idx) => (
-              <motion.path
-                key={`pulse-R-${t.id}`}
-                d={t.d} stroke="#32C5E8" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none"
-                style={{ filter: 'drop-shadow(0 0 8px #32C5E8) drop-shadow(0 0 14px #00F0FF)' }}
-                initial={{ pathLength: 0.08, pathOffset: 0, opacity: 0 }}
-                animate={{ pathOffset: 0.92, opacity: [0, 1, 1, 0.4] }}
-                transition={{ duration: 1.1, delay: idx * 0.04, ease: 'easeInOut' }}
-              />
-            ))}
-          </g>
-        )}
-      </svg>
 
       {/* ── 2. HERO TYPOGRAPHY STAGE ────────────────────────────────────── */}
       <motion.div
