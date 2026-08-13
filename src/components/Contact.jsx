@@ -236,18 +236,20 @@ const Contact = () => {
 
                   {/* Expanding Continuous Glitter Ring 1 */}
                   <motion.circle
-                    cx="0" cy="0" r="8"
+                    cx="0" cy="0" r={8}
                     fill="none" stroke="#32C5E8" strokeWidth="2"
-                    animate={{ r: [8, 38], opacity: [0.95, 0] }}
+                    animate={{ scale: [1, 4.75], opacity: [0.95, 0] }}
                     transition={{ repeat: Infinity, duration: 2.0, ease: "easeOut" }}
+                    style={{ originX: '0px', originY: '0px' }}
                   />
 
                   {/* Expanding Continuous Glitter Ring 2 */}
                   <motion.circle
-                    cx="0" cy="0" r="4"
+                    cx="0" cy="0" r={4}
                     fill="none" stroke="#5ED8F2" strokeWidth="1.5"
-                    animate={{ r: [4, 28], opacity: [1, 0] }}
+                    animate={{ scale: [1, 7], opacity: [1, 0] }}
                     transition={{ repeat: Infinity, duration: 2.0, ease: "easeOut", delay: 1.0 }}
+                    style={{ originX: '0px', originY: '0px' }}
                   />
 
                   {/* Continuous Glittering Sparkle Cross Lines (Light Burst Flare) */}

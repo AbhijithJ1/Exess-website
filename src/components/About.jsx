@@ -233,11 +233,13 @@ const About = () => {
                 ref={imageFrameSvgRef}
                 className="absolute inset-0 w-full h-full pointer-events-none z-20"
                 fill="none"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
               >
-                <path d="M 12 30 L 12 12 L 30 12" stroke="#32C5E8" strokeWidth="2.5" />
-                <path d="M C(100%-30) 12 L C(100%-12) 12 L C(100%-12) 30" stroke="#32C5E8" strokeWidth="2.5" />
-                <path d="M 12 C(100%-30) L 12 C(100%-12) L 30 C(100%-12)" stroke="#32C5E8" strokeWidth="2.5" />
-                <path d="M C(100%-30) C(100%-12) L C(100%-12) C(100%-12) L C(100%-12) C(100%-30)" stroke="#32C5E8" strokeWidth="2.5" />
+                <path d="M 4 10 L 4 4 L 10 4" stroke="#32C5E8" strokeWidth="1.5" />
+                <path d="M 90 4 L 96 4 L 96 10" stroke="#32C5E8" strokeWidth="1.5" />
+                <path d="M 4 90 L 4 96 L 10 96" stroke="#32C5E8" strokeWidth="1.5" />
+                <path d="M 90 96 L 96 96 L 96 90" stroke="#32C5E8" strokeWidth="1.5" />
               </svg>
 
               {/* Light Scan Pass Overlay */}

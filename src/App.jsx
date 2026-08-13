@@ -16,7 +16,6 @@ import Gallery from './components/Gallery'
 import Testimonials from './components/Testimonials'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
-import CircuitDivider from './components/CircuitDivider'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -68,45 +67,13 @@ function App() {
         <Navbar />
         <main className="relative z-10">
           <Hero />
-
-          {/* Circuit trace flows from Hero → About */}
-          <CircuitDivider variant="default" className="section-padding" />
-
           <About />
-
-          {/* Trace between About → Team */}
-          <CircuitDivider variant="left" className="section-padding" />
-
           <Team />
-
-          {/* Trace between Team → Events */}
-          <CircuitDivider variant="right" className="section-padding" />
-
           <Events />
-
-          {/* Trace between Events → Projects */}
-          <CircuitDivider variant="center" className="section-padding" />
-
           <Projects />
-
-          {/* Trace between Projects → Resources */}
-          <CircuitDivider variant="default" className="section-padding" />
-
           <Resources />
-
-          {/* Trace between Resources → Gallery */}
-          <CircuitDivider variant="left" className="section-padding" />
-
           <Gallery />
-
-          {/* Trace between Gallery → Testimonials */}
-          <CircuitDivider variant="right" className="section-padding" />
-
           <Testimonials />
-
-          {/* Trace between Testimonials → Contact */}
-          <CircuitDivider variant="center" className="section-padding" />
-
           <Contact />
         </main>
         <Footer />

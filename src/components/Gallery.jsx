@@ -6,19 +6,15 @@ import PcbLightButton from './PcbLightButton'
 import { galleryItems } from '../data/galleryData'
 
 /**
- * Gallery — "VISUAL TRANSMISSION" (3D Draggable Energy Wheel)
+ * Gallery — Premium 3D Editorial Image Wheel
  *
- * Core Mechanics:
- *   - DOM-based 3D ring using CSS 3D transforms (rotateY + translateZ).
- *   - GPU-cheap single-rotation-wrapper animation.
- *   - Pointer/touch drag with momentum (velocity *= 0.95 per frame decay).
- *   - Scroll-linked subtle spin when in viewport.
- *   - Front-facing card is large, illuminated with PCB node edge glow, and clickable to Lightbox.
- *   - Side cards rotate to front when clicked.
- *   - FLIP Lightbox transition on front card click.
- *   - Accessible prev/next controls.
+ * Key Enhancements:
+ *   - Preserves large animated "GALLERY" heading & FLIP Lightbox.
+ *   - 3D CSS ring with perspective 1200px and clear depth separation.
+ *   - Active card dominates at 100% scale/opacity with sharp caption.
+ *   - Inactive side cards recede to 60%-30% opacity with hidden text to prevent overlaps.
+ *   - Smooth weighted momentum drag, touch, and scroll interactions.
  */
-
 const Gallery = () => {
   const [rotation, setRotation] = useState(0)
   const [selectedImage, setSelectedImage] = useState(null)
@@ -35,15 +31,15 @@ const Gallery = () => {
   const imageCount = galleryItems.length
   const angleStep = 360 / imageCount
 
-  // Radius calculation (responsive: 460px desktop, 220px mobile)
-  const [radius, setRadius] = useState(460)
+  // Radius calculation (responsive: 540px desktop, 360px tablet, 240px mobile)
+  const [radius, setRadius] = useState(540)
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
-      setRadius(mobile ? 200 : window.innerWidth < 1024 ? 340 : 460)
+      setRadius(mobile ? 240 : window.innerWidth < 1024 ? 380 : 540)
     }
     handleResize()
     window.addEventListener('resize', handleResize)
@@ -60,7 +56,7 @@ const Gallery = () => {
 
     const loop = () => {
       if (!isDragging && Math.abs(velocityRef.current) > 0.02) {
-        velocityRef.current *= 0.95
+        velocityRef.current *= 0.94
         setRotation((prev) => prev + velocityRef.current)
       }
       if (active) {
@@ -85,7 +81,7 @@ const Gallery = () => {
       const rect = containerRef.current.getBoundingClientRect()
       if (rect.top < window.innerHeight && rect.bottom > 0) {
         const delta = window.scrollY - lastScrollY
-        velocityRef.current += delta * 0.04
+        velocityRef.current += delta * 0.03
       }
       lastScrollY = window.scrollY
     }
@@ -94,7 +90,7 @@ const Gallery = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [isDragging])
 
-  // Drag handlers
+  // Pointer Drag Handlers
   const handlePointerDown = (e) => {
     setIsDragging(true)
     velocityRef.current = 0
@@ -108,8 +104,8 @@ const Gallery = () => {
   const handlePointerMove = (e) => {
     if (!isDragging) return
     const deltaX = e.clientX - dragStartRef.current.x
-    const newRot = dragStartRef.current.rotation + deltaX * 0.35
-    velocityRef.current = deltaX * 0.08
+    const newRot = dragStartRef.current.rotation + deltaX * 0.32
+    velocityRef.current = deltaX * 0.06
     setRotation(newRot)
   }
 
@@ -119,7 +115,7 @@ const Gallery = () => {
     e.target.releasePointerCapture?.(e.pointerId)
   }
 
-  // Navigation handlers
+  // Navigation Button Handlers
   const rotateToPrev = () => {
     velocityRef.current = 0
     setRotation((prev) => Math.round(prev / angleStep) * angleStep + angleStep)
@@ -136,11 +132,11 @@ const Gallery = () => {
   }
 
   return (
-    <section id="gallery" ref={containerRef} className="relative section-gap overflow-hidden bg-slate-50/30 py-20">
+    <section id="gallery" ref={containerRef} className="relative section-gap overflow-hidden bg-white/60 py-16 sm:py-24">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
 
         {/* ── 1. GALLERY TYPOGRAPHY ANIMATION ─────────────────────────────── */}
-        <div className="mb-10 border-b border-border/60 pb-8 relative text-center sm:text-left">
+        <div className="mb-12 border-b border-border/60 pb-8 relative text-center sm:text-left">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -155,7 +151,7 @@ const Gallery = () => {
             <div className="relative w-full flex items-center justify-center sm:justify-start">
               <h2
                 className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark flex flex-wrap"
-                style={{ fontSize: 'clamp(1.5rem, 7vw, 5.5rem)' }}
+                style={{ fontSize: 'clamp(2rem, 7vw, 5.5rem)' }}
               >
                 {'GALLERY'.split('').map((char, i) => (
                   <motion.span
@@ -177,20 +173,20 @@ const Gallery = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: '-10%' }}
-            transition={{ duration: 0.5, delay: 1.0 }}
-            className="font-inter text-body text-sm sm:text-base text-gray-600 mt-2 max-w-xl mx-auto sm:mx-0"
+            transition={{ duration: 0.5, delay: 0.9 }}
+            className="font-inter text-body text-xs sm:text-sm text-gray-500 mt-2 max-w-xl mx-auto sm:mx-0"
           >
-            Drag or scroll to rotate the 3D visual wheel. Click front card for full details.
+            Drag or scroll to navigate the visual archive. Click active card to view high-res photo.
           </motion.p>
         </div>
 
-        {/* ── 2. 3D DRAGGABLE ENERGY WHEEL ────────────────────────────────── */}
-        <div className="relative my-6 sm:my-12 h-[300px] sm:h-[420px] lg:h-[540px] flex items-center justify-center select-none">
+        {/* ── 2. 3D DRAGGABLE EDITORIAL WHEEL ─────────────────────────────── */}
+        <div className="relative my-8 sm:my-14 h-[320px] sm:h-[460px] lg:h-[560px] flex items-center justify-center select-none overflow-visible">
 
           {/* Perspective Outer Container */}
           <div
             className="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
-            style={{ perspective: isMobile ? '700px' : '1200px' }}
+            style={{ perspective: isMobile ? '800px' : '1200px' }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -199,7 +195,7 @@ const Gallery = () => {
             {/* 3D Ring Wrapper */}
             <div
               ref={ringRef}
-              className="relative w-52 sm:w-72 lg:w-96 h-44 sm:h-64 lg:h-80 transition-transform duration-75 ease-out"
+              className="relative w-64 sm:w-80 lg:w-[380px] h-48 sm:h-64 lg:h-[280px] transition-transform duration-75 ease-out"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: `rotateY(${rotation}deg)`,
@@ -209,6 +205,15 @@ const Gallery = () => {
               {galleryItems.map((item, idx) => {
                 const itemAngle = idx * angleStep
                 const isFront = idx === activeIdx
+
+                // Calculate angular distance to determine opacity and visual hierarchy
+                let diffAngle = (itemAngle + rotation) % 360
+                if (diffAngle > 180) diffAngle -= 360
+                if (diffAngle < -180) diffAngle += 360
+                const absDiff = Math.abs(diffAngle)
+
+                // Progressive recede calculation: front=1.0, near=0.6, far=0.25
+                const cardOpacity = isFront ? 1 : Math.max(0.2, 1 - absDiff / 140)
 
                 return (
                   <div
@@ -221,40 +226,45 @@ const Gallery = () => {
                         rotateToIndex(idx)
                       }
                     }}
-                    className={`absolute inset-0 rounded-none overflow-hidden border transition-all duration-500 cursor-pointer ${
+                    className={`absolute inset-0 rounded-none overflow-hidden border transition-all duration-300 cursor-pointer ${
                       isFront
-                        ? 'border-primary border-t-2 border-t-primary shadow-xl z-30 opacity-100 scale-105'
-                        : 'border-slate-300/60 shadow-md opacity-50 hover:opacity-80 scale-90'
+                        ? 'border-primary/50 border-t-2 border-t-primary shadow-2xl z-30'
+                        : 'border-slate-300/40 shadow-md hover:border-slate-400/60'
                     }`}
                     style={{
                       transformStyle: 'preserve-3d',
                       transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
+                      opacity: cardOpacity,
                       backfaceVisibility: 'hidden'
                     }}
                   >
-                    {/* Photo Content */}
-                    <div className="relative w-full h-full bg-slate-900">
-                      <ImagePlaceholder
+                    {/* Real Image Render */}
+                    <div className="relative w-full h-full bg-slate-900 overflow-hidden">
+                      <img
                         src={item.image}
                         alt={item.title}
-                        type="cover"
-                        aspectRatio="w-full h-full"
-                        className="w-full h-full object-cover rounded-none"
+                        className="w-full h-full object-cover rounded-none transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
                       />
 
-                      {/* Card Overlay Info */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 text-white z-10">
-                        <span className="text-[10px] font-brand uppercase tracking-widest text-primary font-semibold mb-1">
+                      {/* Card Overlay Info — ONLY visible when card is FRONT to prevent text collisions */}
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-end p-5 text-white z-10 transition-opacity duration-300 ${
+                          isFront ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                        }`}
+                      >
+                        <span className="text-[10px] font-brand uppercase tracking-widest text-cyan-400 font-semibold mb-1">
                           {item.category} &bull; {item.date}
                         </span>
                         <h4 className="font-brand text-base sm:text-lg font-bold truncate">
                           {item.title}
                         </h4>
-                        {isFront && (
-                          <div className="flex items-center gap-1.5 mt-2 text-[10px] font-mono text-primary font-semibold">
-                            <Maximize2 className="w-3 h-3" /> CLICK TO EXPAND
-                          </div>
-                        )}
+                        <p className="font-inter text-xs text-slate-300 line-clamp-1 mt-1 font-normal opacity-90">
+                          {item.caption}
+                        </p>
+                        <div className="flex items-center gap-1.5 mt-2 text-[10px] font-mono text-cyan-400 font-semibold">
+                          <Maximize2 className="w-3 h-3" /> CLICK TO EXPAND
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -324,7 +334,7 @@ const Gallery = () => {
 
       </div>
 
-      {/* Directory Modal */}
+      {/* Complete Directory Modal */}
       <AnimatePresence>
         {showAllModal && (
           <motion.div
@@ -350,7 +360,7 @@ const Gallery = () => {
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {galleryItems.map((item, idx) => (
                   <div key={item.id} onClick={() => { setShowAllModal(false); rotateToIndex(idx); setSelectedImage(item) }} className="rounded-2xl overflow-hidden border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50 p-3">
-                    <ImagePlaceholder src={item.image} alt={item.title} type="cover" aspectRatio="aspect-[16/10]" className="rounded-xl mb-3" />
+                    <img src={item.image} alt={item.title} className="w-full aspect-[16/10] object-cover rounded-xl mb-3" loading="lazy" />
                     <h4 className="font-brand text-sm font-bold text-heading truncate">{item.title}</h4>
                     <span className="text-[10px] font-inter text-gray-500">{item.date}</span>
                   </div>
@@ -390,7 +400,7 @@ const Gallery = () => {
                 </div>
 
                 <div className="-mt-6">
-                  <ImagePlaceholder src={selectedImage.image} alt={selectedImage.title} type="cover" aspectRatio="aspect-[16/10]" className="mb-6 rounded-2xl" />
+                  <img src={selectedImage.image} alt={selectedImage.title} className="w-full aspect-[16/10] object-cover mb-6 rounded-2xl" />
                   <span className="text-[10px] font-brand uppercase tracking-wider text-cyan-400 font-semibold block mb-2">{selectedImage.category} &bull; {selectedImage.date}</span>
                   <h3 className="text-xl sm:text-2xl font-brand text-white font-bold mb-3">{selectedImage.title}</h3>
                   <p className="font-inter text-sm text-slate-300 leading-relaxed mb-4">{selectedImage.caption || selectedImage.description}</p>

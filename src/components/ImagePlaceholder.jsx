@@ -68,7 +68,7 @@ const ImagePlaceholder = ({
             <rect width="100%" height="100%" fill="url(#pcbMiniGrid)" />
             
             <path
-              d="M0 40 H 40 V 80 H 120 M 100% 120 H calc(100% - 60) V 160"
+              d="M0 40 H 40 V 80 H 120"
               stroke="#32C5E8"
               strokeWidth="1.2"
               fill="none"
