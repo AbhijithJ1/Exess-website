@@ -28,8 +28,6 @@ const About = () => {
   const headlineWrapRef = useRef(null)
   const headlineSubRef = useRef(null)
   const imageStageRef = useRef(null)
-  const imageFrameSvgRef = useRef(null)
-  const imageScanRef = useRef(null)
   const copyPanelRef = useRef(null)
   const missionPanelRef = useRef(null)
   const visionPanelRef = useRef(null)
@@ -134,11 +132,6 @@ const About = () => {
           duration: 0.9,
           ease: 'power3.out'
         }, '-=0.3')
-        .to(imageScanRef.current, {
-          x: '200%',
-          duration: 0.8,
-          ease: 'power2.inOut'
-        }, '-=0.5')
         .to({}, { duration: 0.6 }) // Pause beat (Image as a breath)
 
       // ── STAGE 5: Supporting Copy + Mission/Vision Panels ───────────────
@@ -196,7 +189,6 @@ const About = () => {
           <div className="mb-12 text-center max-w-4xl mx-auto relative z-10">
             {/* Section Tagline */}
             <div className="inline-flex items-center gap-2 mb-4">
-              <span className="w-2 h-2 rounded-full bg-primary" />
               <span className="font-brand uppercase tracking-[0.24em] text-xs font-bold text-primary">
                 ABOUT ExESS // 01
               </span>
@@ -226,28 +218,7 @@ const About = () => {
 
           {/* ── STAGE 4: IMAGE AS A BREATH (HERO BEAT) ───────────────────── */}
           <div ref={imageStageRef} className="max-w-4xl mx-auto mb-16 relative">
-            <div className="relative rounded-none overflow-hidden border border-border/80 border-t-2 border-t-primary shadow-soft bg-white p-3 group">
-              
-              {/* Technical SVG Corner Frame Overlay */}
-              <svg
-                ref={imageFrameSvgRef}
-                className="absolute inset-0 w-full h-full pointer-events-none z-20"
-                fill="none"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-              >
-                <path d="M 4 10 L 4 4 L 10 4" stroke="#32C5E8" strokeWidth="1.5" />
-                <path d="M 90 4 L 96 4 L 96 10" stroke="#32C5E8" strokeWidth="1.5" />
-                <path d="M 4 90 L 4 96 L 10 96" stroke="#32C5E8" strokeWidth="1.5" />
-                <path d="M 90 96 L 96 96 L 96 90" stroke="#32C5E8" strokeWidth="1.5" />
-              </svg>
-
-              {/* Light Scan Pass Overlay */}
-              <div
-                ref={imageScanRef}
-                className="absolute top-0 bottom-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent pointer-events-none z-20 -translate-x-full"
-              />
-
+            <div className="relative rounded-none overflow-hidden border border-border/60 shadow-soft bg-white p-3 group">
               <ImagePlaceholder
                 src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1600&q=80"
                 alt="ExESS Electronics Lab Facilities"

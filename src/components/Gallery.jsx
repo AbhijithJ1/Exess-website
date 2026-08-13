@@ -223,16 +223,17 @@ const Gallery = () => {
                         rotateToIndex(idx)
                       }
                     }}
-                    className={`absolute inset-0 rounded-none overflow-hidden border transition-all duration-300 cursor-pointer ${
+                    className={`absolute inset-0 rounded-none overflow-hidden transition-all duration-300 cursor-pointer ${
                       isFront
-                        ? 'border-primary/60 border-t-2 border-t-primary shadow-2xl z-30 scale-100'
-                        : 'border-slate-300/40 shadow-md hover:border-slate-400/60 scale-90'
+                        ? 'shadow-2xl z-30 scale-100'
+                        : 'shadow-md scale-90'
                     }`}
                     style={{
                       transformStyle: 'preserve-3d',
                       transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
                       opacity: cardOpacity,
-                      backfaceVisibility: 'hidden'
+                      backfaceVisibility: 'hidden',
+                      border: isFront ? '1px solid rgba(30, 107, 147, 0.35)' : '1px solid rgba(148, 163, 184, 0.25)'
                     }}
                   >
                     {/* Pure Photograph (No text overlays on image) */}
@@ -243,6 +244,19 @@ const Gallery = () => {
                         className="w-full h-full object-cover rounded-none transition-transform duration-500 hover:scale-105"
                         loading="lazy"
                       />
+                      {/* Hairline corner marks — active card only, extremely subtle */}
+                      {isFront && (
+                        <>
+                          {/* Top-left */}
+                          <span className="absolute top-0 left-0 w-4 h-4 pointer-events-none" style={{ borderTop: '1.5px solid rgba(30,107,147,0.5)', borderLeft: '1.5px solid rgba(30,107,147,0.5)' }} />
+                          {/* Top-right */}
+                          <span className="absolute top-0 right-0 w-4 h-4 pointer-events-none" style={{ borderTop: '1.5px solid rgba(30,107,147,0.5)', borderRight: '1.5px solid rgba(30,107,147,0.5)' }} />
+                          {/* Bottom-left */}
+                          <span className="absolute bottom-0 left-0 w-4 h-4 pointer-events-none" style={{ borderBottom: '1.5px solid rgba(30,107,147,0.5)', borderLeft: '1.5px solid rgba(30,107,147,0.5)' }} />
+                          {/* Bottom-right */}
+                          <span className="absolute bottom-0 right-0 w-4 h-4 pointer-events-none" style={{ borderBottom: '1.5px solid rgba(30,107,147,0.5)', borderRight: '1.5px solid rgba(30,107,147,0.5)' }} />
+                        </>
+                      )}
                     </div>
                   </div>
                 )
