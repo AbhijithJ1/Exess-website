@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { FaInstagram, FaLinkedinIn, FaGithub, FaEnvelope } from 'react-icons/fa6'
-import Logo from './Logo'
 
 const essentialNavLinks = [
   { name: 'Home', href: '#home' },
@@ -18,58 +17,43 @@ const legalLinks = [
 ]
 
 const SOCIAL_LINKS = [
-  { icon: <FaInstagram className="w-6 h-6 sm:w-7 sm:h-7 text-[#E4405F]" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
-  { icon: <FaLinkedinIn className="w-6 h-6 sm:w-7 sm:h-7 text-[#0A66C2]" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
-  { icon: <FaGithub className="w-6 h-6 sm:w-7 sm:h-7 text-[#181717]" />, href: '#', label: 'GitHub' },
-  { icon: <FaEnvelope className="w-6 h-6 sm:w-7 sm:h-7 text-[#EA4335]" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
+  { icon: <FaInstagram className="w-5 h-5 sm:w-6 sm:h-6 text-[#E4405F]" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
+  { icon: <FaLinkedinIn className="w-5 h-5 sm:w-6 sm:h-6 text-[#0A66C2]" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
+  { icon: <FaGithub className="w-5 h-5 sm:w-6 sm:h-6 text-[#181717]" />, href: '#', label: 'GitHub' },
+  { icon: <FaEnvelope className="w-5 h-5 sm:w-6 sm:h-6 text-[#EA4335]" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
 ]
 
 /**
- * Footer — Clean White ExESS Architecture
+ * Footer — Refined Compact Editorial Architecture
  */
 const Footer = () => {
   return (
-    <footer className="relative bg-white text-heading pt-12 pb-8 overflow-hidden z-10 border-t border-border/60 mt-10">
+    <footer className="relative bg-white text-heading pt-8 sm:pt-12 pb-6 sm:pb-8 overflow-hidden z-10 border-t border-border/60 mt-6 sm:mt-10">
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-20">
 
-        {/* ── Top Section: Logo & Socials + Direct Navigation Links ─────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-12 mb-10 items-start">
+        {/* ── Top Section: Social Links & Compact Navigation ───────────────── */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 sm:mb-8">
 
-          {/* Left Column — Brand & Description */}
-          <div className="md:col-span-7 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Logo className="w-8 h-8 sm:w-9 sm:h-9" />
-                <span className="font-brand font-bold text-lg tracking-tight text-heading">
-                  Ex<span className="text-primary">ESS</span>
-                </span>
-              </div>
-              <p className="font-inter text-body text-xs sm:text-sm leading-relaxed max-w-lg mb-5 text-gray-500">
-                Electronics Students Society (ExESS) is the official departmental body powering hardware, embedded systems, and robotics innovation at College of Engineering Chengannur.
-              </p>
-            </div>
-
-            {/* Social Icons — Clean bare FaIcons with original brand colors */}
-            <div className="flex items-center gap-5 sm:gap-6">
-              {SOCIAL_LINKS.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transition-all duration-300 transform hover:scale-110 p-0.5"
-                  aria-label={social.label}
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
+          {/* Social Icons — Clean bare FaIcons with original brand colors */}
+          <div className="flex items-center gap-5 sm:gap-6">
+            {SOCIAL_LINKS.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-all duration-300 transform hover:scale-110 p-0.5"
+                aria-label={social.label}
+              >
+                {social.icon}
+              </a>
+            ))}
           </div>
 
-          {/* Right Column — Direct Navigation Links */}
-          <div className="md:col-span-5 md:flex md:justify-end">
-            <ul className="flex flex-wrap gap-x-6 gap-y-2.5 font-inter text-xs sm:text-sm font-medium">
+          {/* Navigation Links — Compact layout for mobile and desktop */}
+          <div>
+            <ul className="flex flex-wrap gap-x-5 sm:gap-x-6 gap-y-2 font-inter text-xs sm:text-sm font-medium">
               {essentialNavLinks.map((link) => (
                 <li key={link.name}>
                   <a
@@ -86,8 +70,8 @@ const Footer = () => {
 
         </div>
 
-        {/* ── COMPACT BRAND HEADLINE "ExESS" & CTA ─────────────────────────── */}
-        <div className="pt-8 border-t border-border/60 mb-8">
+        {/* ── CLOSING BRAND STATEMENT "SHAPING THE FUTURE..." & EXESS → ──────── */}
+        <div className="pt-6 sm:pt-8 border-t border-border/60 mb-6 sm:mb-8">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -125,9 +109,9 @@ const Footer = () => {
           </a>
         </div>
 
-        {/* ── FOOTER BOTTOM ────────────────────────────────────────────────── */}
-        <div className="pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="font-inter text-[11px] text-gray-400 order-2 sm:order-1">
+        {/* ── FOOTER BOTTOM: LEGAL & COPYRIGHT ─────────────────────────────── */}
+        <div className="pt-5 sm:pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+          <p className="font-inter text-[11px] text-gray-400 order-2 sm:order-1 text-center sm:text-left">
             &copy; {new Date().getFullYear()} ExESS — Electronics Students Society CEC. All rights reserved.
           </p>
 
