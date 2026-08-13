@@ -17,61 +17,44 @@ const legalLinks = [
 ]
 
 const SOCIAL_LINKS = [
-  { icon: <FaInstagram className="w-5 h-5 sm:w-6 sm:h-6 text-[#E4405F]" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
-  { icon: <FaLinkedinIn className="w-5 h-5 sm:w-6 sm:h-6 text-[#0A66C2]" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
-  { icon: <FaGithub className="w-5 h-5 sm:w-6 sm:h-6 text-[#181717]" />, href: '#', label: 'GitHub' },
-  { icon: <FaEnvelope className="w-5 h-5 sm:w-6 sm:h-6 text-[#EA4335]" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
+  { icon: <FaInstagram className="w-5 h-5 text-[#E4405F]" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
+  { icon: <FaLinkedinIn className="w-5 h-5 text-[#0A66C2]" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
+  { icon: <FaGithub className="w-5 h-5 text-[#181717]" />, href: '#', label: 'GitHub' },
+  { icon: <FaEnvelope className="w-5 h-5 text-[#EA4335]" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
 ]
 
 /**
- * Footer — Refined Compact Editorial Architecture
+ * Footer — Refined Flexbox Architecture
+ * - Padding of '32px 24px' for ample breathing room
+ * - Direct navigation links top
+ * - Closing statement & animated ExESS wordmark as visual climax
+ * - Copyright on the left side, Social Icons & Legal Links grouped on the right side with 20px gap
  */
 const Footer = () => {
   return (
-    <footer className="relative bg-white text-heading pt-8 sm:pt-12 pb-6 sm:pb-8 overflow-hidden z-10 border-t border-border/60 mt-6 sm:mt-10">
+    <footer className="relative bg-white text-heading overflow-hidden z-10 border-t border-border/60 mt-8 sm:mt-12" style={{ padding: '32px 24px' }}>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-20">
+      <div className="max-w-7xl mx-auto relative z-20">
 
-        {/* ── Top Section: Social Links & Compact Navigation ───────────────── */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 sm:mb-8">
-
-          {/* Social Icons — Clean bare FaIcons with original brand colors */}
-          <div className="flex items-center gap-5 sm:gap-6">
-            {SOCIAL_LINKS.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-all duration-300 transform hover:scale-110 p-0.5"
-                aria-label={social.label}
-              >
-                {social.icon}
-              </a>
+        {/* ── Top Section: Direct Navigation Links along clean baseline ───── */}
+        <div className="flex items-center justify-between gap-6 mb-8">
+          <ul className="flex flex-wrap items-center gap-x-6 sm:gap-x-8 gap-y-2.5 font-inter text-xs sm:text-sm font-medium">
+            {essentialNavLinks.map((link) => (
+              <li key={link.name}>
+                <a
+                  href={link.href}
+                  className="text-body hover:text-primary transition-colors relative group inline-block py-0.5"
+                >
+                  {link.name}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
+                </a>
+              </li>
             ))}
-          </div>
-
-          {/* Navigation Links — Compact layout for mobile and desktop */}
-          <div>
-            <ul className="flex flex-wrap gap-x-5 sm:gap-x-6 gap-y-2 font-inter text-xs sm:text-sm font-medium">
-              {essentialNavLinks.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-body hover:text-primary transition-colors relative group inline-block py-0.5"
-                  >
-                    {link.name}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
+          </ul>
         </div>
 
         {/* ── CLOSING BRAND STATEMENT "SHAPING THE FUTURE..." & EXESS → ──────── */}
-        <div className="pt-6 sm:pt-8 border-t border-border/60 mb-6 sm:mb-8">
+        <div className="pt-8 border-t border-border/60 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -109,23 +92,50 @@ const Footer = () => {
           </a>
         </div>
 
-        {/* ── FOOTER BOTTOM: LEGAL & COPYRIGHT ─────────────────────────────── */}
-        <div className="pt-5 sm:pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-          <p className="font-inter text-[11px] text-gray-400 order-2 sm:order-1 text-center sm:text-left">
+        {/* ── FOOTER BOTTOM: FLEXBOX (Left: Copyright | Right: Social Icons + Legal Links) ── */}
+        <div className="pt-6 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-6" style={{ gap: '20px' }}>
+          
+          {/* Left Side — Copyright Notice */}
+          <p className="font-inter text-xs text-gray-500 order-2 md:order-1 text-center md:text-left">
             &copy; {new Date().getFullYear()} ExESS — Electronics Students Society CEC. All rights reserved.
           </p>
 
-          <div className="flex gap-5 order-1 sm:order-2">
-            {legalLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="font-inter text-[11px] text-gray-400 hover:text-primary transition-colors"
-              >
-                {link.name}
-              </a>
-            ))}
+          {/* Right Side — Grouped Social Media Icons & Legal Links with 20px gap */}
+          <div className="flex items-center order-1 md:order-2 flex-wrap justify-center md:justify-end" style={{ gap: '20px' }}>
+            
+            {/* Social Icons */}
+            <div className="flex items-center" style={{ gap: '16px' }}>
+              {SOCIAL_LINKS.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-all duration-300 transform hover:scale-110 p-0.5"
+                  aria-label={social.label}
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
+
+            {/* Vertical Divider */}
+            <span className="hidden sm:inline-block w-px h-4 bg-border/80" />
+
+            {/* Legal Links */}
+            <div className="flex items-center" style={{ gap: '16px' }}>
+              {legalLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="font-inter text-xs text-gray-500 hover:text-primary transition-colors"
+                >
+                  {link.name}
+                </a>
+              ))}
+            </div>
           </div>
+
         </div>
 
       </div>

@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PcbLightButton from './PcbLightButton'
 import EnergyBus from '../lib/EnergyBus'
+import Antigravity from './Antigravity'
 
 /**
- * Hero — "Logo Formation & Typography Power-Up"
+ * Hero — "Logo Formation & Typography Power-Up with Antigravity Background"
  *
  * Sequence:
  *   Stage 1 — LOGO INTRO ANIMATION:
@@ -80,6 +81,22 @@ const Hero = () => {
       id="home"
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-white text-slate-900"
     >
+      {/* ── 0. ANTIGRAVITY REACT BITS THREE.JS BACKGROUND ────────────────── */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-60">
+        <Antigravity
+          count={250}
+          magnetRadius={8}
+          ringRadius={9}
+          waveSpeed={0.4}
+          waveAmplitude={1}
+          particleSize={1.6}
+          lerpSpeed={0.05}
+          color={'#32C5E8'}
+          autoAnimate={true}
+          particleVariance={0.8}
+        />
+      </div>
+
       {/* ── 1. PCB CANVAS & ENERGY FIELD (Strict Negative Space Around Text) ── */}
       <svg
         aria-hidden="true"
