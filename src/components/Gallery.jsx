@@ -1,19 +1,17 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight, Maximize2, RotateCw } from 'lucide-react'
-import ImagePlaceholder from './ImagePlaceholder'
 import PcbLightButton from './PcbLightButton'
 import { galleryItems } from '../data/galleryData'
 
 /**
- * Gallery — Premium 3D Editorial Image Wheel
+ * Gallery — Pure Photography 3D Editorial Wheel
  *
- * Key Enhancements:
- *   - Preserves large animated "GALLERY" heading & FLIP Lightbox.
- *   - 3D CSS ring with perspective 1200px and clear depth separation.
- *   - Active card dominates at 100% scale/opacity with sharp caption.
- *   - Inactive side cards recede to 60%-30% opacity with hidden text to prevent overlaps.
- *   - Smooth weighted momentum drag, touch, and scroll interactions.
+ * Core Enhancements:
+ *   - 100% clean, un-overlayed photographs on 3D wheel cards (No text cluttering the photos).
+ *   - Dedicated active item caption panel positioned cleanly below the 3D wheel.
+ *   - Fixed mobile 3D card layout to eliminate horizontal card collisions.
+ *   - Art-directed, cinematic movement with zero AI-generated clutter or random neon.
  */
 const Gallery = () => {
   const [rotation, setRotation] = useState(0)
@@ -31,7 +29,7 @@ const Gallery = () => {
   const imageCount = galleryItems.length
   const angleStep = 360 / imageCount
 
-  // Radius calculation (responsive: 540px desktop, 360px tablet, 240px mobile)
+  // Responsive 3D ring radius (mobile: 320px, tablet: 420px, desktop: 540px)
   const [radius, setRadius] = useState(540)
   const [isMobile, setIsMobile] = useState(false)
 
@@ -39,7 +37,7 @@ const Gallery = () => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
-      setRadius(mobile ? 240 : window.innerWidth < 1024 ? 380 : 540)
+      setRadius(mobile ? 320 : window.innerWidth < 1024 ? 420 : 540)
     }
     handleResize()
     window.addEventListener('resize', handleResize)
@@ -49,6 +47,7 @@ const Gallery = () => {
   // Calculate active index normalized to 0..imageCount-1
   const rawActiveIdx = Math.round(-rotation / angleStep) % imageCount
   const activeIdx = (rawActiveIdx + imageCount) % imageCount
+  const activeItem = galleryItems[activeIdx] || galleryItems[0]
 
   // Frictional momentum decay loop
   useEffect(() => {
@@ -81,7 +80,7 @@ const Gallery = () => {
       const rect = containerRef.current.getBoundingClientRect()
       if (rect.top < window.innerHeight && rect.bottom > 0) {
         const delta = window.scrollY - lastScrollY
-        velocityRef.current += delta * 0.03
+        velocityRef.current += delta * 0.025
       }
       lastScrollY = window.scrollY
     }
@@ -104,8 +103,8 @@ const Gallery = () => {
   const handlePointerMove = (e) => {
     if (!isDragging) return
     const deltaX = e.clientX - dragStartRef.current.x
-    const newRot = dragStartRef.current.rotation + deltaX * 0.32
-    velocityRef.current = deltaX * 0.06
+    const newRot = dragStartRef.current.rotation + deltaX * 0.3
+    velocityRef.current = deltaX * 0.05
     setRotation(newRot)
   }
 
@@ -115,7 +114,7 @@ const Gallery = () => {
     e.target.releasePointerCapture?.(e.pointerId)
   }
 
-  // Navigation Button Handlers
+  // Navigation Handlers
   const rotateToPrev = () => {
     velocityRef.current = 0
     setRotation((prev) => Math.round(prev / angleStep) * angleStep + angleStep)
@@ -135,8 +134,8 @@ const Gallery = () => {
     <section id="gallery" ref={containerRef} className="relative section-gap overflow-hidden bg-white/60 py-16 sm:py-24">
       <div className="section-padding max-w-7xl mx-auto relative z-10">
 
-        {/* ── 1. GALLERY TYPOGRAPHY ANIMATION ─────────────────────────────── */}
-        <div className="mb-12 border-b border-border/60 pb-8 relative text-center sm:text-left">
+        {/* ── 1. GALLERY HEADING — CLEAN & PURPOSEFUL ─────────────────────── */}
+        <div className="mb-10 border-b border-border/60 pb-8 relative text-center sm:text-left">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -147,7 +146,6 @@ const Gallery = () => {
           </motion.span>
 
           <div className="relative py-2">
-            {/* GALLERY — per-character stagger animation */}
             <div className="relative w-full flex items-center justify-center sm:justify-start">
               <h2
                 className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark flex flex-wrap"
@@ -176,17 +174,17 @@ const Gallery = () => {
             transition={{ duration: 0.5, delay: 0.9 }}
             className="font-inter text-body text-xs sm:text-sm text-gray-500 mt-2 max-w-xl mx-auto sm:mx-0"
           >
-            Drag or scroll to navigate the visual archive. Click active card to view high-res photo.
+            Drag or scroll to rotate the 3D visual wheel. Click active photo to expand.
           </motion.p>
         </div>
 
-        {/* ── 2. 3D DRAGGABLE EDITORIAL WHEEL ─────────────────────────────── */}
-        <div className="relative my-8 sm:my-14 h-[320px] sm:h-[460px] lg:h-[560px] flex items-center justify-center select-none overflow-visible">
+        {/* ── 2. 3D DRAGGABLE IMAGE WHEEL (PURE PHOTOGRAPHY, NO TEXT ON IMAGES) ── */}
+        <div className="relative my-6 sm:my-10 h-[280px] sm:h-[420px] lg:h-[500px] flex items-center justify-center select-none overflow-visible">
 
           {/* Perspective Outer Container */}
           <div
             className="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
-            style={{ perspective: isMobile ? '800px' : '1200px' }}
+            style={{ perspective: isMobile ? '900px' : '1200px' }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -195,7 +193,7 @@ const Gallery = () => {
             {/* 3D Ring Wrapper */}
             <div
               ref={ringRef}
-              className="relative w-64 sm:w-80 lg:w-[380px] h-48 sm:h-64 lg:h-[280px] transition-transform duration-75 ease-out"
+              className="relative w-52 sm:w-72 lg:w-[360px] h-44 sm:h-60 lg:h-[260px] transition-transform duration-75 ease-out"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: `rotateY(${rotation}deg)`,
@@ -206,14 +204,13 @@ const Gallery = () => {
                 const itemAngle = idx * angleStep
                 const isFront = idx === activeIdx
 
-                // Calculate angular distance to determine opacity and visual hierarchy
+                // Calculate angular distance for depth opacity
                 let diffAngle = (itemAngle + rotation) % 360
                 if (diffAngle > 180) diffAngle -= 360
                 if (diffAngle < -180) diffAngle += 360
                 const absDiff = Math.abs(diffAngle)
 
-                // Progressive recede calculation: front=1.0, near=0.6, far=0.25
-                const cardOpacity = isFront ? 1 : Math.max(0.2, 1 - absDiff / 140)
+                const cardOpacity = isFront ? 1 : Math.max(0.25, 1 - absDiff / 130)
 
                 return (
                   <div
@@ -228,8 +225,8 @@ const Gallery = () => {
                     }}
                     className={`absolute inset-0 rounded-none overflow-hidden border transition-all duration-300 cursor-pointer ${
                       isFront
-                        ? 'border-primary/50 border-t-2 border-t-primary shadow-2xl z-30'
-                        : 'border-slate-300/40 shadow-md hover:border-slate-400/60'
+                        ? 'border-primary/60 border-t-2 border-t-primary shadow-2xl z-30 scale-100'
+                        : 'border-slate-300/40 shadow-md hover:border-slate-400/60 scale-90'
                     }`}
                     style={{
                       transformStyle: 'preserve-3d',
@@ -238,34 +235,14 @@ const Gallery = () => {
                       backfaceVisibility: 'hidden'
                     }}
                   >
-                    {/* Real Image Render */}
+                    {/* Pure Photograph (No text overlays on image) */}
                     <div className="relative w-full h-full bg-slate-900 overflow-hidden">
                       <img
                         src={item.image}
                         alt={item.title}
-                        className="w-full h-full object-cover rounded-none transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-full object-cover rounded-none transition-transform duration-500 hover:scale-105"
                         loading="lazy"
                       />
-
-                      {/* Card Overlay Info — ONLY visible when card is FRONT to prevent text collisions */}
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-end p-5 text-white z-10 transition-opacity duration-300 ${
-                          isFront ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                        }`}
-                      >
-                        <span className="text-[10px] font-brand uppercase tracking-widest text-cyan-400 font-semibold mb-1">
-                          {item.category} &bull; {item.date}
-                        </span>
-                        <h4 className="font-brand text-base sm:text-lg font-bold truncate">
-                          {item.title}
-                        </h4>
-                        <p className="font-inter text-xs text-slate-300 line-clamp-1 mt-1 font-normal opacity-90">
-                          {item.caption}
-                        </p>
-                        <div className="flex items-center gap-1.5 mt-2 text-[10px] font-mono text-cyan-400 font-semibold">
-                          <Maximize2 className="w-3 h-3" /> CLICK TO EXPAND
-                        </div>
-                      </div>
                     </div>
                   </div>
                 )
@@ -274,14 +251,45 @@ const Gallery = () => {
           </div>
         </div>
 
-        {/* ── 3. WHEEL CONTROLS & PAGINATION ─────────────────────────────── */}
+        {/* ── 3. DEDICATED ACTIVE IMAGE CAPTION PANEL (CLEAN BELOW THE WHEEL) ───── */}
+        <div className="max-w-2xl mx-auto text-center px-4 min-h-[120px] flex flex-col items-center justify-center my-6">
+          <motion.div
+            key={activeItem.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="flex flex-col items-center"
+          >
+            <span className="text-[11px] font-brand uppercase tracking-[0.2em] text-primary font-bold mb-1">
+              {activeItem.category} &bull; {activeItem.date}
+            </span>
+            <h3 className="font-brand text-lg sm:text-2xl font-bold text-heading">
+              {activeItem.title}
+            </h3>
+            <p className="font-inter text-xs sm:text-sm text-gray-600 mt-1 max-w-lg leading-relaxed">
+              {activeItem.caption}
+            </p>
+            <button
+              onClick={(e) => {
+                const frontEl = ringRef.current?.children[activeIdx]
+                if (frontEl) flipOriginRef.current = frontEl.getBoundingClientRect()
+                setSelectedImage(activeItem)
+              }}
+              className="inline-flex items-center gap-1.5 mt-3 text-xs font-mono text-primary font-bold hover:underline cursor-pointer"
+            >
+              <Maximize2 className="w-3.5 h-3.5" /> CLICK PHOTO TO EXPAND
+            </button>
+          </motion.div>
+        </div>
+
+        {/* ── 4. WHEEL CONTROLS & PAGINATION ─────────────────────────────── */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-4 border-t border-border/40">
           
           {/* Active Status Badge */}
           <div className="flex items-center gap-2">
             <RotateCw className="w-4 h-4 text-primary animate-spin-slow" />
             <span className="font-mono text-xs text-slate-600 font-semibold">
-              IMAGE {activeIdx + 1} OF {imageCount} &bull; <span className="text-primary">{galleryItems[activeIdx]?.title}</span>
+              IMAGE {activeIdx + 1} OF {imageCount}
             </span>
           </div>
 

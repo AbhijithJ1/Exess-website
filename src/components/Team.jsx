@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { FaLinkedin } from 'react-icons/fa6'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -27,14 +27,14 @@ const TimelineAnimation = ({ children, delay = 0, className = '' }) => (
 )
 
 /**
- * Vertical PCB Team Card — Executive Team only
+ * Vertical PCB Team Card — Executive Team & Committee Members
  * Dark PCB avatar box, initials, badge, name, role & LinkedIn
  */
 const TeamMemberCard = ({ person, badge = null }) => {
   const linkedinUrl = person.socials?.linkedin || 'https://linkedin.com/company/exess-cec'
 
   return (
-    <div className="relative group bg-white border border-border/80 border-t-2 border-t-primary rounded-none p-5 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col h-full">
+    <div className="relative group bg-white border border-border/80 border-t-2 border-t-primary rounded-none p-5 shadow-soft hover:shadow-soft-lg hover:border-primary/40 transition-all duration-300 flex flex-col h-full select-none">
       {/* Dark PCB Image / Avatar Area */}
       <div className="relative mb-5 rounded-none overflow-hidden border border-border/60">
         <ImagePlaceholder
@@ -73,12 +73,57 @@ const TeamMemberCard = ({ person, badge = null }) => {
 
 
 const Team = () => {
-  const scrollRef = useRef(null)
+  const committeeList = [...officeBearers, ...committeeMembers]
+  const totalCount = committeeList.length // N = 8
 
-  const handleScroll = (direction) => {
-    if (scrollRef.current) {
-      const scrollAmount = direction === 'left' ? -320 : 320
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+  // 3 sets of committee items for seamless virtualized circular loop: [Set 0, Set 1, Set 2]
+  const displayItems = [...committeeList, ...committeeList, ...committeeList]
+
+  // Index starts at totalCount (Member 1 of Set 1)
+  const [currentIndex, setCurrentIndex] = useState(totalCount)
+  const [isTransitioning, setIsTransitioning] = useState(true)
+  const [isPaused, setIsPaused] = useState(false)
+
+  // Card Width + Gap: 260px + 24px gap = 284px
+  const [cardWidth, setCardWidth] = useState(284)
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 640
+      setCardWidth(isMobile ? 244 : 284)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Autoplay timer
+  useEffect(() => {
+    if (isPaused) return
+    const timer = setInterval(() => {
+      handleNext()
+    }, 3800)
+    return () => clearInterval(timer)
+  }, [currentIndex, isPaused])
+
+  const handleNext = () => {
+    setIsTransitioning(true)
+    setCurrentIndex((prev) => prev + 1)
+  }
+
+  const handlePrev = () => {
+    setIsTransitioning(true)
+    setCurrentIndex((prev) => prev - 1)
+  }
+
+  // Seamless invisible reset when reaching boundary sets
+  const handleTransitionEnd = () => {
+    if (currentIndex >= totalCount * 2) {
+      setIsTransitioning(false)
+      setCurrentIndex(currentIndex - totalCount)
+    } else if (currentIndex < totalCount) {
+      setIsTransitioning(false)
+      setCurrentIndex(currentIndex + totalCount)
     }
   }
 
@@ -129,47 +174,59 @@ const Team = () => {
           </div>
         </div>
 
-        {/* ── 3. EXTENDED COMMITTEE — AUTOMATIC MARQUEE WITH BOTTOM RIGHT ARROWS ─ */}
+        {/* ── 3. EXTENDED COMMITTEE — INFINITE CIRCULAR STEP CAROUSEL (NEVER BLANKS) ── */}
         <div className="relative pt-12 border-t border-border/40">
-          <TimelineAnimation delay={0.2} className="mb-6">
-            <h3 className="font-brand text-2xl sm:text-3xl font-bold text-heading uppercase tracking-tight">
-              COMMITTEE &amp; OFFICE BEARERS
-            </h3>
-            <p className="text-xs font-inter text-gray-500 mt-1">
-              The operational nodes maintaining ExESS systems across all domains
-            </p>
-          </TimelineAnimation>
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-6">
+            <TimelineAnimation delay={0.2}>
+              <h3 className="font-brand text-2xl sm:text-3xl font-bold text-heading uppercase tracking-tight">
+                COMMITTEE &amp; OFFICE BEARERS
+              </h3>
+              <p className="text-xs font-inter text-gray-500 mt-1">
+                The operational nodes maintaining ExESS systems across all domains
+              </p>
+            </TimelineAnimation>
 
-          {/* Automatic Infinite Scrolling Marquee Container */}
+            {/* Top Right Scroll Navigation Arrows */}
+            <div className="flex items-center gap-2 self-end">
+              <button
+                onClick={handlePrev}
+                className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
+                aria-label="Previous Committee Member"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleNext}
+                className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
+                aria-label="Next Committee Member"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Continuous Circular Carousel Viewport */}
           <div
-            ref={scrollRef}
-            className="relative overflow-x-auto no-scrollbar w-full py-4 scroll-smooth"
+            className="relative overflow-hidden w-full py-4"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
-            <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused] w-max">
-              {[...officeBearers, ...committeeMembers, ...officeBearers, ...committeeMembers].map((person, idx) => (
-                <div key={`ext-${person.id}-${idx}`} className="w-56 sm:w-64 lg:w-72 flex-shrink-0">
+            <div
+              className={`flex gap-6 ${isTransitioning ? 'transition-transform duration-500 ease-out' : ''}`}
+              style={{
+                transform: `translateX(-${currentIndex * cardWidth}px)`
+              }}
+              onTransitionEnd={handleTransitionEnd}
+            >
+              {displayItems.map((person, idx) => (
+                <div
+                  key={`ext-${person.id}-${idx}`}
+                  className="w-56 sm:w-64 lg:w-72 flex-shrink-0"
+                >
                   <TeamMemberCard person={person} />
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Bottom Right Scroll Navigation Arrows */}
-          <div className="flex items-center justify-end gap-2 mt-4">
-            <button
-              onClick={() => handleScroll('left')}
-              className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
-              aria-label="Scroll Committee Left"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => handleScroll('right')}
-              className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
-              aria-label="Scroll Committee Right"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
           </div>
         </div>
 

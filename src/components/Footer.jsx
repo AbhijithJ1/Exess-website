@@ -24,27 +24,33 @@ const SOCIAL_LINKS = [
 ]
 
 /**
- * Footer — Premium Tech Editorial Architecture
- * - Top Bar: "CONNECT WITH ExESS" indicator (Left) + Direct Nav Links (Right)
- * - Middle Climax: Tagline & ExESS ↗ CTA (Left) + Sleek Social Media Dock (Right)
- * - Bottom Bar: Copyright (Left) + Legal Links (Right)
+ * Footer — Premium Electronics Studio Mobile/Desktop Refinement
+ * 
+ * Mobile Structure (< 768px):
+ *   1. CONNECT WITH ExESS + 2-Column Readable Navigation (Home, About, Events, Projects, Gallery, Contact)
+ *   2. Thin Divider
+ *   3. SHAPING THE FUTURE OF ELECTRONICS & HARDWARE + ExESS ↗ Wordmark CTA
+ *   4. Dedicated Social Links Row below ExESS CTA (Instagram, LinkedIn, GitHub, Email)
+ *   5. Final Thin Divider
+ *   6. Legal Links (Privacy Policy, Terms of Service) & Copyright Notice
  */
 const Footer = () => {
   return (
-    <footer className="relative bg-white text-heading overflow-hidden z-10 border-t border-border/60 mt-8 sm:mt-12" style={{ padding: '36px 24px' }}>
+    <footer className="relative bg-white text-heading overflow-hidden z-10 border-t border-border/60 mt-8 sm:mt-12 px-4 sm:px-6 md:px-8 py-8 sm:py-10">
 
       <div className="max-w-7xl mx-auto relative z-20">
 
-        {/* ── Top Bar: Tag indicator (Left) & Direct Navigation Links (Right) ───── */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        {/* ── SECTION 1 — CONNECTION + NAVIGATION ───────────────────────────── */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-primary" />
-            <span className="font-brand text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] text-primary">
+            <span className="font-brand text-xs sm:text-sm font-bold uppercase tracking-[0.22em] text-primary">
               CONNECT WITH ExESS
             </span>
           </div>
 
-          <ul className="flex flex-wrap items-center gap-x-6 sm:gap-x-8 gap-y-2 font-inter text-xs sm:text-sm font-medium">
+          {/* Clean 2-Column Navigation on Mobile, Horizontal Row on Desktop */}
+          <ul className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-x-8 sm:gap-x-8 gap-y-3 font-inter text-sm sm:text-sm font-medium w-full sm:w-auto">
             {essentialNavLinks.map((link) => (
               <li key={link.name}>
                 <a
@@ -59,10 +65,13 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* ── Middle Climax: Brand Statement (Left) + Sleek Social Dock (Right) ── */}
-        <div className="pt-8 border-t border-border/60 mb-8 flex flex-col lg:flex-row items-start lg:items-end justify-between gap-8">
+        {/* ── SECTION 2 — DIVIDER ────────────────────────────────────────────── */}
+        <div className="my-6 sm:my-8 border-t border-border/60" />
+
+        {/* ── SECTION 3 & 4 — BRAND CLOSING STATEMENT + DEDICATED SOCIAL ROW ──── */}
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 sm:gap-8">
           
-          {/* Left: Tagline & ExESS Wordmark CTA */}
+          {/* Tagline & Animated ExESS Wordmark CTA */}
           <div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -70,7 +79,7 @@ const Footer = () => {
               viewport={{ once: false }}
               className="flex items-center gap-2 mb-2"
             >
-              <span className="font-brand text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] text-slate-500">
+              <span className="font-brand text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-slate-500">
                 SHAPING THE FUTURE OF ELECTRONICS &amp; HARDWARE
               </span>
             </motion.div>
@@ -84,7 +93,7 @@ const Footer = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false }}
                 className="font-brand font-extrabold tracking-tight text-heading duration-300 leading-none"
-                style={{ fontSize: 'clamp(2.5rem, 8vw, 6rem)' }}
+                style={{ fontSize: 'clamp(2.75rem, 8vw, 6rem)' }}
               >
                 Ex<span className="text-primary">ESS</span>
               </motion.h2>
@@ -95,13 +104,13 @@ const Footer = () => {
                 viewport={{ once: false }}
                 className="text-heading group-hover:text-primary group-hover:translate-x-2 group-hover:-translate-y-2 transition-all duration-300 flex-shrink-0"
               >
-                <ArrowUpRight className="w-8 h-8 sm:w-12 sm:h-12 lg:w-16 lg:h-16 stroke-[2]" />
+                <ArrowUpRight className="w-9 h-9 sm:w-12 sm:h-12 lg:w-16 lg:h-16 stroke-[2]" />
               </motion.div>
             </a>
           </div>
 
-          {/* Right: Sleek Premium Social Media Hardware Dock */}
-          <div className="flex items-center gap-3 sm:gap-4 pb-2">
+          {/* Dedicated Social Links Row (Below ExESS wordmark on mobile, right-aligned on desktop) */}
+          <div className="flex items-center gap-3 sm:gap-4 pt-2 sm:pt-0 w-full sm:w-auto justify-start sm:justify-end">
             {SOCIAL_LINKS.map((social) => (
               <a
                 key={social.label}
@@ -118,23 +127,30 @@ const Footer = () => {
 
         </div>
 
-        {/* ── Bottom Bar: Copyright (Left) & Legal Links (Right) ────────────── */}
-        <div className="pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="font-inter text-xs text-gray-500 text-center sm:text-left">
-            &copy; {new Date().getFullYear()} ExESS — Electronics Students Society CEC. All rights reserved.
-          </p>
+        {/* ── SECTION 5 — FINAL DIVIDER ──────────────────────────────────────── */}
+        <div className="my-6 sm:my-8 border-t border-border/60" />
 
-          <div className="flex items-center gap-6">
+        {/* ── SECTION 6 — LEGAL & COPYRIGHT ─────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          
+          {/* Legal Links top on mobile, right on desktop */}
+          <div className="flex items-center gap-6 order-1 sm:order-2">
             {legalLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="font-inter text-xs text-gray-500 hover:text-primary transition-colors"
+                className="font-inter text-xs sm:text-sm text-gray-500 hover:text-primary transition-colors font-medium"
               >
                 {link.name}
               </a>
             ))}
           </div>
+
+          {/* Copyright Notice */}
+          <p className="font-inter text-xs text-gray-500 order-2 sm:order-1 leading-relaxed">
+            &copy; {new Date().getFullYear()} ExESS — Electronics Students Society CEC. All rights reserved.
+          </p>
+
         </div>
 
       </div>
