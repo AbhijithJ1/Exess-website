@@ -18,10 +18,10 @@ const legalLinks = [
 ]
 
 const SOCIAL_LINKS = [
-  { icon: <FaInstagram className="w-5 h-5 text-[#E4405F]" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
-  { icon: <FaLinkedinIn className="w-5 h-5 text-[#0A66C2]" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
-  { icon: <FaGithub className="w-5 h-5 text-[#181717]" />, href: '#', label: 'GitHub' },
-  { icon: <FaEnvelope className="w-5 h-5 text-[#EA4335]" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
+  { icon: <FaInstagram className="w-6 h-6 sm:w-7 sm:h-7 text-[#E4405F]" />, href: 'https://instagram.com/exess.cec', label: 'Instagram' },
+  { icon: <FaLinkedinIn className="w-6 h-6 sm:w-7 sm:h-7 text-[#0A66C2]" />, href: 'https://linkedin.com/company/exess-cec', label: 'LinkedIn' },
+  { icon: <FaGithub className="w-6 h-6 sm:w-7 sm:h-7 text-[#181717]" />, href: '#', label: 'GitHub' },
+  { icon: <FaEnvelope className="w-6 h-6 sm:w-7 sm:h-7 text-[#EA4335]" />, href: 'mailto:exess@ceconline.edu', label: 'Email' },
 ]
 
 /**
@@ -102,18 +102,20 @@ const Footer = () => {
             </a>
           </div>
 
-          {/* Dedicated Social Links Row */}
-          <div className="flex items-center gap-3 sm:gap-4 pt-2 sm:pt-0 w-full sm:w-auto justify-start sm:justify-end">
+          {/* Dedicated Premium Standalone Social Icons (No Box Card Layout) */}
+          <div className="flex items-center gap-4 sm:gap-6 pt-2 sm:pt-0 w-full sm:w-auto justify-start sm:justify-end">
             {SOCIAL_LINKS.map((social) => (
               <a
                 key={social.label}
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center transition-all duration-300 hover:bg-white hover:border-primary/40 hover:shadow-md hover:-translate-y-1 group cursor-pointer"
+                className="relative p-2 sm:p-2.5 rounded-full transition-all duration-300 hover:-translate-y-1 hover:scale-110 group cursor-pointer flex items-center justify-center"
                 aria-label={social.label}
               >
-                {social.icon}
+                <div className="transition-all duration-300 group-hover:drop-shadow-[0_0_10px_rgba(30,107,147,0.45)]">
+                  {social.icon}
+                </div>
               </a>
             ))}
           </div>
