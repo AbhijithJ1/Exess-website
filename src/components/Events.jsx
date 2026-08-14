@@ -1,44 +1,93 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, MapPin, X, ArrowRight, ChevronRight, ChevronLeft } from 'lucide-react'
+import { Calendar, MapPin, X, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import ImagePlaceholder from './ImagePlaceholder'
 import PcbLightButton from './PcbLightButton'
 import { eventsData } from '../data/eventsData'
 
 const EVENTS_CHARS = ['E', 'V', 'E', 'N', 'T', 'S']
-const AUTOPLAY_INTERVAL = 4000
+const AUTOPLAY_INTERVAL = 4500
 
 /**
- * Events — "PREMIUM AUTO-ADVANCING EVENT TIMELINE"
+ * Pixel Reveal Image Component
+ * Reveals the underlying image through a staggered sweep of pixel blocks
+ */
+const PixelRevealImage = ({ src, alt, className = '', activeKey = '' }) => {
+  const [pixelKey, setPixelKey] = useState(0)
+
+  useEffect(() => {
+    setPixelKey((prev) => prev + 1)
+  }, [src, activeKey])
+
+  const cols = 8
+  const rows = 5
+  const totalBlocks = cols * rows
+
+  return (
+    <div className={`relative w-full h-full overflow-hidden select-none bg-slate-900 ${className}`}>
+      {/* Base Image */}
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover rounded-none transition-transform duration-700 hover:scale-105"
+        loading="lazy"
+      />
+
+      {/* Staggered Pixel Grid Overlay Sweep */}
+      <div key={pixelKey} className="absolute inset-0 grid grid-cols-8 grid-rows-5 z-20 pointer-events-none">
+        {Array.from({ length: totalBlocks }).map((_, i) => {
+          const r = Math.floor(i / cols)
+          const c = i % cols
+          const delay = (r + c) * 0.035
+
+          return (
+            <motion.div
+              key={`px-${i}`}
+              initial={{ opacity: 1, scale: 1 }}
+              animate={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.35, delay, ease: 'easeOut' }}
+              className="bg-[#071826] border border-cyan-500/10"
+            />
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Events — 3D TUMBLE AUTO-ADVANCING CAROUSEL + PIXEL REVEAL
  *
- * Motion & Interaction Architecture:
- *   - Auto-advances through timeline nodes (01 -> 02 -> 03 ...) every 4 seconds.
- *   - Only autoplays when the section is in the viewport (IntersectionObserver).
- *   - Pauses on hover; resumes on leave.
- *   - Manual node selection resets the timer and triggers the electrical signal transition.
- *   - Active node & cyan signal beam travel smoothly across the timeline.
- *   - Filter switching ('all', 'upcoming', 'past') filters events & resets progression safely.
- *   - Responsive mobile view with horizontally scrollable timeline bar.
+ * Single-Page Viewport Layout:
+ *   - Cards tumble end-over-end (3D rotateX/rotateY flip) as the carousel advances.
+ *   - Image reveals through a sweep of pixel blocks (Pixel Reveal).
+ *   - Auto-advances every 4.5 seconds so events cycle continuously.
+ *   - Fits completely within a single viewport experience (No long scrolling list).
+ *   - Clean detail modal lightbox.
  */
 const Events = () => {
-  const [filter, setFilter] = useState('all')
   const [activeIdx, setActiveIdx] = useState(0)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [showAllModal, setShowAllModal] = useState(false)
-  const [isInView, setIsInView] = useState(false)
+  const [tumbleDirection, setTumbleDirection] = useState(1) // 1 = Next, -1 = Prev
   const [isPaused, setIsPaused] = useState(false)
+  const [isInView, setIsInView] = useState(false)
 
   const sectionRef = useRef(null)
   const autoplayRef = useRef(null)
 
-  // Filtered events calculation
-  const filteredEvents = filter === 'all'
-    ? eventsData
-    : eventsData.filter((e) => e.status === filter)
+  const totalEvents = eventsData.length
+  const activeEvent = eventsData[activeIdx]
 
-  // Ensure active index remains in valid bounds
-  const validActiveIdx = activeIdx >= filteredEvents.length ? 0 : activeIdx
-  const activeEvent = filteredEvents[validActiveIdx] || filteredEvents[0]
+  const handleNext = useCallback(() => {
+    setTumbleDirection(1)
+    setActiveIdx((prev) => (prev + 1) % totalEvents)
+  }, [totalEvents])
+
+  const handlePrev = useCallback(() => {
+    setTumbleDirection(-1)
+    setActiveIdx((prev) => (prev - 1 + totalEvents) % totalEvents)
+  }, [totalEvents])
 
   // Viewport Observer — only run autoplay when section is visible
   useEffect(() => {
@@ -46,7 +95,7 @@ const Events = () => {
       ([entry]) => {
         setIsInView(entry.isIntersecting)
       },
-      { threshold: 0.2 }
+      { threshold: 0.25 }
     )
 
     if (sectionRef.current) {
@@ -56,54 +105,38 @@ const Events = () => {
     return () => observer.disconnect()
   }, [])
 
-  // Auto-advance function
-  const nextEvent = useCallback(() => {
-    if (filteredEvents.length <= 1) return
-    setActiveIdx((prev) => (prev + 1) % filteredEvents.length)
-  }, [filteredEvents.length])
-
-  // Autoplay Timer Management
+  // Auto-advance Autoplay Timer
   useEffect(() => {
-    if (!isInView || isPaused || filteredEvents.length <= 1 || selectedEvent) {
+    if (!isInView || isPaused || selectedEvent || showAllModal) {
       if (autoplayRef.current) clearInterval(autoplayRef.current)
       return
     }
 
     autoplayRef.current = setInterval(() => {
-      nextEvent()
+      handleNext()
     }, AUTOPLAY_INTERVAL)
 
     return () => {
       if (autoplayRef.current) clearInterval(autoplayRef.current)
     }
-  }, [isInView, isPaused, filteredEvents.length, selectedEvent, nextEvent])
+  }, [isInView, isPaused, selectedEvent, showAllModal, handleNext])
 
-  // Reset autoplay timer on manual node click
-  const handleSelectNode = (idx) => {
-    if (idx === validActiveIdx) return
-    setActiveIdx(idx)
-    if (autoplayRef.current) {
-      clearInterval(autoplayRef.current)
-      autoplayRef.current = null
+  // Keybindings / Keyboard Navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (selectedEvent || showAllModal) return
+      if (e.key === 'ArrowRight') handleNext()
+      if (e.key === 'ArrowLeft') handlePrev()
     }
-  }
-
-  // Handle filter change cleanly
-  const handleFilterChange = (newFilter) => {
-    if (newFilter === filter) return
-    setFilter(newFilter)
-    setActiveIdx(0)
-    if (autoplayRef.current) {
-      clearInterval(autoplayRef.current)
-      autoplayRef.current = null
-    }
-  }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleNext, handlePrev, selectedEvent, showAllModal])
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
-      transition: { staggerChildren: 0.15 }
+      transition: { staggerChildren: 0.12 }
     }
   }
 
@@ -117,24 +150,57 @@ const Events = () => {
     }
   }
 
+  // 3D Tumble Variants (Cards tumble end-over-end around 3D axes)
+  const tumbleVariants = {
+    initial: (dir) => ({
+      rotateX: dir > 0 ? 80 : -80,
+      rotateY: dir > 0 ? -15 : 15,
+      y: dir > 0 ? 90 : -90,
+      scale: 0.8,
+      opacity: 0
+    }),
+    animate: {
+      rotateX: 0,
+      rotateY: 0,
+      y: 0,
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.65,
+        ease: [0.16, 1, 0.3, 1]
+      }
+    },
+    exit: (dir) => ({
+      rotateX: dir > 0 ? -80 : 80,
+      rotateY: dir > 0 ? 15 : -15,
+      y: dir > 0 ? -90 : 90,
+      scale: 0.8,
+      opacity: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.7, 0, 0.84, 0]
+      }
+    })
+  }
+
   return (
     <section
       id="events"
       ref={sectionRef}
-      className="relative section-gap overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      className="relative section-gap overflow-hidden bg-slate-50/40 py-10 sm:py-16 min-h-[100svh] flex flex-col justify-center select-none"
     >
-      <div className="section-padding max-w-7xl mx-auto relative z-10 min-h-[80vh] sm:min-h-[85vh]">
+      <div className="section-padding max-w-7xl mx-auto relative z-10 w-full">
 
-        {/* ── 1. SEQUENTIAL CHARACTER ACTIVATION TYPOGRAPHY ───────────────── */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6 border-b border-border/60 pb-6">
-          <div className="origin-left">
+        {/* ── 1. SECTION HEADING — NO FILTER TOGGLE BUTTONS ───────────────── */}
+        <div className="mb-6 border-b border-border/60 pb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
             <motion.span 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: '-10%' }}
-              className="text-[10px] font-brand uppercase tracking-[0.22em] text-primary font-bold block mb-1"
+              className="text-[10px] font-brand uppercase tracking-[0.22em] text-primary font-bold block mb-0.5"
             >
               EVENTS &amp; HACKATHONS
             </motion.span>
@@ -145,138 +211,148 @@ const Events = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: false, margin: '-10%' }}
-              className="flex items-center gap-0.5 sm:gap-1 my-1 py-1"
+              className="flex items-center gap-0.5 sm:gap-1 my-0.5"
             >
               {EVENTS_CHARS.map((char, i) => (
                 <motion.span
                   key={i}
                   variants={charVariants}
                   className="font-brand font-bold tracking-tight leading-none inline-block"
-                  style={{ fontSize: 'clamp(1.5rem, 6vw, 4.5rem)' }}
+                  style={{ fontSize: 'clamp(1.75rem, 5vw, 3.5rem)' }}
                 >
                   {char}
                 </motion.span>
               ))}
             </motion.div>
-
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: '-10%' }}
-              transition={{ delay: 0.5, duration: 0.4 }}
-              className="font-inter text-body text-xs sm:text-sm text-gray-600 mt-1 max-w-xl"
-            >
-              Explore our technical lineup, national hackathons, and hardware bootcamps.
-            </motion.p>
           </div>
 
-          {/* Filter Buttons */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, margin: '-10%' }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-            className="flex gap-1.5 p-1 rounded-none bg-white border border-border/80 shadow-soft w-fit flex-shrink-0 self-start lg:self-end"
-          >
-            {['all', 'upcoming', 'past'].map((f) => (
+          {/* Tumble Navigation Controls */}
+          <div className="flex items-center gap-3 self-end sm:self-auto">
+            <span className="font-mono text-xs text-slate-500 font-bold tracking-wider">
+              {String(activeIdx + 1).padStart(2, '0')} / {String(totalEvents).padStart(2, '0')}
+            </span>
+            <div className="flex items-center gap-2">
               <button
-                key={f}
-                onClick={() => handleFilterChange(f)}
-                className={`px-3.5 py-1.5 rounded-none text-[10px] uppercase font-brand tracking-wider font-semibold transition-all duration-300 whitespace-nowrap cursor-pointer ${
-                  filter === f
-                    ? 'bg-primary text-white shadow-sm font-bold'
-                    : 'text-gray-600 hover:text-heading hover:bg-slate-50'
-                }`}
+                onClick={handlePrev}
+                className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
+                aria-label="Previous Event"
               >
-                {f.charAt(0).toUpperCase() + f.slice(1)}
+                <ChevronLeft className="w-5 h-5" />
               </button>
-            ))}
-          </motion.div>
+              <button
+                onClick={handleNext}
+                className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
+                aria-label="Next Event"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* ── 2. COMPACT MULTI-COLUMN SIDE-BY-SIDE EVENT CARDS ───────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 items-stretch">
-          {filteredEvents.map((event, idx) => (
+        {/* ── 2. SINGLE-VIEWPORT 3D TUMBLE AUTO-ADVANCING CAROUSEL ─────────── */}
+        <div className="relative max-w-4xl mx-auto min-h-[360px] sm:min-h-[420px] flex items-center justify-center py-2" style={{ perspective: '1200px' }}>
+          <AnimatePresence custom={tumbleDirection} mode="wait">
             <motion.div
-              key={event.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: '-5%' }}
-              transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              onClick={() => setSelectedEvent(event)}
-              className="relative group cursor-pointer rounded-none border border-border/80 border-t-2 border-t-primary bg-white p-5 sm:p-6 shadow-soft hover:shadow-soft-lg hover:border-primary/50 transition-all duration-300 flex flex-col justify-between"
+              key={activeEvent.id}
+              custom={tumbleDirection}
+              variants={tumbleVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              onClick={() => setSelectedEvent(activeEvent)}
+              className="relative w-full group cursor-pointer rounded-none border border-border/80 border-t-2 border-t-primary bg-white p-5 sm:p-7 shadow-2xl hover:border-primary/60 transition-colors duration-300 overflow-hidden flex flex-col md:flex-row gap-6 sm:gap-8 items-center"
+              style={{ transformStyle: 'preserve-3d' }}
             >
-              <div>
-                {/* Event Photo Cover */}
-                <div className="relative w-full aspect-video overflow-hidden border border-border/60 bg-slate-900 mb-4 flex-shrink-0">
-                  <ImagePlaceholder
-                    src={event.image}
-                    alt={event.title}
-                    type="cover"
-                    aspectRatio="w-full h-full"
-                    className="group-hover:scale-105 transition-transform duration-700 rounded-none"
-                  />
-                  <div className="absolute top-2.5 right-2.5 z-10">
-                    <span className={`px-2 py-0.5 rounded-none text-[9px] font-brand tracking-wide font-semibold ${
-                      event.status === 'upcoming'
-                        ? 'bg-emerald-500 text-white border border-emerald-400/40'
-                        : 'bg-slate-700/90 text-white border border-slate-600/40'
-                    }`}>
-                      {event.status === 'upcoming' ? 'Upcoming' : 'Completed'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Metadata & Title */}
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-brand uppercase tracking-wider font-bold text-primary">
-                    {event.category}
+              {/* Left: Event Photo Cover with Pixel Reveal Sweep */}
+              <div className="relative w-full md:w-5/12 aspect-[16/10] overflow-hidden border border-border/60 bg-slate-900 flex-shrink-0">
+                <PixelRevealImage
+                  src={activeEvent.image}
+                  alt={activeEvent.title}
+                  activeKey={activeEvent.id}
+                  className="w-full h-full"
+                />
+                <div className="absolute top-3 right-3 z-30">
+                  <span className={`px-2.5 py-1 rounded-none text-[10px] font-brand tracking-wider font-semibold ${
+                    activeEvent.status === 'upcoming'
+                      ? 'bg-emerald-500 text-white border border-emerald-400/40 shadow-sm'
+                      : 'bg-slate-700/90 text-white border border-slate-600/40'
+                  }`}>
+                    {activeEvent.status === 'upcoming' ? 'Upcoming' : 'Completed'}
                   </span>
                 </div>
+              </div>
 
-                <h3 className="text-lg sm:text-xl font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors leading-tight">
-                  {event.title}
-                </h3>
-
-                <p className="font-inter text-xs text-body leading-relaxed mb-4 line-clamp-2">
-                  {event.description}
-                </p>
-
-                {/* Date & Location Box */}
-                <div className="space-y-1.5 mb-4 p-3 rounded-none bg-slate-50 border border-border/60 font-inter border-l-2 border-l-primary text-xs text-heading">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                    <span className="font-semibold">{event.date}</span>
+              {/* Right: Event Details */}
+              <div className="w-full md:w-7/12 flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-brand uppercase tracking-wider font-bold text-primary">
+                      {activeEvent.category}
+                    </span>
+                    <span className="text-gray-300">•</span>
+                    <span className="text-xs font-inter text-gray-500 truncate">{activeEvent.subtitle}</span>
                   </div>
-                  <div className="flex items-center gap-2 truncate">
-                    <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                    <span className="font-semibold truncate">{event.location}</span>
+
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold font-brand text-heading mb-3 group-hover:text-primary transition-colors leading-tight">
+                    {activeEvent.title}
+                  </h3>
+
+                  <p className="font-inter text-xs sm:text-sm text-body leading-relaxed mb-4 line-clamp-3">
+                    {activeEvent.description}
+                  </p>
+
+                  {/* Date & Location Box */}
+                  <div className="grid sm:grid-cols-2 gap-2 mb-4 p-3.5 rounded-none bg-slate-50 border border-border/60 font-inter border-l-2 border-l-primary text-xs text-heading">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span className="font-semibold">{activeEvent.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 truncate">
+                      <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span className="font-semibold truncate">{activeEvent.location}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Action Button */}
-              <div className="pt-3 border-t border-border/40 flex items-center justify-between mt-auto">
-                <span className="inline-flex items-center gap-1.5 text-xs font-brand uppercase tracking-wider text-primary group-hover:text-cyan-600 font-bold">
-                  View Details <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </span>
+                {/* Action Button */}
+                <div className="pt-3 border-t border-border/40 flex items-center justify-between mt-auto">
+                  <span className="inline-flex items-center gap-2 text-xs font-brand uppercase tracking-wider text-primary group-hover:text-cyan-600 font-bold">
+                    View Event Details <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
+                  </span>
+                </div>
               </div>
             </motion.div>
-          ))}
+          </AnimatePresence>
         </div>
 
-        {/* Explore All Modal Button */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: false }}
-          transition={{ delay: 1.0 }}
-          className="flex justify-center mt-10"
-        >
+        {/* ── 3. TIMELINE DOTS & DIRECTORY MODAL BUTTON ───────────────────── */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+          {/* Timeline Nodes Bar */}
+          <div className="flex items-center gap-2 overflow-x-auto max-w-full py-1">
+            {eventsData.map((ev, idx) => (
+              <button
+                key={ev.id}
+                onClick={() => {
+                  setTumbleDirection(idx > activeIdx ? 1 : -1)
+                  setActiveIdx(idx)
+                }}
+                className={`h-2 transition-all duration-300 rounded-none cursor-pointer ${
+                  idx === activeIdx
+                    ? 'w-8 bg-primary'
+                    : 'w-2 bg-slate-300 hover:bg-slate-400'
+                }`}
+                aria-label={`Go to event ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          {/* Explore All Modal Button */}
           <PcbLightButton onClick={() => setShowAllModal(true)}>
             VIEW ALL EVENTS ARCHIVE
           </PcbLightButton>
-        </motion.div>
+        </div>
+
       </div>
 
       {/* Directory Modal */}
@@ -306,10 +382,13 @@ const Events = () => {
               </div>
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {eventsData.map((ev) => (
+                {eventsData.map((ev, idx) => (
                   <div
                     key={ev.id}
-                    onClick={() => { setShowAllModal(false); setSelectedEvent(ev) }}
+                    onClick={() => {
+                      setShowAllModal(false)
+                      setActiveIdx(idx)
+                    }}
                     className="p-4 rounded-2xl border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50 flex flex-col justify-between"
                   >
                     <div>
@@ -318,7 +397,7 @@ const Events = () => {
                       <p className="text-xs text-gray-500 line-clamp-2 mb-3 font-inter">{ev.description}</p>
                     </div>
                     <span className="text-[10px] font-brand text-primary font-semibold flex items-center gap-1 pt-2">
-                      Details <ArrowRight className="w-3 h-3" />
+                      View Event <ArrowRight className="w-3 h-3" />
                     </span>
                   </div>
                 ))}

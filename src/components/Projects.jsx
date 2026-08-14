@@ -1,177 +1,268 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, X, Users, Cpu, Maximize2 } from 'lucide-react'
+import { ArrowRight, X, Cpu, ChevronLeft, ChevronRight } from 'lucide-react'
 import ImagePlaceholder from './ImagePlaceholder'
 import PcbLightButton from './PcbLightButton'
 import { projectsData } from '../data/projectsData'
 
+const AUTOPLAY_INTERVAL = 4500
+
 /**
- * Projects — Asymmetric Editorial Construction Composition
+ * Projects — REACT BITS PRO SKEWED CAROUSEL (MATCHING SECTION DESIGN LANGUAGE)
  *
- * Choreography:
- *   1. ENGINEERING CONSTRUCTION typography wireframe to solid assembly.
- *   2. Asymmetric full-viewport case study grid (inspired by editorial collage).
- *   3. Individual project cards enter at different scales, initial offsets (y, x, scale),
- *      and progressive stagger delays, rearranging into their asymmetric collage layout.
- *   4. Interactive Case Study inspection lightbox.
+ * Design Architecture:
+ *   - Skewed 3D marquee stage (center active card enlarged & upright, side cards tilted in 3D perspective).
+ *   - Full-bleed vertical image cards with gradient text overlay over the photo.
+ *   - Preserved original section background styling (`bg-slate-50/30`).
+ *   - Auto-advances every 4.5 seconds (pauses on hover or modal open).
+ *   - Members count completely removed.
  */
-
-// Asymmetric layout config for 4 featured projects
-const ASYMMETRIC_PROJECT_LAYOUT = [
-  // Item 0: Hero Project Card (8 columns wide)
-  { colSpan: 'md:col-span-8', aspect: 'aspect-[16/10]', initial: { y: 40, opacity: 0, scale: 0.94 }, delay: 0.1 },
-  // Item 1: Tall Side Project Card (4 columns wide)
-  { colSpan: 'md:col-span-4', aspect: 'aspect-[16/10] md:aspect-[4/5]', initial: { x: 40, opacity: 0, scale: 0.95 }, delay: 0.25 },
-  // Item 2: Medium Landscape Project Card (6 columns wide)
-  { colSpan: 'md:col-span-6', aspect: 'aspect-[16/10]', initial: { x: -40, opacity: 0, scale: 0.95 }, delay: 0.35 },
-  // Item 3: Medium Landscape Project Card (6 columns wide)
-  { colSpan: 'md:col-span-6', aspect: 'aspect-[16/10]', initial: { y: 40, opacity: 0, scale: 0.94 }, delay: 0.45 },
-]
-
 const Projects = () => {
+  const [activeIdx, setActiveIdx] = useState(0)
   const [selectedProject, setSelectedProject] = useState(null)
   const [showAllModal, setShowAllModal] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+  const [isInView, setIsInView] = useState(false)
 
-  const featuredProjects = projectsData.slice(0, 4)
+  const sectionRef = useRef(null)
+  const autoplayRef = useRef(null)
+
+  const totalProjects = projectsData.length
+
+  const handleNext = useCallback(() => {
+    setActiveIdx((prev) => (prev + 1) % totalProjects)
+  }, [totalProjects])
+
+  const handlePrev = useCallback(() => {
+    setActiveIdx((prev) => (prev - 1 + totalProjects) % totalProjects)
+  }, [totalProjects])
+
+  // Viewport Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting)
+      },
+      { threshold: 0.25 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
+  // Auto-advance Autoplay Timer (4.5s)
+  useEffect(() => {
+    if (!isInView || isPaused || selectedProject || showAllModal) {
+      if (autoplayRef.current) clearInterval(autoplayRef.current)
+      return
+    }
+
+    autoplayRef.current = setInterval(() => {
+      handleNext()
+    }, AUTOPLAY_INTERVAL)
+
+    return () => {
+      if (autoplayRef.current) clearInterval(autoplayRef.current)
+    }
+  }, [isInView, isPaused, selectedProject, showAllModal, handleNext])
+
+  // Compute offset index relative to activeIdx (-2, -1, 0, 1, 2)
+  const getCardOffset = (index) => {
+    let diff = index - activeIdx
+    if (diff > totalProjects / 2) diff -= totalProjects
+    if (diff < -totalProjects / 2) diff += totalProjects
+    return diff
+  }
 
   return (
-    <section id="projects" className="relative section-gap overflow-hidden bg-slate-50/30">
-      <div className="section-padding max-w-7xl mx-auto relative z-10">
+    <section
+      id="projects"
+      ref={sectionRef}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      className="relative section-gap overflow-hidden bg-slate-50/30 py-12 sm:py-16 min-h-[100svh] flex flex-col justify-center select-none"
+    >
+      <div className="section-padding max-w-7xl mx-auto relative z-10 w-full">
 
-        {/* ── 1. ENGINEERING CONSTRUCTION ASSEMBLY TYPOGRAPHY ────────────── */}
-        <div className="mb-6 border-b border-border/60 pb-6 relative">
-          <motion.span
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: false, margin: '-10%' }}
-            className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-1"
-          >
-            PROJECTS &amp; INNOVATION
-          </motion.span>
+        {/* ── 1. SECTION HEADING (PRESERVED ORIGINAL DESIGN TOKENS) ───────── */}
+        <div className="mb-6 sm:mb-10 border-b border-border/60 pb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <span className="text-[10px] font-brand uppercase tracking-[0.24em] text-primary font-bold block mb-0.5">
+              PROJECTS &amp; INNOVATION
+            </span>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: false, margin: '-10%' }}
-            className="origin-left relative"
-          >
-            {/* Solid text */}
-            <motion.h2
-              className="font-brand text-heading font-bold tracking-tight leading-[1.0] text-light-sweep-dark"
-              style={{ fontSize: 'clamp(1.5rem, 6vw, 4.5rem)' }}
-              variants={{
-                hidden: { opacity: 0, scale: 1.02, filter: 'blur(4px)' },
-                visible: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.6, delay: 0.2, ease: 'easeOut' } }
-              }}
+            <h2
+              className="font-brand text-heading font-bold tracking-tight leading-none text-light-sweep-dark"
+              style={{ fontSize: 'clamp(1.75rem, 5vw, 3.5rem)' }}
             >
-              PROJECTS
-            </motion.h2>
+              HARDWARE PROJECTS
+            </h2>
 
-            <motion.p
-              variants={{
-                hidden: { opacity: 0, y: 10 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 0.4 } }
-              }}
-              className="font-inter text-body text-xs sm:text-sm text-gray-600 mt-1 max-w-xl"
-            >
-              Hardware case studies, circuit prototypes, and embedded systems engineered by ExESS members.
-            </motion.p>
-          </motion.div>
+            <p className="font-inter text-body text-xs sm:text-sm text-gray-600 mt-1 max-w-xl">
+              Circuit prototypes, robotics architectures, and embedded systems engineered by ExESS.
+            </p>
+          </div>
+
+          <span className="font-mono text-xs text-primary font-bold tracking-wider self-end sm:self-auto bg-white border border-border/80 px-3.5 py-1 rounded-none shadow-sm">
+            {String(activeIdx + 1).padStart(2, '0')} / {String(totalProjects).padStart(2, '0')}
+          </span>
         </div>
 
-        {/* ── 2. COMPACT MULTI-COLUMN SIDE-BY-SIDE CARD GRID ─────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 items-stretch">
-          {projectsData.slice(0, 6).map((project, idx) => {
-            return (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false, margin: '-5%' }}
-                transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                onClick={() => setSelectedProject(project)}
-                className="relative group cursor-pointer rounded-none border border-border/80 border-t-2 border-t-primary bg-white shadow-soft hover:shadow-soft-xl hover:border-primary/50 transition-all duration-300 flex flex-col justify-between"
-              >
-                {/* Photo / Image Container */}
-                <div className="relative w-full aspect-video overflow-hidden border-b border-border/60 bg-slate-900 flex-shrink-0">
-                  <ImagePlaceholder
+        {/* ── 2. REACT BITS PRO SKEWED CAROUSEL STAGE ─────────────────────── */}
+        <div
+          className="relative w-full h-[420px] sm:h-[480px] flex items-center justify-center overflow-hidden my-2"
+          style={{ perspective: '1200px' }}
+        >
+          <div className="relative w-full max-w-5xl h-full flex items-center justify-center">
+            {projectsData.map((project, idx) => {
+              const offset = getCardOffset(idx)
+              const isVisible = Math.abs(offset) <= 2 // Render visible subset around center
+
+              if (!isVisible) return null
+
+              const isActive = offset === 0
+
+              // Dynamic 3D skew, tilt rotateY, scale, and horizontal translate
+              let rotateY = 0
+              let skewY = 0
+              let scale = 1
+              let opacity = 1
+              let zIndex = 30
+              let translateX = offset * 210
+
+              if (offset < 0) {
+                rotateY = 32
+                skewY = -8
+                scale = 0.8
+                opacity = Math.abs(offset) === 1 ? 0.75 : 0.4
+                zIndex = 20 - Math.abs(offset)
+                translateX = offset * 200 - 30
+              } else if (offset > 0) {
+                rotateY = -32
+                skewY = 8
+                scale = 0.8
+                opacity = Math.abs(offset) === 1 ? 0.75 : 0.4
+                zIndex = 20 - Math.abs(offset)
+                translateX = offset * 200 + 30
+              } else {
+                scale = 1.08
+                opacity = 1
+                zIndex = 40
+                translateX = 0
+              }
+
+              return (
+                <motion.div
+                  key={project.id}
+                  animate={{
+                    x: translateX,
+                    rotateY,
+                    skewY,
+                    scale,
+                    opacity,
+                    zIndex
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                  onClick={() => {
+                    if (isActive) {
+                      setSelectedProject(project)
+                    } else {
+                      setActiveIdx(idx)
+                    }
+                  }}
+                  className={`absolute w-[220px] sm:w-[280px] aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer bg-slate-900 border transition-all duration-300 shadow-2xl group ${
+                    isActive
+                      ? 'border-primary shadow-primary/20 ring-2 ring-primary/40'
+                      : 'border-border/60 hover:border-primary/50'
+                  }`}
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  {/* Card Cover Image */}
+                  <img
                     src={project.image}
                     alt={project.title}
-                    type="cover"
-                    aspectRatio="w-full h-full"
-                    className="group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100 rounded-none"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
                   />
 
-                  {/* Status Badge */}
-                  <div className="absolute top-3 left-3 z-10">
-                    <span className={`px-2.5 py-0.5 rounded-none text-[9px] font-brand tracking-wider font-semibold backdrop-blur-md shadow-sm ${
+                  {/* Dark Gradient Overlay for Text Readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent z-10" />
+
+                  {/* Status Badge Top-Left */}
+                  <div className="absolute top-3.5 left-3.5 z-20">
+                    <span className={`px-2.5 py-0.5 rounded-none text-[9px] font-brand tracking-wider font-semibold shadow-sm ${
                       project.status === 'Completed'
-                        ? 'bg-emerald-500/90 text-white border border-emerald-400/40'
-                        : 'bg-amber-500/90 text-white border border-amber-400/40'
+                        ? 'bg-emerald-500 text-white border border-emerald-400/40'
+                        : 'bg-amber-500 text-white border border-amber-400/40'
                     }`}>
                       {project.status}
                     </span>
                   </div>
 
-                  {/* Top Right Zoom Icon */}
-                  <div className="absolute top-3 right-3 w-8 h-8 rounded-none bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 group-hover:scale-110">
-                    <Maximize2 className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-
-                {/* Information Card Body */}
-                <div className="p-5 sm:p-6 flex flex-col justify-between flex-grow">
-                  <div>
-                    <span className="text-[11px] font-mono font-bold text-primary flex items-center gap-1.5 mb-1.5">
-                      <Cpu className="w-3.5 h-3.5" /> SYSTEM_0{idx + 1}
+                  {/* Title & Info Overlay DIRECTLY OVER THE IMAGE at Bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 z-20 text-left">
+                    <span className="text-[10px] font-mono font-bold text-cyan-300 flex items-center gap-1 mb-1">
+                      <Cpu className="w-3 h-3" /> SYSTEM_0{idx + 1}
                     </span>
 
-                    <h3 className="text-lg sm:text-xl font-bold font-brand text-heading mb-2 group-hover:text-primary transition-colors leading-tight">
+                    <h3 className="text-base sm:text-xl font-brand font-bold text-white leading-tight drop-shadow-md group-hover:text-cyan-300 transition-colors">
                       {project.title}
                     </h3>
-
-                    <p className="font-inter text-xs text-body leading-relaxed mb-3 line-clamp-2">
-                      {project.description}
-                    </p>
-
-                    <div className="flex flex-wrap gap-1.5 mb-4 font-mono">
-                      {project.tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-0.5 rounded-none text-[9px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/60"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
                   </div>
-
-                  <div className="pt-3 border-t border-border/40 flex items-center justify-between mt-auto">
-                    <span className="text-xs text-body flex items-center gap-1 font-mono">
-                      <Users className="w-3.5 h-3.5 text-primary" /> {project.team}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 text-xs font-brand uppercase tracking-wider text-primary group-hover:text-cyan-600 font-bold">
-                      Inspect <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            )
-          })}
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
 
-        {/* CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }}
-          transition={{ delay: 0.3 }}
-          className="flex justify-center"
-        >
+        {/* ── 3. BOTTOM CAROUSEL PROGRESS DASHES & CONTROLS ───────────────── */}
+        <div className="flex items-center justify-center gap-4 sm:gap-6 mt-6">
+          <button
+            onClick={handlePrev}
+            className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
+            aria-label="Previous Project"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          {/* Dash Indicators */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {projectsData.map((p, idx) => (
+              <button
+                key={p.id}
+                onClick={() => setActiveIdx(idx)}
+                className={`h-1.5 transition-all duration-300 rounded-none cursor-pointer ${
+                  idx === activeIdx
+                    ? 'w-8 sm:w-10 bg-primary shadow-sm'
+                    : 'w-3 sm:w-4 bg-slate-300 hover:bg-slate-400'
+                }`}
+                aria-label={`Go to project ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={handleNext}
+            className="w-10 h-10 rounded-none bg-white border border-border/80 flex items-center justify-center text-slate-700 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
+            aria-label="Next Project"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* View All Button */}
+        <div className="flex justify-center mt-8">
           <PcbLightButton onClick={() => setShowAllModal(true)}>
             VIEW ALL HARDWARE PROJECTS
           </PcbLightButton>
-        </motion.div>
+        </div>
+
       </div>
 
       {/* Directory Modal */}
@@ -197,12 +288,21 @@ const Projects = () => {
                 </button>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-6">
-                {projectsData.map((project) => (
-                  <div key={project.id} onClick={() => { setShowAllModal(false); setSelectedProject(project) }} className="p-5 rounded-2xl border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50">
-                    <span className="text-[9px] font-mono text-primary font-bold block mb-1">{project.status}</span>
-                    <h4 className="font-brand text-base text-heading font-bold mb-1">{project.title}</h4>
-                    <p className="text-xs font-inter text-gray-500 line-clamp-2">{project.description}</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {projectsData.map((project, idx) => (
+                  <div
+                    key={project.id}
+                    onClick={() => { setShowAllModal(false); setActiveIdx(idx) }}
+                    className="p-5 rounded-2xl border border-border/60 hover:border-primary/40 transition-colors cursor-pointer bg-slate-50/50 flex flex-col justify-between"
+                  >
+                    <div>
+                      <span className="text-[9px] font-mono text-primary font-bold block mb-1">{project.status}</span>
+                      <h4 className="font-brand text-base text-heading font-bold mb-1">{project.title}</h4>
+                      <p className="text-xs font-inter text-gray-500 line-clamp-2 mb-3">{project.description}</p>
+                    </div>
+                    <span className="text-[10px] font-brand text-primary font-semibold flex items-center gap-1 pt-2">
+                      Inspect Project <ArrowRight className="w-3.5 h-3.5" />
+                    </span>
                   </div>
                 ))}
               </div>
@@ -211,7 +311,7 @@ const Projects = () => {
         )}
       </AnimatePresence>
 
-      {/* Detail Lightbox */}
+      {/* Detail Lightbox Modal (NO MEMBERS COUNT) */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
@@ -241,8 +341,12 @@ const Projects = () => {
                 </div>
                 <h3 className="text-xl sm:text-2xl font-brand text-heading font-bold mb-4">{selectedProject.title}</h3>
                 <p className="font-inter text-body text-sm leading-relaxed mb-6">{selectedProject.description}</p>
-                <div className="flex items-center gap-2 font-mono text-xs text-gray-500 pt-4 border-t border-border/40">
-                  <Users className="w-4 h-4 text-primary" /> {selectedProject.team}
+                <div className="flex flex-wrap gap-2 font-mono">
+                  {selectedProject.tags.map((tag) => (
+                    <span key={tag} className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200/80">
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
             </motion.div>

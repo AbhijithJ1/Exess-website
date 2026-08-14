@@ -1,23 +1,27 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight, Maximize2, RotateCw } from 'lucide-react'
 import PcbLightButton from './PcbLightButton'
 import { galleryItems } from '../data/galleryData'
 
 /**
- * Gallery — Pure Photography 3D Editorial Wheel
+ * Gallery — Pure Photography 3D Editorial Wheel & Restrained Editorial Lightbox
  *
- * Core Enhancements:
- *   - 100% clean, un-overlayed photographs on 3D wheel cards (No text cluttering the photos).
- *   - Dedicated active item caption panel positioned cleanly below the 3D wheel.
- *   - Fixed mobile 3D card layout to eliminate horizontal card collisions.
- *   - Art-directed, cinematic movement with zero AI-generated clutter or random neon.
+ * Cinematic Behavior & Art Direction:
+ *   - Continuous, smooth, slow 3D auto-rotation when section is in viewport.
+ *   - Seamless infinite loop (01 -> 02 -> ... -> 08 -> 01) with zero blank states or sudden stops.
+ *   - Normal page scrolling completely untouched (no scroll-hijacking).
+ *   - User drag/button interactions temporarily pause auto-rotation; resumes after 4s inactivity.
+ *   - Pauses when out of viewport to conserve resources; resumes when visible.
+ *   - Restrained, clean white editorial lightbox modal with natural photo scaling and 0 right-side overflow artifacts.
  */
 const Gallery = () => {
   const [rotation, setRotation] = useState(0)
   const [selectedImage, setSelectedImage] = useState(null)
   const [showAllModal, setShowAllModal] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const [isInView, setIsInView] = useState(false)
+  const [userInteracted, setUserInteracted] = useState(false)
 
   const containerRef = useRef(null)
   const ringRef = useRef(null)
@@ -25,6 +29,7 @@ const Gallery = () => {
   const velocityRef = useRef(0)
   const animFrameRef = useRef(null)
   const flipOriginRef = useRef(null)
+  const userTimerRef = useRef(null)
 
   const imageCount = galleryItems.length
   const angleStep = 360 / imageCount
@@ -44,21 +49,52 @@ const Gallery = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // Viewport Observer — pause animation when section is out of view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting)
+      },
+      { threshold: 0.15 }
+    )
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
+  // User Interaction Activity Register (pauses auto-rotation for 4s after interaction)
+  const registerInteraction = useCallback(() => {
+    setUserInteracted(true)
+    if (userTimerRef.current) clearTimeout(userTimerRef.current)
+    userTimerRef.current = setTimeout(() => {
+      setUserInteracted(false)
+    }, 4000)
+  }, [])
+
   // Calculate active index normalized to 0..imageCount-1
   const rawActiveIdx = Math.round(-rotation / angleStep) % imageCount
   const activeIdx = (rawActiveIdx + imageCount) % imageCount
   const activeItem = galleryItems[activeIdx] || galleryItems[0]
 
-  // Frictional momentum decay loop
+  // Continuous Cinematic 3D Auto-Rotation + Frictional Drag Momentum Loop
   useEffect(() => {
     let active = true
 
     const loop = () => {
-      if (!isDragging && Math.abs(velocityRef.current) > 0.02) {
-        velocityRef.current *= 0.94
-        setRotation((prev) => prev + velocityRef.current)
-      }
       if (active) {
+        if (!isDragging && !selectedImage && !showAllModal && isInView) {
+          if (!userInteracted && Math.abs(velocityRef.current) < 0.05) {
+            // Calm, slow cinematic auto-rotation (-0.14 deg per frame)
+            setRotation((prev) => (prev - 0.14) % 360)
+          } else if (Math.abs(velocityRef.current) > 0.02) {
+            // Momentum decay from drag velocity
+            velocityRef.current *= 0.94
+            setRotation((prev) => (prev + velocityRef.current) % 360)
+          }
+        }
         animFrameRef.current = requestAnimationFrame(loop)
       }
     }
@@ -68,30 +104,12 @@ const Gallery = () => {
       active = false
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current)
     }
-  }, [isDragging])
-
-  // Scroll-linked spin when in view
-  useEffect(() => {
-    let lastScrollY = window.scrollY
-
-    const handleScroll = () => {
-      if (isDragging) return
-      if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      if (rect.top < window.innerHeight && rect.bottom > 0) {
-        const delta = window.scrollY - lastScrollY
-        velocityRef.current += delta * 0.025
-      }
-      lastScrollY = window.scrollY
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [isDragging])
+  }, [isDragging, selectedImage, showAllModal, isInView, userInteracted])
 
   // Pointer Drag Handlers
   const handlePointerDown = (e) => {
     setIsDragging(true)
+    registerInteraction()
     velocityRef.current = 0
     dragStartRef.current = {
       x: e.clientX,
@@ -102,6 +120,7 @@ const Gallery = () => {
 
   const handlePointerMove = (e) => {
     if (!isDragging) return
+    registerInteraction()
     const deltaX = e.clientX - dragStartRef.current.x
     const newRot = dragStartRef.current.rotation + deltaX * 0.3
     velocityRef.current = deltaX * 0.05
@@ -111,21 +130,25 @@ const Gallery = () => {
   const handlePointerUp = (e) => {
     if (!isDragging) return
     setIsDragging(false)
+    registerInteraction()
     e.target.releasePointerCapture?.(e.pointerId)
   }
 
-  // Navigation Handlers
+  // Navigation Button Handlers
   const rotateToPrev = () => {
+    registerInteraction()
     velocityRef.current = 0
     setRotation((prev) => Math.round(prev / angleStep) * angleStep + angleStep)
   }
 
   const rotateToNext = () => {
+    registerInteraction()
     velocityRef.current = 0
     setRotation((prev) => Math.round(prev / angleStep) * angleStep - angleStep)
   }
 
   const rotateToIndex = (idx) => {
+    registerInteraction()
     velocityRef.current = 0
     setRotation(-idx * angleStep)
   }
@@ -174,7 +197,7 @@ const Gallery = () => {
             transition={{ duration: 0.5, delay: 0.9 }}
             className="font-inter text-body text-xs sm:text-sm text-gray-500 mt-2 max-w-xl mx-auto sm:mx-0"
           >
-            Drag or scroll to rotate the 3D visual wheel. Click active photo to expand.
+            Cinematic 3D gallery collection. Drag or click arrows to explore photos.
           </motion.p>
         </div>
 
@@ -216,6 +239,7 @@ const Gallery = () => {
                   <div
                     key={item.id}
                     onClick={(e) => {
+                      registerInteraction()
                       if (isFront) {
                         flipOriginRef.current = e.currentTarget.getBoundingClientRect()
                         setSelectedImage(item)
@@ -285,6 +309,7 @@ const Gallery = () => {
             </p>
             <button
               onClick={(e) => {
+                registerInteraction()
                 const frontEl = ringRef.current?.children[activeIdx]
                 if (frontEl) flipOriginRef.current = frontEl.getBoundingClientRect()
                 setSelectedImage(activeItem)
@@ -393,39 +418,59 @@ const Gallery = () => {
         )}
       </AnimatePresence>
 
-      {/* Manual FLIP Lightbox Modal */}
+      {/* Editorial Lightbox Modal (Clean White Surface, 0 Right-Side Artifacts, No Internal Scrollbar) */}
       <AnimatePresence>
         {selectedImage && (() => {
           const origin = flipOriginRef.current
           const initX = origin ? (origin.left + origin.width / 2) - (window.innerWidth / 2) : 0
           const initY = origin ? (origin.top + origin.height / 2) - (window.innerHeight / 2) : 0
-          const initSx = origin ? origin.width / Math.min(window.innerWidth * 0.9, 768) : 0.95
-          const initSy = origin ? origin.height / (window.innerHeight * 0.75) : 0.95
           return (
             <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[65] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/70 backdrop-blur-md overflow-y-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[65] flex items-center justify-center p-4 sm:p-6 bg-slate-950/25 backdrop-blur-md overflow-y-auto"
               onClick={() => setSelectedImage(null)}
             >
               <motion.div
-                initial={{ x: initX, y: initY, scaleX: initSx, scaleY: initSy, opacity: 0.7 }}
-                animate={{ x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1 }}
+                initial={{ x: initX, y: initY, scale: 0.6, opacity: 0 }}
+                animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 onClick={(e) => e.stopPropagation()}
-                className="relative w-full max-w-3xl bg-[#071826] rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/20 text-white my-auto max-h-[calc(100vh-100px)] overflow-y-auto"
+                className="relative w-full max-w-3xl bg-white rounded-2xl p-5 sm:p-7 shadow-2xl border border-slate-200/90 text-slate-900 my-auto overflow-hidden flex flex-col"
               >
-                <div className="sticky top-0 right-0 z-30 flex justify-end pb-2 pointer-events-none -mr-2 sm:-mr-4 -mt-2 sm:-mt-4">
-                  <button onClick={() => setSelectedImage(null)} className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md shadow-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-colors pointer-events-auto cursor-pointer">
-                    <X className="w-5 h-5" />
+                {/* Header with Category & Minimal Close Button */}
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 flex-shrink-0">
+                  <span className="text-xs font-brand uppercase tracking-wider text-primary font-bold">
+                    {selectedImage.category} &bull; {selectedImage.date}
+                  </span>
+                  <button
+                    onClick={() => setSelectedImage(null)}
+                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer"
+                    aria-label="Close image lightbox"
+                  >
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="-mt-6">
-                  <img src={selectedImage.image} alt={selectedImage.title} className="w-full aspect-[16/10] object-cover mb-6 rounded-2xl" />
-                  <span className="text-[10px] font-brand uppercase tracking-wider text-cyan-400 font-semibold block mb-2">{selectedImage.category} &bull; {selectedImage.date}</span>
-                  <h3 className="text-xl sm:text-2xl font-brand text-white font-bold mb-3">{selectedImage.title}</h3>
-                  <p className="font-inter text-sm text-slate-300 leading-relaxed mb-4">{selectedImage.caption || selectedImage.description}</p>
+                {/* Hero Photograph (Uncropped, Natural Aspect Ratio, No Overflow) */}
+                <div className="relative w-full bg-slate-950/5 rounded-xl overflow-hidden mb-4 border border-slate-200/60 shadow-sm flex items-center justify-center flex-shrink-0">
+                  <img
+                    src={selectedImage.image}
+                    alt={selectedImage.title}
+                    className="w-full max-h-[60vh] object-contain rounded-xl"
+                  />
+                </div>
+
+                {/* Caption Details */}
+                <div className="flex-shrink-0">
+                  <h3 className="text-xl sm:text-2xl font-brand font-bold text-slate-900 mb-1">
+                    {selectedImage.title}
+                  </h3>
+                  <p className="font-inter text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    {selectedImage.caption || selectedImage.description}
+                  </p>
                 </div>
               </motion.div>
             </motion.div>

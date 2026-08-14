@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { FaInstagram, FaLinkedinIn, FaGithub, FaEnvelope } from 'react-icons/fa6'
+import Logo from './Logo'
 
 const essentialNavLinks = [
   { name: 'Home', href: '#home' },
@@ -32,13 +33,14 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto relative z-20">
 
-        {/* ── SECTION 1 — CONNECTION + NAVIGATION ───────────────────────────── */}
+        {/* ── SECTION 1 — BRAND LOGO + NAVIGATION ───────────────────────────── */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <span className="font-brand text-xs sm:text-sm font-bold uppercase tracking-[0.22em] text-primary">
-              CONNECT WITH ExESS
+          <a href="#home" className="flex items-center gap-2.5 group py-1">
+            <Logo size={32} color="#1E6B93" />
+            <span className="font-brand text-xl sm:text-2xl font-bold tracking-tight text-heading group-hover:text-primary transition-colors">
+              Ex<span className="text-primary">ESS</span>
             </span>
-          </div>
+          </a>
 
           {/* Navigation Links */}
           <ul className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-end gap-x-8 sm:gap-x-8 gap-y-3 font-inter text-sm sm:text-sm font-medium w-full sm:w-auto">

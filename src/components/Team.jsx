@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaLinkedin } from 'react-icons/fa6'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -47,7 +47,7 @@ const TeamMemberCard = ({ person, badge = null }) => {
         />
       </div>
 
-      {/* Name, Role & LinkedIn Connect Link — Bare FaIcon without container box */}
+      {/* Name, Role & LinkedIn Connect Link */}
       <div className="flex items-end justify-between gap-3 pt-2 mt-auto">
         <div className="overflow-hidden">
           <h4 className="font-brand font-bold text-heading text-base sm:text-lg group-hover:text-primary transition-colors leading-snug truncate">
@@ -73,8 +73,9 @@ const TeamMemberCard = ({ person, badge = null }) => {
 
 
 const Team = () => {
-  const committeeList = [...officeBearers, ...committeeMembers]
-  const totalCount = committeeList.length // N = 8
+  // Combine executive committee (Aditya, Meera, Rahul, Anjali) first, followed by office bearers and committee members
+  const committeeList = [...executiveCommittee, ...officeBearers, ...committeeMembers]
+  const totalCount = committeeList.length // N = 12
 
   // 3 sets of committee items for seamless virtualized circular loop: [Set 0, Set 1, Set 2]
   const displayItems = [...committeeList, ...committeeList, ...committeeList]
@@ -152,29 +153,16 @@ const Team = () => {
           </TimelineAnimation>
         </div>
 
-        {/* ── 2. EXECUTIVE TEAM GRID (FACULTY + CORE LEADERS) ─────────────── */}
+        {/* ── 2. FACULTY COORDINATOR (CENTERED TOP) ─────────────────────────── */}
         <div className="relative max-w-5xl mx-auto mb-16">
-          {/* Faculty Coordinator — Centered Top */}
-          <div className="flex justify-center mb-10">
+          <div className="flex justify-center">
             <TimelineAnimation delay={0.4} className="w-full max-w-xs">
               <TeamMemberCard person={facultyCoordinator} badge="FACULTY" />
             </TimelineAnimation>
           </div>
-
-          {/* Executive Committee Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {executiveCommittee.map((person, i) => (
-              <TimelineAnimation key={person.id} delay={0.5 + i * 0.1}>
-                <TeamMemberCard
-                  person={person}
-                  badge={person.role.includes('Chair') ? 'SYS_ADMIN' : 'CORE_EXEC'}
-                />
-              </TimelineAnimation>
-            ))}
-          </div>
         </div>
 
-        {/* ── 3. EXTENDED COMMITTEE — INFINITE CIRCULAR STEP CAROUSEL (NEVER BLANKS) ── */}
+        {/* ── 3. COMMITTEE & OFFICE BEARERS — INFINITE CIRCULAR STEP CAROUSEL (NEVER BLANKS) ── */}
         <div className="relative pt-12 border-t border-border/40">
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-6">
             <TimelineAnimation delay={0.2}>

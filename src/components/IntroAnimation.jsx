@@ -71,10 +71,9 @@ const IntroAnimation = ({ onComplete }) => {
   return (
     <div
       ref={containerRef}
-      onClick={finish}
       style={{
         position: 'fixed', inset: 0, zIndex: 100,
-        background: '#FFFFFF', cursor: 'pointer',
+        background: '#FFFFFF',
         userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center'
       }}
     >
@@ -327,15 +326,6 @@ const IntroAnimation = ({ onComplete }) => {
         {/* Wordmark (Centered below) */}
 
       </svg>
-
-      <div style={{
-        position: 'absolute', bottom: '1.25rem', right: '1.75rem',
-        fontSize: '10px', fontFamily: '"Space Grotesk", monospace',
-        color: '#94a3b8', textTransform: 'uppercase',
-        letterSpacing: '0.18em', pointerEvents: 'none', opacity: 0.55,
-      }}>
-        Click to skip →
-      </div>
     </div>
   )
 }

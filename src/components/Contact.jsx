@@ -275,10 +275,10 @@ const Contact = () => {
 
         {/* ── 2. COMMUNICATION CHANNELS & FORM ───────────────────────────── */}
         <motion.div 
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, margin: "-10%" }}
-          transition={{ duration: 0.8, delay: 1.8, ease: "easeOut" }}
+          transition={{ duration: 0.6, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="grid lg:grid-cols-2 gap-8 lg:gap-20 mt-6 sm:mt-10"
         >
           {/* Information & Channels */}
