@@ -407,38 +407,51 @@ const Events = () => {
         )}
       </AnimatePresence>
 
-      {/* Detail Lightbox */}
+      {/* Detail Lightbox — Full-Bleed Image with Overlapping Text (0 Wasted Space) */}
       <AnimatePresence>
         {selectedEvent && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[65] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-[65] flex items-start justify-center p-3 sm:p-6 pt-24 sm:pt-28 pb-8 sm:pb-12 bg-slate-950/40 backdrop-blur-md overflow-y-auto"
             onClick={() => setSelectedEvent(null)}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-2xl bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] overflow-y-auto"
+              className="relative w-full max-w-3xl aspect-[16/11] sm:aspect-[16/10] bg-slate-950 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 my-auto text-white"
             >
-              <div className="sticky top-0 right-0 z-30 flex justify-end pb-2 pointer-events-none -mr-2 sm:-mr-4 -mt-2 sm:-mt-4">
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="w-10 h-10 rounded-full bg-white/90 shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors pointer-events-auto cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+              {/* Full-Bleed Photograph */}
+              <img
+                src={selectedEvent.image}
+                alt={selectedEvent.title}
+                className="absolute inset-0 size-full object-cover"
+              />
 
-              <div className="-mt-6">
-                <ImagePlaceholder src={selectedEvent.image} alt={selectedEvent.title} type="cover" aspectRatio="aspect-[21/9]" className="mb-6" badge={selectedEvent.category} />
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="px-3 py-1 rounded-full text-[9px] font-brand bg-primary/10 text-primary uppercase tracking-wider">{selectedEvent.category}</span>
-                  <span className="text-xs font-inter text-gray-400">{selectedEvent.status === 'upcoming' ? '• Upcoming' : '• Past Event'}</span>
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-slate-950/60 hover:bg-slate-900 text-white transition-colors flex items-center justify-center cursor-pointer border border-white/20 backdrop-blur-md"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* Gradient Backdrop & Overlapping Text */}
+              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-white z-10 flex flex-col justify-end pointer-events-none">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[9px] font-brand bg-cyan-400/20 text-cyan-300 border border-cyan-400/30 uppercase tracking-wider font-bold">
+                    {selectedEvent.category}
+                  </span>
+                  <span className="text-xs font-inter text-slate-300">
+                    {selectedEvent.date} &bull; {selectedEvent.location}
+                  </span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-brand text-heading mb-2">{selectedEvent.title}</h3>
-                <p className="text-xs font-brand text-primary uppercase tracking-wider mb-4">{selectedEvent.subtitle}</p>
-                <p className="font-inter text-body text-sm leading-relaxed mb-6">{selectedEvent.description}</p>
+                <h3 className="text-xl sm:text-3xl font-brand text-white font-bold mb-1.5 tracking-tight">
+                  {selectedEvent.title}
+                </h3>
+                <p className="font-inter text-xs sm:text-sm text-slate-200 leading-relaxed opacity-95 max-w-2xl">
+                  {selectedEvent.description}
+                </p>
               </div>
             </motion.div>
           </motion.div>

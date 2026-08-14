@@ -311,43 +311,55 @@ const Projects = () => {
         )}
       </AnimatePresence>
 
-      {/* Detail Lightbox Modal (NO MEMBERS COUNT) */}
+      {/* Detail Lightbox Modal — Full-Bleed Image with Overlapping Text (0 Wasted Space) */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[65] flex items-start justify-center p-3 sm:p-6 pt-20 sm:pt-24 pb-8 sm:pb-12 bg-slate-900/65 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-[65] flex items-start justify-center p-3 sm:p-6 pt-24 sm:pt-28 pb-8 sm:pb-12 bg-slate-950/40 backdrop-blur-md overflow-y-auto"
             onClick={() => setSelectedProject(null)}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-3xl bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-border/80 my-auto max-h-[calc(100vh-100px)] overflow-y-auto"
+              className="relative w-full max-w-3xl aspect-[16/11] sm:aspect-[16/10] bg-slate-950 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 my-auto text-white"
             >
-              <div className="sticky top-0 right-0 z-30 flex justify-end pb-2 pointer-events-none -mr-2 sm:-mr-4 -mt-2 sm:-mt-4">
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="w-10 h-10 rounded-full bg-white/90 shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors pointer-events-auto cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+              {/* Full-Bleed Photograph */}
+              <img
+                src={selectedProject.image}
+                alt={selectedProject.title}
+                className="absolute inset-0 size-full object-cover"
+              />
 
-              <div className="-mt-6">
-                <ImagePlaceholder src={selectedProject.image} alt={selectedProject.title} type="cover" aspectRatio="aspect-[21/9]" className="mb-6 rounded-2xl" badge={selectedProject.status} />
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={`px-3 py-1 rounded-full text-[9px] font-brand tracking-wider font-semibold ${selectedProject.status === 'Completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/40' : 'bg-amber-50 text-amber-600 border border-amber-200/40'}`}>{selectedProject.status}</span>
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-slate-950/60 hover:bg-slate-900 text-white transition-colors flex items-center justify-center cursor-pointer border border-white/20 backdrop-blur-md"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* Gradient Backdrop & Overlapping Text */}
+              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-white z-10 flex flex-col justify-end pointer-events-none">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-brand tracking-wider font-semibold ${selectedProject.status === 'Completed' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40' : 'bg-amber-500/20 text-amber-300 border border-amber-400/40'}`}>
+                    {selectedProject.status}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 font-mono">
+                    {selectedProject.tags.map((tag) => (
+                      <span key={tag} className="px-2 py-0.5 rounded text-[10px] bg-white/10 text-slate-200 border border-white/15">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-brand text-heading font-bold mb-4">{selectedProject.title}</h3>
-                <p className="font-inter text-body text-sm leading-relaxed mb-6">{selectedProject.description}</p>
-                <div className="flex flex-wrap gap-2 font-mono">
-                  {selectedProject.tags.map((tag) => (
-                    <span key={tag} className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200/80">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <h3 className="text-xl sm:text-3xl font-brand text-white font-bold mb-1.5 tracking-tight">
+                  {selectedProject.title}
+                </h3>
+                <p className="font-inter text-xs sm:text-sm text-slate-200 leading-relaxed opacity-95 max-w-2xl">
+                  {selectedProject.description}
+                </p>
               </div>
             </motion.div>
           </motion.div>

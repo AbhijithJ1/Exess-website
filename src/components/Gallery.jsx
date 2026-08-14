@@ -418,7 +418,7 @@ const Gallery = () => {
         )}
       </AnimatePresence>
 
-      {/* Editorial Lightbox Modal (Clean White Surface, 0 Right-Side Artifacts, No Internal Scrollbar) */}
+      {/* Editorial Lightbox Modal — Full-Bleed Image with Overlapping Text (0 Wasted Space) */}
       <AnimatePresence>
         {selectedImage && (() => {
           const origin = flipOriginRef.current
@@ -429,7 +429,7 @@ const Gallery = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[65] flex items-center justify-center p-4 sm:p-6 bg-slate-950/25 backdrop-blur-md overflow-y-auto"
+              className="fixed inset-0 z-[65] flex items-start justify-center p-4 sm:p-6 pt-24 sm:pt-28 pb-8 sm:pb-12 bg-slate-950/40 backdrop-blur-md overflow-y-auto"
               onClick={() => setSelectedImage(null)}
             >
               <motion.div
@@ -438,37 +438,33 @@ const Gallery = () => {
                 exit={{ scale: 0.95, opacity: 0 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 onClick={(e) => e.stopPropagation()}
-                className="relative w-full max-w-3xl bg-white rounded-2xl p-5 sm:p-7 shadow-2xl border border-slate-200/90 text-slate-900 my-auto overflow-hidden flex flex-col"
+                className="relative w-full max-w-3xl aspect-[16/11] sm:aspect-[16/10] bg-slate-950 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 text-white my-auto flex flex-col group"
               >
-                {/* Header with Category & Minimal Close Button */}
-                <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 flex-shrink-0">
-                  <span className="text-xs font-brand uppercase tracking-wider text-primary font-bold">
+                {/* Full-Bleed Photograph */}
+                <img
+                  src={selectedImage.image}
+                  alt={selectedImage.title}
+                  className="absolute inset-0 size-full object-cover"
+                />
+
+                {/* Overlay Close Button */}
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-slate-950/60 hover:bg-slate-900 text-white transition-colors flex items-center justify-center cursor-pointer border border-white/20 backdrop-blur-md"
+                  aria-label="Close image lightbox"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                {/* Gradient Backdrop & Overlapping Text */}
+                <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-white z-10 flex flex-col justify-end pointer-events-none">
+                  <span className="text-xs font-brand uppercase tracking-wider text-cyan-400 font-bold mb-1.5">
                     {selectedImage.category} &bull; {selectedImage.date}
                   </span>
-                  <button
-                    onClick={() => setSelectedImage(null)}
-                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer"
-                    aria-label="Close image lightbox"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Hero Photograph (Uncropped, Natural Aspect Ratio, No Overflow) */}
-                <div className="relative w-full bg-slate-950/5 rounded-xl overflow-hidden mb-4 border border-slate-200/60 shadow-sm flex items-center justify-center flex-shrink-0">
-                  <img
-                    src={selectedImage.image}
-                    alt={selectedImage.title}
-                    className="w-full max-h-[60vh] object-contain rounded-xl"
-                  />
-                </div>
-
-                {/* Caption Details */}
-                <div className="flex-shrink-0">
-                  <h3 className="text-xl sm:text-2xl font-brand font-bold text-slate-900 mb-1">
+                  <h3 className="text-xl sm:text-3xl font-brand font-bold text-white mb-2 tracking-tight">
                     {selectedImage.title}
                   </h3>
-                  <p className="font-inter text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  <p className="font-inter text-xs sm:text-sm text-slate-200 leading-relaxed opacity-95 max-w-2xl">
                     {selectedImage.caption || selectedImage.description}
                   </p>
                 </div>

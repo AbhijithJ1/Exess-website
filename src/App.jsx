@@ -66,7 +66,7 @@ function App() {
         <ScrollProgress />
         <Navbar />
         <main className="relative z-10">
-          <Hero />
+          <Hero isIntroComplete={!showIntro} />
           <About />
           <Team />
           <Events />
