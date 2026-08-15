@@ -98,8 +98,8 @@ const About = () => {
             </span>
           </motion.div>
 
-          {/* "ABOUT US" TYPOGRAPHY TRANSFORMATION (Graduated Scale: Hero > About Us >= Other Sections) */}
-          <div className="w-full overflow-hidden py-1">
+          {/* "ABOUT US" TYPOGRAPHY TRANSFORMATION & MATCHED DIVIDER LINE */}
+          <div className="inline-block relative">
             <motion.h2
               initial={{ scale: 1.5, filter: 'blur(12px)', opacity: 0.2, y: 20 }}
               animate={
@@ -112,28 +112,26 @@ const About = () => {
               transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               className="font-brand font-bold text-light-sweep-dark tracking-tight leading-none origin-left select-none text-[clamp(2.4rem,6.8vw,5.2rem)]"
             >
-              {displayText.map((char, index) => (
-                <span key={index} className="inline-block transition-all duration-150">
-                  {char === ' ' ? '\u00A0' : char}
-                </span>
-              ))}
+              <span className="relative inline-block pb-3">
+                {displayText.map((char, index) => (
+                  <span key={index} className="inline-block transition-all duration-150">
+                    {char === ' ' ? '\u00A0' : char}
+                  </span>
+                ))}
+
+                {/* Hairline Cyan Energy Divider (Underlines "ABOUT US" 100% precisely from A to S) */}
+                <motion.span
+                  initial={{ scaleX: 0, opacity: 0 }}
+                  animate={animStage >= 2 ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
+                  transition={{ duration: 0.75, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute bottom-0 left-0 w-full h-[1.5px] origin-left block"
+                  style={{
+                    background: 'linear-gradient(90deg, rgba(30,107,147,0.95) 0%, rgba(6,182,212,0.9) 70%, rgba(150,235,248,1) 100%)',
+                  }}
+                />
+              </span>
             </motion.h2>
           </div>
-
-          {/* Hairline Cyan Energy Divider */}
-          <motion.div
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={animStage >= 2 ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
-            transition={{ duration: 0.65, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full origin-left mt-3"
-          >
-            <div
-              className="h-px w-full max-w-sm"
-              style={{
-                background: 'linear-gradient(90deg, rgba(30,107,147,0.6) 0%, rgba(6,182,212,0.3) 60%, transparent 100%)',
-              }}
-            />
-          </motion.div>
         </div>
 
         {/* ── 2. REFINED COMPACT ABOUT CONTENT (TOP-DOWN RESOLUTION) ────────── */}
